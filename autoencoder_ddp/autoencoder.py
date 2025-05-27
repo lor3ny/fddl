@@ -1,8 +1,5 @@
 import torch.nn as nn
 
-
-# Inserire dropout
-
 class Autoencoder(nn.Module):
     def __init__(self, input_dim, hidden_dim):
         super(Autoencoder, self).__init__()
@@ -11,7 +8,6 @@ class Autoencoder(nn.Module):
             nn.ReLU(True),
             nn.Linear(128, hidden_dim),
             nn.ReLU(True),
-
         )
         self.decoder = nn.Sequential(
             nn.Linear(hidden_dim, 128),

@@ -28,10 +28,13 @@ for epoch in range(epochs):
     for images, _ in data.trainloader:
         inputs = images.view(-1, data.linear_size).to(device)
         outputs = model(inputs)
+        
         loss = criterion(outputs, inputs)
-
-        optimizer.zero_grad()
         loss.backward()
+
+        # ALLREDUCE SE VUOI FARE DDP
+
+        optimizer.zero_grad() #reset gradients to zero before
         optimizer.step()    
     print(f'Epoch [{epoch+1}/{epochs}], Loss: {loss.item():.4f}')
 
