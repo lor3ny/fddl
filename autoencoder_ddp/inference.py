@@ -11,7 +11,7 @@ model = Autoencoder(28*28, 32)
 data = MNISTLoader('./data/MNIST')
 
 # Load saved weights
-model.load_state_dict(torch.load("autoencoder.pth"))
+model.load_state_dict(torch.load("autoencoder_ddp.pth"))
 model.eval()  # Set to evaluation mode
 
 device = torch.device('cuda')
