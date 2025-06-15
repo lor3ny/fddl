@@ -1,0 +1,12 @@
+name: fddl_env
+dependencies:
+  - python=3.10
+  - numpy
+  - pytorch
+  - torchvision
+  - numpy
+  - matplotlib
+  - torchaudio
+  - pip
+  - pip:
+      - tqdm
