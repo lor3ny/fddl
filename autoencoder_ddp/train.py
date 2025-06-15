@@ -43,7 +43,7 @@ class Trainer:
         self.save_every = save_every
         self.with_gpu = with_gpu
         self.model = model
-        self.local_rank = int(os.environ["RANK"] % torch.cuda.device_count())
+        self.local_rank = int(os.environ["LOCAL_RANK"]) % 4#int(torch.cuda.device_count())
         self.global_rank = int(os.environ["RANK"])
         # IF YOU WANT TO ADD GPU SUPPORT YOU NEED TO KNOW HOW MANY GPUS YOU HAVE PER NODE
         # self.gpu_id = rank % torch.cuda.device_count() if torch.cuda.is_available() else None
@@ -84,23 +84,18 @@ class Trainer:
 def main_train(save_every: int, total_epochs: int, batch_size: int, latent_linear_size: int):
 
 
-    print(f"[RANK {rank}] Hi! My local rank is {local_rank}, global rank is {rank}, world size is {world_size}")
-    dist.barrier()
-
-    if torch.cuda.is_available():
-        print("Training with GPUs") if rank == 0 else None
-
-    else:
-        print("Training with CPUs") if rank == 0 else None
-
-
-
     # INITIALIZATION
-    dist.init_process_group(backend='gloo')
-    local_rank = int(os.environ["LOCAL_RANK"] % torch.cuda.device_count())
+    print(torch.cuda.device_count())
+    print(torch.cuda.is_available())
+
+    backend = 'nccl' if torch.cuda.is_available() else 'gloo'
+    dist.init_process_group(backend=backend)
+    local_rank = int(os.environ["LOCAL_RANK"]) % 4 #int(torch.cuda.device_count())
     rank = int(os.environ["RANK"])
     world_size = int(os.environ["WORLD_SIZE"])
 
+    print("Training with GPUs") if torch.cuda.is_available() and rank == 0 else print("Training with CPUs")
+    print(f"[RANK {rank}] Hi! My local rank is {local_rank}, global rank is {rank}, world size is {world_size}")
 
     # DATASET LOADING
     if not os.path.exists("./data/MNIST"):
@@ -126,8 +121,9 @@ def main_train(save_every: int, total_epochs: int, batch_size: int, latent_linea
     optimizer = optim.Adam(model.parameters(), lr=1e-3)
 
     if torch.cuda.is_available() and torch.cuda.device_count() > 1:
-        model = model.to(rank)
-        model = DDP(model, device_ids=[rank])
+        torch.cuda.set_device(local_rank)
+        model = model.to(local_rank)
+        model = DDP(model, device_ids=[local_rank])
         with_gpu = True
     else:
         model = DDP(model)  # CPU
@@ -149,7 +145,7 @@ def main_train(save_every: int, total_epochs: int, batch_size: int, latent_linea
 
     if(rank == 0):
         torch.save(model.module.state_dict(), "autoencoder_ddp.pth")
-        print("[RANK: {rank}] Model saved to autoencoder_ddp.pth")
+        print(f"[RANK: {rank}] Model saved to autoencoder_ddp.pth")
 
     dist.destroy_process_group()
 
