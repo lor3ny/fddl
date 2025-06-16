@@ -14,70 +14,70 @@ import os
 import argparse
 
 from autoencoder import Autoencoder
-from mnist_loader import MNISTLoader
+#from mnist_loader import MNISTLoader
 
 
-class MyTrainDataset(Dataset):
-    def __init__(self, size):
-        self.size = size
-        self.data = [(torch.rand(20), torch.rand(1)) for _ in range(size)]
+# class MyTrainDataset(Dataset):
+#     def __init__(self, size):
+#         self.size = size
+#         self.data = [(torch.rand(20), torch.rand(1)) for _ in range(size)]
 
-    def __len__(self):
-        return self.size
+#     def __len__(self):
+#         return self.size
     
-    def __getitem__(self, index):
-        return self.data[index]
+#     def __getitem__(self, index):
+#         return self.data[index]
 
-class Trainer:
-    def __init__(
-        self,
-        model: torch.nn.Module,
-        data: MNISTLoader,
-        optimizer: torch.optim.Optimizer,
-        criterion: torch.nn.Module,
-        save_every: int,
-        rank: int,
-        gpu_rank: int,
-        size: int,
-        comm: MPI.Comm
-    ) -> None:
-        self.data = data
-        self.optimizer = optimizer
-        self.criterion = criterion
-        self.save_every = save_every
-        self.model = model
-        self.gpu_rank = gpu_rank
-        self.rank = rank
+# class Trainer:
+#     def __init__(
+#         self,
+#         model: torch.nn.Module,
+#         data: MNISTLoader,
+#         optimizer: torch.optim.Optimizer,
+#         criterion: torch.nn.Module,
+#         save_every: int,
+#         rank: int,
+#         gpu_rank: int,
+#         size: int,
+#         comm: MPI.Comm
+#     ) -> None:
+#         self.data = data
+#         self.optimizer = optimizer
+#         self.criterion = criterion
+#         self.save_every = save_every
+#         self.model = model
+#         self.gpu_rank = gpu_rank
+#         self.rank = rank
 
-    def _run_batch(self, inputs):
-        outputs = self.model(inputs)
-        loss = self.criterion(inputs, outputs)
+#     def _run_batch(self, inputs):
+#         outputs = self.model(inputs)
+#         loss = self.criterion(inputs, outputs)
         
-        self.optimizer.zero_grad()
-        loss.backward()
-        self.optimizer.step()
+#         self.optimizer.zero_grad()
+#         loss.backward()
+#         self.optimizer.step()
 
-    def _run_epoch(self, epoch):
-        print(f"[GPU{self.global_rank}] Epoch {epoch} | Steps: {len(self.data)}")
-        for images, _ in self.data:
-            inputs = images.view(-1, 28*28)
-            inputs = inputs.to(self.local_rank)
-            self._run_batch(inputs)
+#     def _run_epoch(self, epoch):
+#         print(f"[GPU{self.global_rank}] Epoch {epoch} | Steps: {len(self.data)}")
+#         for images, _ in self.data:
+#             inputs = images.view(-1, 28*28)
+#             inputs = inputs.to(self.local_rank)
+#             self._run_batch(inputs)
 
-    def _save_checkpoint(self, epoch):
-        ckp = self.model.state_dict()
-        PATH = "checkpoint.pt"
-        torch.save(ckp, PATH)
-        print(f"Epoch {epoch} | Training checkpoint saved at {PATH}")
+#     def _save_checkpoint(self, epoch):
+#         ckp = self.model.state_dict()
+#         PATH = "checkpoint.pt"
+#         torch.save(ckp, PATH)
+#         print(f"Epoch {epoch} | Training checkpoint saved at {PATH}")
 
-    def train(self, max_epochs: int):
+#     def train(self, max_epochs: int):
 
-        for epoch in range(max_epochs):
-            self._run_epoch(epoch)
-            '''
-            if self.gpu_id == 0 and epoch % self.save_every == 0:
-                self._save_checkpoint(epoch)
-            '''
+#         for epoch in range(max_epochs):
+#             self._run_epoch(epoch)
+#             '''
+#             if self.gpu_id == 0 and epoch % self.save_every == 0:
+#                 self._save_checkpoint(epoch)
+#             '''
 
 
 # NON SONO CONVINTO VADA BENE, BISOGNA TESTARLO E CORREGGERLO
@@ -150,36 +150,36 @@ def main(
         print("x --------------------- x")
     
     comm.barrier()
-    print(f"[Rank {dist.get_rank()}] LOCAL_RANK={gpu_rank} on CUDA device {torch.cuda.current_device()} hostname={os.uname()[1]}")
+    print(f"[Rank {rank}] LOCAL_RANK={gpu_rank} on CUDA device {torch.cuda.current_device()} hostname={os.uname()[1]}")
     comm.barrier()
 
     # DATA MUST BE DIVIDED MANUALLY
-    train_loader, test_loadr = load_distribute_data(rank=rank, size=size)
+    # train_loader, test_loadr = load_distribute_data(rank=rank, size=size)
 
-    # Verificare che questa funzione tiri fuori roba seria
+    # # Verificare che questa funzione tiri fuori roba seria
 
-    # MODEL INIT
-    model = Autoencoder(28*28, 32)
-    criterion = nn.MSELoss()
-    optimizer = optim.Adam(model.parameters(), lr=1e-3)
+    # # MODEL INIT
+    # model = Autoencoder(28*28, 32)
+    # criterion = nn.MSELoss()
+    # optimizer = optim.Adam(model.parameters(), lr=1e-3)
 
-    model = model.to(gpu_rank)
-    model = DDP(model, device_ids=[gpu_rank])
+    # model = model.to(gpu_rank)
+    # model = DDP(model, device_ids=[gpu_rank])
 
-    # MODEL TRAINING
-    print(f"[RANK: {rank}] Trainer is running...") if rank == 0 else None
+    # # MODEL TRAINING
+    # print(f"[RANK: {rank}] Trainer is running...") if rank == 0 else None
 
-    trainer = Trainer(model, train_loader, optimizer, criterion, save_every, rank, size, comm)
-    trainer.train(epochs)
-    comm.barrier()
+    # trainer = Trainer(model, train_loader, optimizer, criterion, save_every, rank, size, comm)
+    # trainer.train(epochs)
+    # comm.barrier()
 
-    # Il training deve gestire l'aggregazione del gradiente con la allreduce, rivederlo
+    # # Il training deve gestire l'aggregazione del gradiente con la allreduce, rivederlo
 
-    print(f"[RANK: {rank}] Training done.") if rank == 0 else None
+    # print(f"[RANK: {rank}] Training done.") if rank == 0 else None
 
-    if(rank == 0):
-        torch.save(model.module.state_dict(), "autoencoder_ddp.pth")
-        print(f"[RANK: {rank}] Model saved to autoencoder_ddp.pth")
+    # if(rank == 0):
+    #     torch.save(model.module.state_dict(), "autoencoder_ddp.pth")
+    #     print(f"[RANK: {rank}] Model saved to autoencoder_ddp.pth")
 
 
 if __name__ == "__main__":
