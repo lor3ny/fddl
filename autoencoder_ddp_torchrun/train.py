@@ -85,17 +85,26 @@ def main_train(save_every: int, total_epochs: int, batch_size: int, latent_linea
 
 
     # INITIALIZATION
-    print(torch.cuda.device_count())
-    print(torch.cuda.is_available())
+    
+    local_rank = int(os.environ["LOCAL_RANK"])
+    backend = 'nccl' #if torch.cuda.is_available() else 'gloo'
+    torch.cuda.set_device(local_rank)
+    dist.init_process_group(backend=backend, init_method="env://")
+    rank = dist.get_rank()
 
-    backend = 'nccl' if torch.cuda.is_available() else 'gloo'
-    dist.init_process_group(backend=backend)
-    local_rank = int(os.environ["LOCAL_RANK"]) % 4 #int(torch.cuda.device_count())
-    rank = int(os.environ["RANK"])
-    world_size = int(os.environ["WORLD_SIZE"])
+    if rank == 0:
+        print("x --- LIBRARY CHECK --- x")
+        print(f"PyTorch version: {torch.__version__}")
+        print(f"PyTorch CUDA version: {torch.version.cuda}")
+        print(f"PyTorch CUDNN version: {torch.backends.cudnn.version()}")
+        print(f"GPUs per node {torch.cuda.device_count()}")
+        print(f"Training with GPUs :)") if torch.cuda.is_available() else print("Training with CPUs")
+        print("x --------------------- x")
+    
+    dist.barrier()
+    print(f"[Rank {dist.get_rank()}] LOCAL_RANK={local_rank} on CUDA device {torch.cuda.current_device()} hostname={os.uname()[1]}")
+    dist.barrier()
 
-    print("Training with GPUs") if torch.cuda.is_available() and rank == 0 else print("Training with CPUs")
-    print(f"[RANK {rank}] Hi! My local rank is {local_rank}, global rank is {rank}, world size is {world_size}")
 
     # DATASET LOADING
     if not os.path.exists("./data/MNIST"):
@@ -120,14 +129,19 @@ def main_train(save_every: int, total_epochs: int, batch_size: int, latent_linea
     criterion = nn.MSELoss()
     optimizer = optim.Adam(model.parameters(), lr=1e-3)
 
-    if torch.cuda.is_available() and torch.cuda.device_count() > 1:
-        torch.cuda.set_device(local_rank)
-        model = model.to(local_rank)
-        model = DDP(model, device_ids=[local_rank])
-        with_gpu = True
-    else:
-        model = DDP(model)  # CPU
-        with_gpu = False
+    # if torch.cuda.is_available() and torch.cuda.device_count() > 1:
+    #     torch.cuda.set_device(local_rank)
+    #     model = model.to(local_rank)
+    #     model = DDP(model, device_ids=[local_rank])
+    #     with_gpu = True
+    # else:
+    #     model = DDP(model)  # CPU
+    #     with_gpu = False
+
+    torch.cuda.set_device(local_rank)
+    model = model.to(local_rank)
+    model = DDP(model, device_ids=[local_rank])
+    with_gpu = True
 
     # Teoricamente ora ogni core ha un batch di dati diverso, e fanno allreduce automaticamente
     # 1. Se fosse multinodo come facciamo? Lanciandolo su slurm funziona comunque?
