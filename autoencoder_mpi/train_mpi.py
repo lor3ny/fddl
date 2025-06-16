@@ -79,7 +79,10 @@ class Trainer:
                 self._save_checkpoint(epoch)
             '''
 
-def load_and_distribute_data(
+
+# NON SONO CONVINTO VADA BENE, BISOGNA TESTARLO E CORREGGERLO
+
+def load_distribute_data(
         rank: int, 
         size: int, 
         batch_size: int
@@ -113,6 +116,7 @@ def load_and_distribute_data(
     print(f"[RANK: {rank}] I have {local_samples} samples. indices {start_index}:{end_index}")
 
     # Create DataLoader for local dataset
+    # Bisogna passare local_indices
     local_dataset = set(train_dataset, local_indices)
     train_loader = DataLoader(
         local_dataset, batch_size=batch_size, shuffle=True
@@ -150,7 +154,9 @@ def main(
     comm.barrier()
 
     # DATA MUST BE DIVIDED MANUALLY
-    train_loader, test_loadr = load_data(rank=rank, size=size)
+    train_loader, test_loadr = load_distribute_data(rank=rank, size=size)
+
+    # Verificare che questa funzione tiri fuori roba seria
 
     # MODEL INIT
     model = Autoencoder(28*28, 32)
@@ -160,13 +166,14 @@ def main(
     model = model.to(gpu_rank)
     model = DDP(model, device_ids=[gpu_rank])
 
-
     # MODEL TRAINING
     print(f"[RANK: {rank}] Trainer is running...") if rank == 0 else None
 
-    trainer = Trainer(model, trainloader, optimizer, criterion, save_every, rank, size, comm)
+    trainer = Trainer(model, train_loader, optimizer, criterion, save_every, rank, size, comm)
     trainer.train(epochs)
     comm.barrier()
+
+    # Il training deve gestire l'aggregazione del gradiente con la allreduce, rivederlo
 
     print(f"[RANK: {rank}] Training done.") if rank == 0 else None
 
