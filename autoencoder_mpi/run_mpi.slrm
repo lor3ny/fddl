@@ -32,10 +32,9 @@
 # export WORLD_SIZE=$SLURM_NTASKS
 
 nvidia-smi
-echo "-----------------------------------------"
+echo "+ -------------- SLURM CHECK -------------- +"
 echo "CUDA_VISIBLE_DEVICES=$CUDA_VISIBLE_DEVICES"
 echo "NODES=$SLURM_NNODES"
-echo "$HEAD_NODE:$HEAD_NODE_IP"
-echo "-----------------------------------------"
+echo "+ ----------------------------------------- +"
 
-srun --mpi=openmpi -n 16 python train_mpi.py --ntasks $SLURM_NTASKS
+srun python train_mpi.py --ntasks $SLURM_NTASKS
