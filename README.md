@@ -2,6 +2,9 @@
 
 DL models are executed over single and multi GPUs systems.
 
+This project is designed to work on cluster architectures.
+So the architectures and modules have to be adapted on the chosen cluster.
+
 # Dependencies
 
 ```cmd
