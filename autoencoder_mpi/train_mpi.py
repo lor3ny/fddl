@@ -16,7 +16,7 @@ import argparse
 import time
 import sys
 
-from autoencoder import Autoencoder
+from autoencoder import Autoencoder, Autoencoder_PIPE
 #from mnist_loader import MNISTLoader
 
 
@@ -54,8 +54,7 @@ class Trainer:
         print(f"Epoch {epoch} | Training checkpoint saved at {PATH}")
 
 
-    # I don't know if it is correct on an autoencoder
-
+    # Actually we are using this trainer with an Autoencoder, so I don't really know if this evaluator is good
     '''
     def _evaluate (self) -> None:
         
@@ -97,15 +96,20 @@ class Trainer:
 
     def train(self, max_epochs: int):
 
+
+        local_syncs_lat = []
+        local_epochs_lat = []
+
         start_time = MPI.Wtime()
         for epoch in range(max_epochs):
-            print(f"[RANK {self.rank} GPU {self.gpu_rank}] Epoch {epoch} | Steps: {len(self.test_data)}")
+            print(f"[RANK {self.rank} GPU {self.gpu_rank}] Epoch {epoch} | Batches: {len(self.test_data)}") if self.rank == 0 else None
             e_start_time = MPI.Wtime()
             total_loss = 0.0
 
             #BATCH
-            for images, _ in self.train_data:
-                inputs = images.view(-1, 28*28)
+            for batch_idx, (batch_data, batch_target) in enumerate(self.train_data):
+                print(f"-> Epoch {epoch} | Batch: {batch_idx}") if self.rank == 0 else None
+                inputs = batch_data.view(-1, 28*28)
                 inputs = inputs.to(self.gpu_rank)
                 outputs = self.model(inputs)
                 loss = self.criterion(inputs, outputs)
@@ -113,8 +117,11 @@ class Trainer:
                 self.optimizer.zero_grad()
                 loss.backward()
 
+                sync_start_time = MPI.Wtime()
                 self._synchronize_gradients() 
+                sync_end_time = MPI.Wtime()
 
+                local_syncs_lat.append(sync_end_time-sync_start_time)
                 total_loss += loss.item()
 
                 self.optimizer.step()
@@ -124,23 +131,22 @@ class Trainer:
                 self._save_checkpoint(epoch)
             '''
 
-            # needs averaging
-            epoch_duration = MPI.Wtime() - e_start_time
-
+            local_epochs_lat.append(MPI.Wtime() - e_start_time)
             avg_loss = total_loss / len(self.train_data)
             all_avg_loss = (self.comm.allreduce(avg_loss, op=MPI.SUM) / self.size)
+            print(f"-> Epoch {epoch} | Avg Loss: {all_avg_loss}") if self.rank == 0 else None
 
             #test_accuracy = self._evaluate()
-
-            self.comm.Barrier()
-            print(f"{self.rank:^5} | {epoch:^7} | {avg_loss:^10.4f} | {all_avg_loss:^11.4f} | {epoch_duration:^10.2f}", flush=True)
             
         local_training_time = MPI.Wtime() - start_time
         max_training_time = self.comm.allreduce(local_training_time, op=MPI.MAX)
-        print(f"Final execution time{max_training_time}") if self.rank == 0 else None
 
+        # Printare Epochs Time (voglio mantenere l'associazione per epoch) #ogni pro crea un file e salva i tempi, il file riporta il suo rank
+        # Printare Syncs Time (non so se voglio mantenere l'associazione per epoch) #ogni pro crea un file e salva i tempi, il file riporta il suo rank
+        # Per fare plot
 
-# NON SONO CONVINTO VADA BENE, BISOGNA TESTARLO E CORREGGERLO
+        print(f"Final execution time: {max_training_time}s") if self.rank == 0 else None
+
 
 
 def load_distribute_data(
@@ -221,10 +227,8 @@ def main(
     comm.Barrier()
     train_loader, test_loader = load_distribute_data(rank=rank, size=size, batch_size=batch_size, comm=comm)
 
-    # # Verificare che questa funzione tiri fuori roba seria
-
-    # # MODEL INIT
-    model = Autoencoder(28*28, 32)
+    # MODEL INIT
+    model = Autoencoder_PIPE(28*28, 32)
     criterion = nn.MSELoss()
     optimizer = optim.Adam(model.parameters(), lr=1e-3)
 
