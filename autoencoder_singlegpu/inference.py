@@ -2,12 +2,12 @@
 import torch
 import matplotlib.pyplot as plt
 
-from autoencoder import Autoencoder
+from autoencoder import Autoencoder, Autoencoder_PIPE
 from mnist_loader import MNISTLoader
 
 
 # Load model architecture
-model = Autoencoder(28*28, 32)
+model =  Autoencoder_PIPE(28*28, 32)
 data = MNISTLoader('./data/MNIST')
 
 # Load saved weights
