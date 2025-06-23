@@ -265,7 +265,7 @@ def main(
 
 if __name__ == "__main__":
 
-    epochs = 5
+    epochs = 32
     batch_size = 64
     save_every = 1
     latent_linear_size = 32
