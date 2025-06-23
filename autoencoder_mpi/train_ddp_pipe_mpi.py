@@ -84,7 +84,7 @@ class Trainer:
             if param.grad is None:
                 continue
             # Gather gradients from all ranks
-            grad = param.grad.data.cpu().numpy()
+            grad = param.grad.data.cpu().numpy() # why cpu?
             avg_grad = np.zeros_like(grad)
             try:
                 self.comm.Allreduce(grad, avg_grad, op=MPI.SUM)
@@ -107,24 +107,56 @@ class Trainer:
             total_loss = 0.0
 
             #BATCH
+
+            # Forse questo ciclo va solo per gpu 0 e gli altri ciclano senza leggere train.data (bho forse va bene così)
+
             for batch_idx, (batch_data, batch_target) in enumerate(self.train_data):
-                print(f"-> Epoch {epoch} | Batch: {batch_idx}") if self.rank == 0 else None
-                inputs = batch_data.view(-1, 28*28)
-                inputs = inputs.to(self.gpu_rank)
-                outputs = self.model(inputs)
-                loss = self.criterion(inputs, outputs)
+
+
+                if self.gpu_rank == 0:
+                    print(f"-> Epoch {epoch} | Batch: {batch_idx}") if self.rank == 0 else None
+                    inputs = batch_data.view(-1, 28*28)
+                    inputs = inputs.to(self.gpu_rank)
+
+                    outputs_step0 = self.model.forward_step0(inputs)
+                    req = self.comm.Isend(outputs_step0, dest=self.rank+1, tag=0)
+                    #req.Wait() #non va messa qui
+
+                elif self.gpu_rank == 1:
+                    outputs_step0 =  self.comm.recv(source=self.rank-1, tag=0)
+                    outputs_step1 = self.model.forward_step1(outputs_step0)
+                    req = self.comm.Isend(outputs_step1, dest=self.rank+1, tag=0)
+                    #req.Wait() #non va messa qui
+
+                elif self.gpu_rank == 2:
+                    outputs_step1 = self.comm.recv(source=self.rank-1, tag=0)
+                    outputs_step2 = self.model.forward_step1(outputs_step1)
+                    req = self.comm.Isend(outputs_step2, dest=self.rank+1, tag=0)
+                    #req.Wait() #non va messa qui
+
+                elif self.gpu_rank == 3:
+                    outputs_step2 = self.comm.recv(source=self.rank-1, tag=0)
+                    outputs = self.model.forward_step1(outputs_step2)
+
+                    # non dovrebbe essere pipelinata anche questa fase? 
+
+                    loss = self.criterion(inputs, outputs)
                 
-                self.optimizer.zero_grad()
-                loss.backward()
+                    self.optimizer.zero_grad()
+                    loss.backward()
 
-                sync_start_time = MPI.Wtime()
-                self._synchronize_gradients() 
-                sync_end_time = MPI.Wtime()
+                    sync_start_time = MPI.Wtime()
+                    self._synchronize_gradients() # in questo caso solo tra le gpu 3
+                    sync_end_time = MPI.Wtime()
 
-                local_syncs_lat.append(sync_end_time-sync_start_time)
-                total_loss += loss.item()
+                    local_syncs_lat.append(sync_end_time-sync_start_time)
+                    total_loss += loss.item()
 
-                self.optimizer.step()
+                    self.optimizer.step()
+                    
+                else:
+                    print(f"[RANK {self.rank}] Error on GPU rank")
+
             
             '''
             if self.gpu_id == 0 and epoch % self.save_every == 0:
@@ -226,6 +258,11 @@ def main(
     # DATA MUST BE DIVIDED MANUALLY
     comm.Barrier()
     train_loader, test_loader = load_distribute_data(rank=rank, size=size, batch_size=batch_size, comm=comm)
+
+    # I dati vanno distribuiti solo tra le gpu 0, gli altri non hanno bisogno
+    # Se ci sono 4 nodi 4 gpu per nodo, avremo 16 processi. Quindi solo 4 processi avranno train_data, gli altri no
+    # Ricorda sempre che per ora 0 legge e computa, 1-2 computano, 3 computa fa discesa del gradiente e sincronizza (bho forse meh)
+    # Tutti dovrebbe fare discesa, forse è meglio se 3 manda a 0-1-2. 0-1-2-3 fanno discesa e poi fanno aggregazione tutti (tutti i processi di tutti i nodi)
 
     # MODEL INIT
     model = Autoencoder_PIPE(28*28, 32)

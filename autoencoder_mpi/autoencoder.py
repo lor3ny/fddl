@@ -54,19 +54,19 @@ class Autoencoder_PIPE(nn.Module):
         decoded_2 = self.decoder_PIPE2(decoded_1)
         return decoded_2
     
-    def forward_step1(self, x):
+    def forward_step0(self, x):
         encoded_1 = self.encoder_PIPE1(x)
         return encoded_1
     
-    def forward_step2(self, x):
+    def forward_step1(self, x):
         encoded_2 = self.encoder_PIPE2(x)
         return encoded_2
     
-    def forward_step3(self, x):
+    def forward_step2(self, x):
         decoded_1 = self.decoder_PIPE1(x)
         return decoded_1
     
-    def forward_step4(self, x):
+    def forward_step3(self, x):
         decoded_2 = self.decoder_PIPE1(x)
         return decoded_2(x)
     
