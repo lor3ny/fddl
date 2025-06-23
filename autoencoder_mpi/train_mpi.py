@@ -258,9 +258,9 @@ def main(
 
     print(f"[RANK {rank}] Training done.", flush=True) if rank == 0 else None
 
-    # if(rank == 0):
-    #     torch.save(model.module.state_dict(), "autoencoder_ddp.pth")
-    #     print(f"[RANK: {rank}] Model saved to autoencoder_ddp.pth")
+    if(rank == 0):
+        torch.save(model.state_dict(), "autoencoder_ddp.pth")
+        print(f"[RANK: {rank}] Model saved to autoencoder_ddp.pth")
 
 
 if __name__ == "__main__":
