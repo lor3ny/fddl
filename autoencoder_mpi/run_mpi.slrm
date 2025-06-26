@@ -2,13 +2,14 @@
 #SBATCH --job-name=fddl_lor
 #SBATCH --output=logs/%j.out
 #SBATCH --error=logs/%j.err
-#SBATCH --nodes=4
+#SBATCH --nodes=2
 #SBATCH --gpus-per-node=4
 #SBATCH --gres=gpu:4
 #SBATCH --ntasks-per-node=4
 #SBATCH --cpus-per-task=4
 #SBATCH --time=00:05:00
 #SBATCH --partition=boost_usr_prod
+#SBATCH --qos=boost_qos_dbg
 #SBATCH --account=IscrB_SWING
 
 # module purge
@@ -37,4 +38,4 @@ echo "CUDA_VISIBLE_DEVICES=$CUDA_VISIBLE_DEVICES"
 echo "NODES=$SLURM_NNODES"
 echo "+ ----------------------------------------- +"
 
-srun python train_mpi.py --ntasks $SLURM_NTASKS
+srun python train_ddp_pipe_mpi.py --ntasks $SLURM_NTASKS

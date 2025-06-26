@@ -67,8 +67,8 @@ class Autoencoder_PIPE(nn.Module):
         return decoded_1
     
     def forward_step3(self, x):
-        decoded_2 = self.decoder_PIPE1(x)
-        return decoded_2(x)
+        decoded_2 = self.decoder_PIPE2(x)
+        return decoded_2
     
     # PIPELINING
 
