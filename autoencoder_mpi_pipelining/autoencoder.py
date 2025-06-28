@@ -74,4 +74,47 @@ class Autoencoder_PIPE(nn.Module):
 
     def encode(self, x):
         return self.encoder(x)
+
+# AUTOENCODER LAYERS WITH CLASSES
+
+
+class Layer0(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.layer = nn.Sequential(
+            nn.Linear(784, 128),
+            nn.ReLU(True)
+        )
+    def forward(self, x):
+        return self.layer(x)
+
+class Layer1(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.layer = nn.Sequential(
+            nn.Linear(128, 32),
+            nn.ReLU(True)
+        )
+    def forward(self, x):
+        return self.layer(x)
+
+class Layer2(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.layer = nn.Sequential(
+            nn.Linear(32, 128),
+            nn.ReLU(True)
+        )
+    def forward(self, x):
+        return self.layer(x)
+
+class Layer3(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.layer = nn.Sequential(
+            nn.Linear(128, 784),
+            nn.Sigmoid()
+        )
+    def forward(self, x):
+        return self.layer(x)  # output layer (no activation)
     

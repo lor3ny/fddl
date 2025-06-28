@@ -16,7 +16,7 @@ import argparse
 import time
 import sys
 
-from autoencoder import Autoencoder, Autoencoder_PIPE
+from autoencoder import Autoencoder_PIPE, Layer0, Layer1, Layer2, Layer3
 #from mnist_loader import MNISTLoader
 
 
@@ -108,8 +108,6 @@ class Trainer:
             e_start_time = MPI.Wtime()
             total_loss = 0.0
 
-            #BATCH
-
             # Forse questo ciclo va solo per gpu 0 e gli altri ciclano senza leggere train.data (bho forse va bene così)
             self.comm.Barrier()  # Synchronize all ranks before starting the epoch
 
@@ -120,28 +118,27 @@ class Trainer:
                 if self.gpu_rank == 0:
                     print(f"-> Epoch {epoch} | Batch: {batch_idx}", flush=True)
                     inputs = batch_data.view(-1, 28*28).to(self.gpu_rank)
-                    inputs.requires_grad_()
+                    inputs.requires_grad = True
 
-                    outputs_step0 = self.model.forward_step0(inputs)
-                    req = self.comm.Isend(outputs_step0.detach().cpu(), dest=self.rank+1, tag=0)
+                    #outputs_step0 = self.model.forward_step0(inputs)
+                    outputs_step0 = self.model(inputs)
+                    self.comm.Send(outputs_step0.detach().cpu().numpy(), dest=self.rank+1, tag=0)
 
                     print(f"{self.rank} GPU {self.gpu_rank} -> Epoch {epoch} | Batch: {batch_idx} SENT", flush=True)
 
-                    grad_from_1 = torch.empty((len(batch_data), 128), dtype=torch.float32)
+                    grad_from_1 = torch.empty((len(batch_data), 784), dtype=torch.float32)
                     self.comm.Recv([grad_from_1.numpy(), MPI.FLOAT], source=self.rank+1, tag=0)
 
                     print(f"{self.rank} GPU {self.gpu_rank} -> Epoch {epoch} | Batch: {batch_idx} GRAD RECEIVED", flush=True)
 
-                    outputs_step0.backward(grad_from_1.to(self.gpu_rank))
-                    sync_start_time = MPI.Wtime()
-                    print(f"{self.rank} GPU {self.gpu_rank} -> Epoch {epoch} | Batch: {batch_idx} SYNCHING START", flush=True)
-                    self._synchronize_gradients() # in questo caso solo tra le gpu 3
-                    print(f"{self.rank} GPU {self.gpu_rank} -> Epoch {epoch} | Batch: {batch_idx} SYNCHING END", flush=True)
-                    sync_end_time = MPI.Wtime()
-
+                    inputs.backward(torch.tensor(grad_from_1).to(self.gpu_rank))
+                    # sync_start_time = MPI.Wtime()
+                    # print(f"{self.rank} GPU {self.gpu_rank} -> Epoch {epoch} | Batch: {batch_idx} SYNCHING START", flush=True)
+                    # self._synchronize_gradients() # in questo caso solo tra le gpu 3
+                    # print(f"{self.rank} GPU {self.gpu_rank} -> Epoch {epoch} | Batch: {batch_idx} SYNCHING END", flush=True)
+                    # sync_end_time = MPI.Wtime()
                     # local_syncs_lat.append(sync_end_time-sync_start_time)
-                    # total_loss += loss.item()
-                    #req.Wait() #non va messa qui
+                    # req.Wait() #non va messa qui
 
                 elif self.gpu_rank == 1:
                     print(f"{self.rank} GPU {self.gpu_rank} -> Epoch {epoch} | Batch: {batch_idx} TAKEN", flush=True)
@@ -149,24 +146,22 @@ class Trainer:
                     self.comm.Recv([outputs_step0.numpy(), MPI.FLOAT], source=self.rank-1, tag=0)
 
                     outputs_step0 = outputs_step0.to(self.gpu_rank)
-                    outputs_step0.requires_grad_()
+                    outputs_step0.requires_grad = True
 
-                    outputs_step1 = self.model.forward_step1(outputs_step0)
+                    outputs_step1 = self.model(outputs_step0)
                     
-                    req = self.comm.Isend(outputs_step1.detach().cpu(), dest=self.rank+1, tag=0)
+                    self.comm.Send(outputs_step1.detach().cpu().numpy(), dest=self.rank+1, tag=0)
 
                     print(f"{self.rank} GPU {self.gpu_rank} -> Epoch {epoch} | Batch: {batch_idx} SENT", flush=True)
-
 
                     grad_from_2 = torch.empty((len(batch_data), 32), dtype=torch.float32)
                     self.comm.Recv([grad_from_2.numpy(), MPI.FLOAT], source=self.rank+1, tag=0)
 
                     print(f"{self.rank} GPU {self.gpu_rank} -> Epoch {epoch} | Batch: {batch_idx} GRAD RECEIVED", flush=True)
 
-                    outputs_step1.backward(grad_from_2.to(self.gpu_rank))
+                    outputs_step1.backward(torch.tensor(grad_from_2).to(self.gpu_rank))
 
-                    grad_to_send = outputs_step0.grad.data.cpu()
-                    req = self.comm.Isend(grad_to_send.numpy(), dest=self.rank-1, tag=0)
+                    self.comm.Send(outputs_step0.grad.data.cpu().numpy(), dest=self.rank-1, tag=0)
 
                     print(f"{self.rank} GPU {self.gpu_rank} -> Epoch {epoch} | Batch: {batch_idx} GRAD SENT", flush=True)
                     #req.Wait() #non va messa qui
@@ -177,10 +172,10 @@ class Trainer:
                     self.comm.Recv([outputs_step1.numpy(), MPI.FLOAT], source=self.rank-1, tag=0)
 
                     outputs_step1 = outputs_step1.to(self.gpu_rank)
-                    outputs_step1.requires_grad_()
+                    outputs_step1.requires_grad = True
 
-                    outputs_step2 = self.model.forward_step2(outputs_step1)
-                    req = self.comm.Isend(outputs_step2.detach().cpu(), dest=self.rank+1, tag=0)
+                    outputs_step2 = self.model(outputs_step1)
+                    req = self.comm.Isend(outputs_step2.detach().cpu().numpy(), dest=self.rank+1, tag=0)
 
                     print(f"{self.rank} GPU {self.gpu_rank} -> Epoch {epoch} | Batch: {batch_idx} SENT", flush=True)
 
@@ -189,10 +184,9 @@ class Trainer:
 
                     print(f"{self.rank} GPU {self.gpu_rank} -> Epoch {epoch} | Batch: {batch_idx} GRAD RECEIVED", flush=True)
 
-                    outputs_step2.backward(grad_from_3.to(self.gpu_rank))
+                    outputs_step2.backward(torch.tensor(grad_from_3).to(self.gpu_rank))
 
-                    grad_to_send = outputs_step1.grad.data.cpu()
-                    req = self.comm.Isend(grad_to_send.numpy(), dest=self.rank-1, tag=0)
+                    self.comm.Send(outputs_step1.grad.data.cpu().numpy(), dest=self.rank-1, tag=0)
                     
                     print(f"{self.rank} GPU {self.gpu_rank} -> Epoch {epoch} | Batch: {batch_idx} GRAD SENT", flush=True)
 
@@ -204,20 +198,17 @@ class Trainer:
                     self.comm.Recv([outputs_step2.numpy(), MPI.FLOAT], source=self.rank-1, tag=0)
 
                     outputs_step2 = outputs_step2.to(self.gpu_rank)
-                    outputs_step2.requires_grad_()
+                    outputs_step2.requires_grad = True
 
-                    outputs = self.model.forward_step3(outputs_step2)
-
-                    # non dovrebbe essere pipelinata anche questa fase? 
-
+                    outputs = self.model(outputs_step2)
 
                     inputs = batch_data.view(-1, 28*28).to(self.gpu_rank)
                     loss = self.criterion(inputs, outputs)
-                    self.optimizer.zero_grad()
                     loss.backward()
 
-                    grad_to_send = outputs_step2.grad.data.cpu()
-                    self.comm.Isend([grad_to_send.numpy(), MPI.FLOAT], dest=self.rank - 1, tag=0)
+                    self.comm.Send([outputs_step2.grad.data.cpu().numpy(), MPI.FLOAT], dest=self.rank - 1, tag=0)
+
+                    #total_loss += loss.item()
 
                     print(f"{self.rank} GPU {self.gpu_rank} -> Epoch {epoch} | Batch: {batch_idx} GRAD SENT", flush=True)
 
@@ -229,6 +220,7 @@ class Trainer:
                     print(f"[RANK {self.rank}] Error on GPU rank")
 
                 self.optimizer.step()
+                self.optimizer.zero_grad()
             
             '''
             if self.gpu_id == 0 and epoch % self.save_every == 0:
@@ -312,7 +304,7 @@ def main(
     rank = comm.Get_rank()
     size = comm.Get_size()
 
-    group_ranks = [0, 4]
+    group_ranks = [0]
     world_group = comm.Get_group()
     sub_group = world_group.Incl(group_ranks)
     sub_comm = comm.Create(sub_group)
@@ -356,39 +348,11 @@ def main(
     print(f"[RANK {rank}] Trainer is running...", flush=True) if rank == 0 else None
 
     model = Autoencoder_PIPE(28*28, 32)
-    criterion = nn.MSELoss()
+
+    layers = [Layer0, Layer1, Layer2, Layer3]
+    model = layers[rank]().to(gpu_rank)
     optimizer = optim.Adam(model.parameters(), lr=1e-3)
-    model = model.to(gpu_rank)
-    
-    # if rank == 0:
-    #     trainer = Trainer(
-    #         model=model,
-    #         train_data=None,
-    #         test_data=None,
-    #         optimizer=optimizer,
-    #         criterion=criterion,
-    #         save_every=save_every,
-    #         rank=rank,
-    #         gpu_rank=gpu_rank,
-    #         size=size,
-    #         comm=comm
-    #     )
-    #     trainer.train(epochs)
-    # else:
-    #     trainer = Trainer(
-    #         model=model,
-    #         train_data=train_loader,
-    #         test_data=test_loader,
-    #         optimizer=optimizer,
-    #         criterion=criterion,
-    #         save_every=save_every,
-    #         rank=rank,
-    #         gpu_rank=gpu_rank,
-    #         size=size,
-    #         comm=comm
-    #     )
-    #     trainer.train(epochs)
-    # comm.Barrier()
+    criterion = nn.MSELoss()
 
     # # Il training deve gestire l'aggregazione del gradiente con la allreduce, rivederlo
 
@@ -416,8 +380,8 @@ def main(
 
 if __name__ == "__main__":
 
-    epochs = 32
-    batch_size = 128
+    epochs = 5
+    batch_size = 64
     save_every = 1
     latent_linear_size = 32
     
