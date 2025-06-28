@@ -16,10 +16,10 @@ model1 = Layer1()
 model2 = Layer2()
 model3 = Layer3()
 
-model0.load_state_dict(torch.load("layer0.pth"))
-model1.load_state_dict(torch.load("layer1.pth"))
-model2.load_state_dict(torch.load("layer2.pth"))
-model3.load_state_dict(torch.load("layer3.pth"))
+model0.load_state_dict(torch.load("layer0.pth", map_location="cuda:0"))
+model1.load_state_dict(torch.load("layer1.pth", map_location="cuda:0"))
+model2.load_state_dict(torch.load("layer2.pth", map_location="cuda:0"))
+model3.load_state_dict(torch.load("layer3.pth", map_location="cuda:0"))
 
 model0.eval()  # Set to evaluation mode
 model1.eval()  # Set to evaluation mode
