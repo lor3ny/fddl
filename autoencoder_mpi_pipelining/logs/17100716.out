@@ -1,4 +1,4 @@
-Sat Jun 28 15:32:20 2025       
+Sat Jun 28 15:44:12 2025       
 +---------------------------------------------------------------------------------------+
 | NVIDIA-SMI 530.30.02              Driver Version: 530.30.02    CUDA Version: 12.1     |
 |-----------------------------------------+----------------------+----------------------+
@@ -7,19 +7,19 @@ Sat Jun 28 15:32:20 2025
 |                                         |                      |               MIG M. |
 |=========================================+======================+======================|
 |   0  NVIDIA A100-SXM-64GB            On | 00000000:1D:00.0 Off |                    0 |
-| N/A   43C    P0               61W / 466W|      0MiB / 65536MiB |      0%      Default |
+| N/A   42C    P0               62W / 459W|      0MiB / 65536MiB |      0%      Default |
 |                                         |                      |             Disabled |
 +-----------------------------------------+----------------------+----------------------+
 |   1  NVIDIA A100-SXM-64GB            On | 00000000:56:00.0 Off |                    0 |
-| N/A   42C    P0               60W / 466W|      0MiB / 65536MiB |      0%      Default |
+| N/A   42C    P0               61W / 461W|      0MiB / 65536MiB |      0%      Default |
 |                                         |                      |             Disabled |
 +-----------------------------------------+----------------------+----------------------+
 |   2  NVIDIA A100-SXM-64GB            On | 00000000:8F:00.0 Off |                    0 |
-| N/A   42C    P0               61W / 462W|      0MiB / 65536MiB |      0%      Default |
+| N/A   42C    P0               62W / 465W|      0MiB / 65536MiB |      0%      Default |
 |                                         |                      |             Disabled |
 +-----------------------------------------+----------------------+----------------------+
 |   3  NVIDIA A100-SXM-64GB            On | 00000000:C8:00.0 Off |                    0 |
-| N/A   42C    P0               63W / 461W|      0MiB / 65536MiB |      0%      Default |
+| N/A   42C    P0               61W / 462W|      0MiB / 65536MiB |      0%      Default |
 |                                         |                      |             Disabled |
 +-----------------------------------------+----------------------+----------------------+
                                                                                          
@@ -41,14 +41,14 @@ PyTorch CUDNN version: 90501
 GPUs per node 4
 Training with GPUs :)
 + ----------------------------------------- +
-[Rank 0] GPU_RANK=0 on CUDA device 0 hostname=lrdn1204.leonardo.local
-[Rank 1] GPU_RANK=1 on CUDA device 1 hostname=lrdn1204.leonardo.local
-[Rank 2] GPU_RANK=2 on CUDA device 2 hostname=lrdn1204.leonardo.local
-[Rank 3] GPU_RANK=3 on CUDA device 3 hostname=lrdn1204.leonardo.local
+[Rank 0] GPU_RANK=0 on CUDA device 0 hostname=lrdn0410.leonardo.local
+[Rank 1] GPU_RANK=1 on CUDA device 1 hostname=lrdn0410.leonardo.local
+[Rank 2] GPU_RANK=2 on CUDA device 2 hostname=lrdn0410.leonardo.local
+[Rank 3] GPU_RANK=3 on CUDA device 3 hostname=lrdn0410.leonardo.local
+[RANK 1] I have 15000 samples. From 15000 to 30000
+[RANK 0] This dataset has 60000 samples
 [RANK 2] I have 15000 samples. From 30000 to 45000
 [RANK 3] I have 15000 samples. From 45000 to 60000
-[RANK 0] This dataset has 60000 samples
-[RANK 1] I have 15000 samples. From 15000 to 30000
 [RANK 0] I have 15000 samples. From 0 to 15000
 [RANK 0] Trainer is running...
 [RANK 0 GPU 0] Epoch 0 | Batches: 157
@@ -63,11 +63,11 @@ Training with GPUs :)
 3 GPU 3 -> Epoch 0 | Batch: 0 GRAD SENT
 1 GPU 1 -> Epoch 0 | Batch: 0 GRAD RECEIVED
 2 GPU 2 -> Epoch 0 | Batch: 0 GRAD SENT
-1 GPU 1 -> Epoch 0 | Batch: 0 GRAD SENT
 0 GPU 0 -> Epoch 0 | Batch: 0 GRAD RECEIVED
+1 GPU 1 -> Epoch 0 | Batch: 0 GRAD SENT
 2 GPU 2 -> Epoch 0 | Batch: 1 TAKEN
-1 GPU 1 -> Epoch 0 | Batch: 1 TAKEN
 3 GPU 3 -> Epoch 0 | Batch: 1 TAKEN
+1 GPU 1 -> Epoch 0 | Batch: 1 TAKEN
 -> Epoch 0 | Batch: 1
 0 GPU 0 -> Epoch 0 | Batch: 1 SENT
 1 GPU 1 -> Epoch 0 | Batch: 1 SENT
@@ -78,9 +78,9 @@ Training with GPUs :)
 2 GPU 2 -> Epoch 0 | Batch: 1 GRAD SENT
 0 GPU 0 -> Epoch 0 | Batch: 1 GRAD RECEIVED
 1 GPU 1 -> Epoch 0 | Batch: 1 GRAD SENT
-3 GPU 3 -> Epoch 0 | Batch: 2 TAKEN
 2 GPU 2 -> Epoch 0 | Batch: 2 TAKEN
 1 GPU 1 -> Epoch 0 | Batch: 2 TAKEN
+3 GPU 3 -> Epoch 0 | Batch: 2 TAKEN
 -> Epoch 0 | Batch: 2
 0 GPU 0 -> Epoch 0 | Batch: 2 SENT
 1 GPU 1 -> Epoch 0 | Batch: 2 SENT
@@ -3110,9 +3110,9 @@ Training with GPUs :)
 -> Epoch 0 | Avg Loss: 0.0
 [RANK 0 GPU 0] Epoch 1 | Batches: 157
 -> Epoch 1 | Batch: 0
-2 GPU 2 -> Epoch 1 | Batch: 0 TAKEN
 1 GPU 1 -> Epoch 1 | Batch: 0 TAKEN
 3 GPU 3 -> Epoch 1 | Batch: 0 TAKEN
+2 GPU 2 -> Epoch 1 | Batch: 0 TAKEN
 0 GPU 0 -> Epoch 1 | Batch: 0 SENT
 1 GPU 1 -> Epoch 1 | Batch: 0 SENT
 2 GPU 2 -> Epoch 1 | Batch: 0 SENT
@@ -3519,8 +3519,8 @@ Training with GPUs :)
 0 GPU 0 -> Epoch 1 | Batch: 31 SENT
 1 GPU 1 -> Epoch 1 | Batch: 31 SENT
 2 GPU 2 -> Epoch 1 | Batch: 31 SENT
-3 GPU 3 -> Epoch 1 | Batch: 31 GRAD SENT
 2 GPU 2 -> Epoch 1 | Batch: 31 GRAD RECEIVED
+3 GPU 3 -> Epoch 1 | Batch: 31 GRAD SENT
 1 GPU 1 -> Epoch 1 | Batch: 31 GRAD RECEIVED
 2 GPU 2 -> Epoch 1 | Batch: 31 GRAD SENT
 0 GPU 0 -> Epoch 1 | Batch: 31 GRAD RECEIVED
@@ -4679,9 +4679,9 @@ Training with GPUs :)
 2 GPU 2 -> Epoch 1 | Batch: 120 GRAD RECEIVED
 3 GPU 3 -> Epoch 1 | Batch: 120 GRAD SENT
 1 GPU 1 -> Epoch 1 | Batch: 120 GRAD RECEIVED
-1 GPU 1 -> Epoch 1 | Batch: 120 GRAD SENT
 2 GPU 2 -> Epoch 1 | Batch: 120 GRAD SENT
 0 GPU 0 -> Epoch 1 | Batch: 120 GRAD RECEIVED
+1 GPU 1 -> Epoch 1 | Batch: 120 GRAD SENT
 3 GPU 3 -> Epoch 1 | Batch: 121 TAKEN
 2 GPU 2 -> Epoch 1 | Batch: 121 TAKEN
 1 GPU 1 -> Epoch 1 | Batch: 121 TAKEN
@@ -6169,8 +6169,8 @@ Training with GPUs :)
 -> Epoch 2 | Batch: 0
 2 GPU 2 -> Epoch 2 | Batch: 0 TAKEN
 1 GPU 1 -> Epoch 2 | Batch: 0 TAKEN
-3 GPU 3 -> Epoch 2 | Batch: 0 TAKEN
 0 GPU 0 -> Epoch 2 | Batch: 0 SENT
+3 GPU 3 -> Epoch 2 | Batch: 0 TAKEN
 1 GPU 1 -> Epoch 2 | Batch: 0 SENT
 2 GPU 2 -> Epoch 2 | Batch: 0 SENT
 2 GPU 2 -> Epoch 2 | Batch: 0 GRAD RECEIVED
@@ -9224,9 +9224,9 @@ Training with GPUs :)
 -> Epoch 2 | Avg Loss: 0.0
 [RANK 0 GPU 0] Epoch 3 | Batches: 157
 -> Epoch 3 | Batch: 0
-2 GPU 2 -> Epoch 3 | Batch: 0 TAKEN
 1 GPU 1 -> Epoch 3 | Batch: 0 TAKEN
 3 GPU 3 -> Epoch 3 | Batch: 0 TAKEN
+2 GPU 2 -> Epoch 3 | Batch: 0 TAKEN
 0 GPU 0 -> Epoch 3 | Batch: 0 SENT
 1 GPU 1 -> Epoch 3 | Batch: 0 SENT
 2 GPU 2 -> Epoch 3 | Batch: 0 SENT
@@ -10374,10 +10374,10 @@ Training with GPUs :)
 0 GPU 0 -> Epoch 3 | Batch: 88 SENT
 1 GPU 1 -> Epoch 3 | Batch: 88 SENT
 2 GPU 2 -> Epoch 3 | Batch: 88 SENT
-2 GPU 2 -> Epoch 3 | Batch: 88 GRAD RECEIVED
-3 GPU 3 -> Epoch 3 | Batch: 88 GRAD SENT
 1 GPU 1 -> Epoch 3 | Batch: 88 GRAD RECEIVED
+2 GPU 2 -> Epoch 3 | Batch: 88 GRAD RECEIVED
 2 GPU 2 -> Epoch 3 | Batch: 88 GRAD SENT
+3 GPU 3 -> Epoch 3 | Batch: 88 GRAD SENT
 0 GPU 0 -> Epoch 3 | Batch: 88 GRAD RECEIVED
 1 GPU 1 -> Epoch 3 | Batch: 88 GRAD SENT
 3 GPU 3 -> Epoch 3 | Batch: 89 TAKEN
@@ -13554,8 +13554,8 @@ Training with GPUs :)
 2 GPU 2 -> Epoch 4 | Batch: 97 GRAD SENT
 0 GPU 0 -> Epoch 4 | Batch: 97 GRAD RECEIVED
 1 GPU 1 -> Epoch 4 | Batch: 97 GRAD SENT
-2 GPU 2 -> Epoch 4 | Batch: 98 TAKEN
 3 GPU 3 -> Epoch 4 | Batch: 98 TAKEN
+2 GPU 2 -> Epoch 4 | Batch: 98 TAKEN
 1 GPU 1 -> Epoch 4 | Batch: 98 TAKEN
 -> Epoch 4 | Batch: 98
 0 GPU 0 -> Epoch 4 | Batch: 98 SENT
@@ -13918,8 +13918,8 @@ Training with GPUs :)
 2 GPU 2 -> Epoch 4 | Batch: 125 GRAD SENT
 0 GPU 0 -> Epoch 4 | Batch: 125 GRAD RECEIVED
 1 GPU 1 -> Epoch 4 | Batch: 125 GRAD SENT
-2 GPU 2 -> Epoch 4 | Batch: 126 TAKEN
 3 GPU 3 -> Epoch 4 | Batch: 126 TAKEN
+2 GPU 2 -> Epoch 4 | Batch: 126 TAKEN
 1 GPU 1 -> Epoch 4 | Batch: 126 TAKEN
 -> Epoch 4 | Batch: 126
 0 GPU 0 -> Epoch 4 | Batch: 126 SENT
@@ -15336,6 +15336,9 @@ Training with GPUs :)
 0 GPU 0 -> Epoch 4 | Batch: 234 GRAD RECEIVED
 1 GPU 1 -> Epoch 4 | Batch: 234 GRAD SENT
 -> Epoch 4 | Avg Loss: 0.0
-Final execution time: 18.042868195s
+Final execution time: 17.899737526s
 [RANK 0] Training done.
-[RANK: 0] Model saved to autoencoder_ddp.pth
+[RANK: 2] Model saved to layer2.pth
+[RANK: 1] Model saved to layer1.pth
+[RANK: 3] Model saved to layer3.pth
+[RANK: 0] Model saved to layer0.pth
