@@ -21,6 +21,11 @@ model1.load_state_dict(torch.load("layer1.pth", map_location="cuda:0"))
 model2.load_state_dict(torch.load("layer2.pth", map_location="cuda:0"))
 model3.load_state_dict(torch.load("layer3.pth", map_location="cuda:0"))
 
+print(next(iter(model0.state_dict().values())).view(-1)[:10])
+print(next(iter(model1.state_dict().values())).view(-1)[:10])
+print(next(iter(model2.state_dict().values())).view(-1)[:10])
+print(next(iter(model3.state_dict().values())).view(-1)[:10])
+
 model0.eval()  # Set to evaluation mode
 model1.eval()  # Set to evaluation mode
 model2.eval()  # Set to evaluation mode
@@ -40,7 +45,7 @@ model3 = model3.to(device)
 
 
 with torch.no_grad():
-    img, _ = data.testloader.dataset[0]
+    img, _ = data.testloader.dataset[10]
     img_linear = img.view(-1).unsqueeze(0).to(device)
 
     model0_output = model0(img_linear)
