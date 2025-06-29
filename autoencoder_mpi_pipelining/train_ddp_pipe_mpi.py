@@ -221,7 +221,8 @@ class Trainer:
                 self.optimizer.zero_grad()
 
             self.comm.Barrier()
-            print(f'Epoch [{epoch+1}/{epochs}], Loss: {total_loss/len(self.train_data):.6f}')
+            if self.gpu_rank == 3:
+                print(f'Epoch [{epoch+1}/{epochs}], Loss: {total_loss/len(self.train_data):.6f}', flush=True)
 
             '''
             if self.gpu_id == 0 and epoch % self.save_every == 0:
