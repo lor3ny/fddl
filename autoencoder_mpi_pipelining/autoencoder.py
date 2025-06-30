@@ -82,7 +82,7 @@ class Layer0(nn.Module):
     def __init__(self):
         super().__init__()
         self.layer = nn.Sequential(
-            nn.Linear(784, 128),
+            nn.Linear(784, 256),
             nn.ReLU(True)
         )
     def forward(self, x):
@@ -92,7 +92,7 @@ class Layer1(nn.Module):
     def __init__(self):
         super().__init__()
         self.layer = nn.Sequential(
-            nn.Linear(128, 111),
+            nn.Linear(256, 64),
             nn.ReLU(True)
         )
     def forward(self, x):
@@ -102,7 +102,7 @@ class Layer2(nn.Module):
     def __init__(self):
         super().__init__()
         self.layer = nn.Sequential(
-            nn.Linear(111, 128),
+            nn.Linear(64, 256),
             nn.ReLU(True)
         )
     def forward(self, x):
@@ -112,7 +112,7 @@ class Layer3(nn.Module):
     def __init__(self):
         super().__init__()
         self.layer = nn.Sequential(
-            nn.Linear(128, 784),
+            nn.Linear(256, 784),
             nn.Sigmoid()
         )
     def forward(self, x):

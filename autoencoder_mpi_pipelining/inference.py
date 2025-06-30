@@ -59,13 +59,13 @@ with torch.no_grad():
         axs[0].imshow(img.squeeze(), cmap='gray')
         axs[0].set_title('Original')
 
-        axs[1].imshow(model0_output[0].view(16, 8).cpu(), cmap='gray')
+        axs[1].imshow(model0_output[0].view(16, 16).cpu(), cmap='gray')
         axs[1].set_title('Encoded 0')
 
-        axs[2].imshow(model1_output[0].view(37, 3).cpu(), cmap='gray')
+        axs[2].imshow(model1_output[0].view(8, 8).cpu(), cmap='gray')
         axs[2].set_title('Encoded 1')
 
-        axs[3].imshow(model2_output[0].view(16, 8).cpu(), cmap='gray')
+        axs[3].imshow(model2_output[0].view(16, 16).cpu(), cmap='gray')
         axs[3].set_title('Decoded 0')
 
         axs[4].imshow(output[0].view(28, 28).cpu(), cmap='gray')

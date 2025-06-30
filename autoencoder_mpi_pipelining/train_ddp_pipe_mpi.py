@@ -128,7 +128,7 @@ class Trainer:
                     self.comm.Recv([grad_from_1.numpy(), MPI.FLOAT], source=self.rank+1, tag=0)
 
                     # BACKWARD LAYER 0
-                    inputs.backward(grad_from_1.to(self.gpu_rank))
+                    inputs.backward(torch.tensor(grad_from_1).to(self.gpu_rank))
 
                     # NODES SYNCHRONIZATION
                     # sync_start_time = MPI.Wtime()
@@ -142,7 +142,7 @@ class Trainer:
                 elif self.gpu_rank == 1:
 
                     # WAITING LAYER 0
-                    outputs_step0 = torch.empty((len(batch_data), 128), dtype=torch.float32)
+                    outputs_step0 = torch.empty((len(batch_data), 256), dtype=torch.float32)
                     self.comm.Recv([outputs_step0.numpy(), MPI.FLOAT], source=self.rank-1, tag=0)
                     outputs_step0 = outputs_step0.to(self.gpu_rank)
                     outputs_step0.requires_grad_()
@@ -154,11 +154,11 @@ class Trainer:
                     self.comm.Send(outputs_step1.detach().cpu().numpy(), dest=self.rank+1, tag=0)
 
                     # WAITING LAYER 2 GRADIENT
-                    grad_from_2 = torch.empty((len(batch_data), 111), dtype=torch.float32)
+                    grad_from_2 = torch.empty((len(batch_data), 64), dtype=torch.float32)
                     self.comm.Recv([grad_from_2.numpy(), MPI.FLOAT], source=self.rank+1, tag=0)
 
                     # BACKWARD LAYER 1
-                    outputs_step1.backward(grad_from_2.to(self.gpu_rank))
+                    outputs_step1.backward(torch.tensor(grad_from_2).to(self.gpu_rank))
 
                     # SEND LAYER 1 GRADIENT
                     self.comm.Send(outputs_step0.grad.data.cpu().numpy(), dest=self.rank-1, tag=0)
@@ -166,23 +166,23 @@ class Trainer:
 
                 elif self.gpu_rank == 2:
                     # WAITING LAYER 1
-                    outputs_step1 = torch.empty((len(batch_data), 111), dtype=torch.float32)
+                    outputs_step1 = torch.empty((len(batch_data), 64), dtype=torch.float32)
                     self.comm.Recv([outputs_step1.numpy(), MPI.FLOAT], source=self.rank-1, tag=0)
-
-                    # FORWARD LAYER 2
                     outputs_step1 = outputs_step1.to(self.gpu_rank)
                     outputs_step1.requires_grad_()
+
+                    # FORWARD LAYER 2
                     outputs_step2 = self.model(outputs_step1)
 
                     # SEND LAYER 2
                     self.comm.Send(outputs_step2.detach().cpu().numpy(), dest=self.rank+1, tag=0)
 
                     # WAITING LAYER 3 GRADIENT
-                    grad_from_3 = torch.empty((len(batch_data), 128), dtype=torch.float32)
+                    grad_from_3 = torch.empty((len(batch_data), 256), dtype=torch.float32)
                     self.comm.Recv([grad_from_3.numpy(), MPI.FLOAT], source=self.rank+1, tag=0)
 
                     # BACKWARD LAYER 2
-                    outputs_step2.backward(grad_from_3.to(self.gpu_rank))
+                    outputs_step2.backward(torch.tensor(grad_from_3).to(self.gpu_rank))
 
                     # SEND LAYER 2 GRADIENT
                     self.comm.Send(outputs_step1.grad.data.cpu().numpy(), dest=self.rank-1, tag=0)
@@ -192,7 +192,7 @@ class Trainer:
                 elif self.gpu_rank == 3:
 
                     # WAITING LAYER 3   
-                    outputs_step2 = torch.empty((len(batch_data), 128), dtype=torch.float32)
+                    outputs_step2 = torch.empty((len(batch_data), 256), dtype=torch.float32)
                     self.comm.Recv([outputs_step2.numpy(), MPI.FLOAT], source=self.rank-1, tag=0)
 
                     # FORWARD LAYER 3
