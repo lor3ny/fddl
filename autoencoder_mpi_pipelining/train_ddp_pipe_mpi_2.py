@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader, Subset
 from torchvision import datasets, transforms
-
+import torch.distributed as dist
 
 from mpi4py import MPI
 import numpy as np
@@ -91,6 +91,34 @@ class Trainer:
 
             except Exception as e:
                 raise RuntimeError(f"Error synchronizing gradients: {e}.", flush=True)
+            
+
+    def send_grad(self, dst, tag) -> None:
+        for param in self.model.parameters():
+            if param.grad is None:
+                print(f"[RANK {self.rank}] No gradient for parameter {param}. Skipping synchronization.", flush=True)
+                continue
+
+            # Gather gradients from all ranks
+            grad = param.grad.data.cpu().numpy() # why cpu?
+            try:
+                self.sync_comm.Send(grad, dest=dst, tag=tag)
+            except Exception as e:
+                raise RuntimeError(f"Error synchronizing gradients: {e}.", flush=True)
+
+    def recv_grad(self, grad, src, tag) -> None:
+        for param in self.model.parameters():
+            if param.grad is None:
+                continue
+            # Gather gradients from all ranks
+            grad = param.grad.data.cpu().numpy() # why cpu?
+            grad = np.zeros_like(grad)
+            try:
+                self.sync_comm.Recv(grad, source=src, tag=tag)
+                param.grad.data = torch.tensor(grad, device=self.device)
+
+            except Exception as e:
+                raise RuntimeError(f"Error synchronizing gradients: {e}.", flush=True)
         
 
     def train(self, max_epochs: int):
@@ -120,13 +148,13 @@ class Trainer:
 
                     # Send activations to the next stage (rank 1)
                     #dist.send(activations.cpu(), dst=1, tag=i) # Send CPU tensor to avoid GPU sync issues)
-                    self.comm.Send(activations.detach().cpu(), dest=1, tag=0)
+                    self.send_grad(activations.detach().cpu(), dest=1, tag=batch_idx)
                     activations_storage[0] = activations # Store for backward pass
 
                 elif self.rank  == 1: # Last stage
                     # Receive activations from the previous stage (rank 0)
                     received_activations = torch.empty((len(batch_data), 256), dtype=torch.float32)
-                    self.comm.Recv(received_activations, source=0, tag=0)
+                    self.recv_grad(received_activations, source=0, tag=batch_idx)
                     received_activations = received_activations.to(self.gpu_rank)
                     received_activations.requires_grad_() # IMPORTANT: Enable grad for received tensor
                     
@@ -151,16 +179,16 @@ class Trainer:
                     # Gradients computed locally for stage1 parameters
                     # Need to retain graph if not the last micro-batch overall for the stage input
                     #retain_graph_flag = (i != 0) 
-                    loss.backward(retain_graph=True) 
+                    loss.backward() 
                     
                     # Send gradient of input activation back to previous stage (rank 0)
                     grad_to_send = input_activation.grad.cpu() 
-                    self.comm.Send(grad_to_send, dest=0, tag=0)
+                    self.send_grad(grad_to_send, dest=0, tag=batch_idx)
 
                 elif self.rank == 0: # First stage
                     # Receive gradient from the next stage (rank 1)
                     grad_received = torch.empty((len(batch_data), 256), dtype=torch.float32)
-                    self.comm.Recv(grad_received, source=1, tag=0)
+                    self.recv_grad(grad_received, source=1, tag=batch_idx)
                     grad_received = grad_received.to(self.gpu_rank)
 
                     # Continue backward pass using received gradient

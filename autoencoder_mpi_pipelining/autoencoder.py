@@ -125,7 +125,7 @@ class Encoder(nn.Module):
     def __init__(self):
         super().__init__()
         self.layer = nn.Sequential(
-            nn.Flatten(),
+            #nn.Flatten(),
             nn.Linear(784, 256),
             nn.ReLU(True)
         )
@@ -139,7 +139,7 @@ class Decoder(nn.Module):
         self.layer = nn.Sequential(
             nn.Linear(256, 784),
             nn.Sigmoid(),  # Or remove and use BCEWithLogitsLoss
-            nn.Unflatten(1, (1, 28, 28))
+            #nn.Unflatten(1, (1, 28, 28))
         )
 
     def forward(self, x):
