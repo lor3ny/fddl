@@ -116,7 +116,7 @@ class Trainer:
                 if self.rank == 0: # First stage
                     # Compute activations for stage 0
                     inputs = batch_data.view(-1, 28*28).to(self.gpu_rank)
-                    activations = self.model(inputs.to(self.gpu_rank))
+                    activations = self.model.forward_step0(inputs.to(self.gpu_rank))
 
                     # Send activations to the next stage (rank 1)
                     #dist.send(activations.cpu(), dst=1, tag=i) # Send CPU tensor to avoid GPU sync issues)
@@ -131,7 +131,7 @@ class Trainer:
                     received_activations.requires_grad_() # IMPORTANT: Enable grad for received tensor
                     
                     # Compute activations for stage 1 (final output)
-                    outputs = self.model(received_activations)
+                    outputs = self.model.forward_step3(received_activations)
                     
                     # Compute loss
                     inputs = batch_data.view(-1, 28*28).to(self.gpu_rank)
@@ -332,8 +332,12 @@ def main(
     # #MODEL TRAINING
     print(f"[RANK {rank}] Trainer is running...", flush=True) if rank == 0 else None
 
-    layers = [Layer0, Layer3]
-    model = layers[rank]().to(gpu_rank)
+    #layers = [Layer0, Layer3]
+    #model = layers[rank]().to(gpu_rank)
+    model = Autoencoder_PIPE(
+        input_dim=28*28, 
+        hidden_dim=256
+    ).to(gpu_rank)
     optimizer = optim.Adam(model.parameters(), lr=1e-3)
     criterion = nn.MSELoss()
 
