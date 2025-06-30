@@ -141,7 +141,6 @@ class Trainer:
 
                 elif self.gpu_rank == 1:
 
-                    print(f"{self.rank} GPU {self.gpu_rank} -> Epoch {epoch} | Batch: {batch_idx} TAKEN", flush=True)
                     # WAITING LAYER 0
                     outputs_step0 = torch.empty((len(batch_data), 128), dtype=torch.float32)
                     self.comm.Recv([outputs_step0.numpy(), MPI.FLOAT], source=self.rank-1, tag=0)
@@ -214,8 +213,6 @@ class Trainer:
 
                     self.optimizer.step()
                     self.optimizer.zero_grad()
-
-                    print(f"{self.rank} GPU {self.gpu_rank} -> Epoch {epoch} | Batch: {batch_idx} GRAD SENT", flush=True)
                     
                 else:
                     print(f"[RANK {self.rank}] Error on GPU rank")
