@@ -1,0 +1,61 @@
+Mon Jun 30 15:52:39 2025       
++---------------------------------------------------------------------------------------+
+| NVIDIA-SMI 530.30.02              Driver Version: 530.30.02    CUDA Version: 12.1     |
+|-----------------------------------------+----------------------+----------------------+
+| GPU  Name                  Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp  Perf            Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
+|                                         |                      |               MIG M. |
+|=========================================+======================+======================|
+|   0  NVIDIA A100-SXM-64GB            On | 00000000:8F:00.0 Off |                    0 |
+| N/A   43C    P0               62W / 465W|      0MiB / 65536MiB |      0%      Default |
+|                                         |                      |             Disabled |
++-----------------------------------------+----------------------+----------------------+
+|   1  NVIDIA A100-SXM-64GB            On | 00000000:C8:00.0 Off |                    0 |
+| N/A   43C    P0               58W / 449W|      0MiB / 65536MiB |      0%      Default |
+|                                         |                      |             Disabled |
++-----------------------------------------+----------------------+----------------------+
+                                                                                         
++---------------------------------------------------------------------------------------+
+| Processes:                                                                            |
+|  GPU   GI   CI        PID   Type   Process name                            GPU Memory |
+|        ID   ID                                                             Usage      |
+|=======================================================================================|
+|  No running processes found                                                           |
++---------------------------------------------------------------------------------------+
++ -------------- SLURM CHECK -------------- +
+CUDA_VISIBLE_DEVICES=0,1
+NODES=1
++ ----------------------------------------- +
++ ---------- TORCH LIBRARY CHECK ---------- +
+PyTorch version: 2.7.1+cu126
+PyTorch CUDA version: 12.6
+PyTorch CUDNN version: 90501
+GPUs per node 2
+Training with GPUs :)
++ ----------------------------------------- +
+[Rank 0] GPU_RANK=0 on CUDA device 0 hostname=lrdn3083.leonardo.local
+[Rank 1] GPU_RANK=1 on CUDA device 1 hostname=lrdn3083.leonardo.local
+[RANK 0] Trainer is running...
+[RANK 0 GPU 0] Epoch 0 | Batches: 157
+[RANK 0 GPU 0] Epoch 1 | Batches: 157
+Epoch [1/10], Loss: 0.069444
+[RANK 0 GPU 0] Epoch 2 | Batches: 157
+Epoch [2/10], Loss: 0.067550
+[RANK 0 GPU 0] Epoch 3 | Batches: 157
+Epoch [3/10], Loss: 0.067419
+[RANK 0 GPU 0] Epoch 4 | Batches: 157
+Epoch [4/10], Loss: 0.067384
+[RANK 0 GPU 0] Epoch 5 | Batches: 157
+Epoch [5/10], Loss: 0.067350
+[RANK 0 GPU 0] Epoch 6 | Batches: 157
+Epoch [6/10], Loss: 0.067357
+[RANK 0 GPU 0] Epoch 7 | Batches: 157
+Epoch [7/10], Loss: 0.067341
+[RANK 0 GPU 0] Epoch 8 | Batches: 157
+Epoch [8/10], Loss: 0.067330
+[RANK 0 GPU 0] Epoch 9 | Batches: 157
+Epoch [9/10], Loss: 0.067329
+Epoch [10/10], Loss: 0.067323
+[RANK 0] Training done.
+[RANK: 0] Model saved to layer0.pth
+[RANK: 1] Model saved to layer1.pth

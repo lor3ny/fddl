@@ -1,5 +1,6 @@
 import torch.nn as nn
 
+
 class Autoencoder(nn.Module):
     def __init__(self, input_dim, hidden_dim):
         super(Autoencoder, self).__init__()
@@ -113,8 +114,33 @@ class Layer3(nn.Module):
         super().__init__()
         self.layer = nn.Sequential(
             nn.Linear(256, 784),
-            #nn.Sigmoid()
+            nn.Sigmoid()
         )
     def forward(self, x):
         return self.layer(x)  # output layer (no activation)
-    
+
+
+# Define the two stages
+class Encoder(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.layer = nn.Sequential(
+            nn.Flatten(),
+            nn.Linear(784, 256),
+            nn.ReLU(True)
+        )
+
+    def forward(self, x):
+        return self.layer(x)
+
+class Decoder(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.layer = nn.Sequential(
+            nn.Linear(256, 784),
+            nn.Sigmoid(),  # Or remove and use BCEWithLogitsLoss
+            nn.Unflatten(1, (1, 28, 28))
+        )
+
+    def forward(self, x):
+        return self.layer(x)

@@ -2,13 +2,9 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader, Subset
-from torch.utils.data.distributed import DistributedSampler
 from torchvision import datasets, transforms
 
-import torch.multiprocessing as mp
-import torch.distributed as dist
-from torch.utils.data.distributed import DistributedSampler
-from torch.nn.parallel import DistributedDataParallel as DDP
+
 from mpi4py import MPI
 import numpy as np
 import os
@@ -95,6 +91,7 @@ class Trainer:
 
             except Exception as e:
                 raise RuntimeError(f"Error synchronizing gradients: {e}.", flush=True)
+        
 
     def train(self, max_epochs: int):
 
@@ -112,129 +109,130 @@ class Trainer:
 
             for batch_idx, (batch_data, batch_target) in enumerate(self.train_data):
 
-                inputs = batch_data.view(-1, 28*28).to(self.gpu_rank)
-                inputs.requires_grad_()
-                outputs_step0 = self.model(inputs)
-                outputs_step1 = self.model(outputs_step0)
-                outputs_step2 = self.model(outputs_step1)
-                outputs = self.model(outputs_step2)
+                activations_storage = [None] * 1 # To store activations for backward pass
+                gradients_storage = [None] * 1 # To store gradients for backward pass
 
-                inputs = batch_data.view(-1, 28*28).to(self.gpu_rank)
-                loss = self.criterion(inputs, outputs)
-                total_loss += loss.item()
-                loss.backward() #3
-                outputs_step2.backward(outputs_step2.grad.to(self.gpu_rank))
-                outputs_step1.backward(outputs_step1.grad.to(self.gpu_rank))
-                outputs_step0.backward(outputs_step0.grad.to(self.gpu_rank))
+                 # --- Forward Pass ---
 
-
-                if self.gpu_rank == 0:
-                    #print(f"-> Epoch {epoch} | Batch: {batch_idx}", flush=True)
-
-                    # FORWARD LAYER 0
+                if self.rank == 0: # First stage
+                    # Compute activations for stage 0
                     inputs = batch_data.view(-1, 28*28).to(self.gpu_rank)
-                    inputs.requires_grad_()
-                    outputs_step0 = self.model(inputs)
+                    activations = self.model(inputs.to(self.gpu_rank))
 
-                    # SEND LAYER 0
-                    self.comm.Send(outputs_step0.detach().cpu().numpy(), dest=self.rank+1, tag=0)
+                    # Send activations to the next stage (rank 1)
+                    #dist.send(activations.cpu(), dst=1, tag=i) # Send CPU tensor to avoid GPU sync issues)
+                    self.comm.Send(activations.detach().cpu(), dest=self.rank+1, tag=0)
+                    activations_storage[0] = activations # Store for backward pass
 
-                    # WAITING LAYER 1 GRADIENT
-                    grad_from_1 = torch.empty((len(batch_data), 784), dtype=torch.float32)
-                    self.comm.Recv([grad_from_1.numpy(), MPI.FLOAT], source=self.rank+1, tag=0)
-
-                    # BACKWARD LAYER 0
-                    inputs.backward(torch.tensor(grad_from_1).to(self.gpu_rank))
-
-                    # NODES SYNCHRONIZATION
-                    # sync_start_time = MPI.Wtime()
-                    # print(f"{self.rank} GPU {self.gpu_rank} -> Epoch {epoch} | Batch: {batch_idx} SYNCHING START", flush=True)
-                    # self._synchronize_gradients() # in questo caso solo tra le gpu 3
-                    # print(f"{self.rank} GPU {self.gpu_rank} -> Epoch {epoch} | Batch: {batch_idx} SYNCHING END", flush=True)
-                    # sync_end_time = MPI.Wtime()
-                    # local_syncs_lat.append(sync_end_time-sync_start_time)
-                    # req.Wait() #non va messa qui
-
-                elif self.gpu_rank == 1:
-
-                    # WAITING LAYER 0
-                    outputs_step0 = torch.empty((len(batch_data), 256), dtype=torch.float32)
-                    self.comm.Recv([outputs_step0.numpy(), MPI.FLOAT], source=self.rank-1, tag=0)
-                    outputs_step0 = outputs_step0.to(self.gpu_rank)
-                    outputs_step0.requires_grad_()
-
-                    # FORWARD LAYER 1
-                    outputs_step1 = self.model(outputs_step0)
+                elif self.rank  == 1: # Last stage
+                    # Receive activations from the previous stage (rank 0)
+                    received_activations = torch.empty((len(batch_data), 256), dtype=torch.float32)
+                    self.comm.Recv(received_activations, source=0, tag=0)
+                    received_activations = received_activations.to(self.gpu_rank)
+                    received_activations.requires_grad_() # IMPORTANT: Enable grad for received tensor
                     
-                    # SEND LAYER 1
-                    self.comm.Send(outputs_step1.detach().cpu().numpy(), dest=self.rank+1, tag=0)
-
-                    # WAITING LAYER 2 GRADIENT
-                    grad_from_2 = torch.empty((len(batch_data), 64), dtype=torch.float32)
-                    self.comm.Recv([grad_from_2.numpy(), MPI.FLOAT], source=self.rank+1, tag=0)
-
-                    # BACKWARD LAYER 1
-                    outputs_step1.backward(torch.tensor(grad_from_2).to(self.gpu_rank))
-
-                    # SEND LAYER 1 GRADIENT
-                    self.comm.Send(outputs_step0.grad.data.cpu().numpy(), dest=self.rank-1, tag=0)
-
-
-                elif self.gpu_rank == 2:
-                    # WAITING LAYER 1
-                    outputs_step1 = torch.empty((len(batch_data), 64), dtype=torch.float32)
-                    self.comm.Recv([outputs_step1.numpy(), MPI.FLOAT], source=self.rank-1, tag=0)
-                    outputs_step1 = outputs_step1.to(self.gpu_rank)
-                    outputs_step1.requires_grad_()
-
-                    # FORWARD LAYER 2
-                    outputs_step2 = self.model(outputs_step1)
-
-                    # SEND LAYER 2
-                    self.comm.Send(outputs_step2.detach().cpu().numpy(), dest=self.rank+1, tag=0)
-
-                    # WAITING LAYER 3 GRADIENT
-                    grad_from_3 = torch.empty((len(batch_data), 256), dtype=torch.float32)
-                    self.comm.Recv([grad_from_3.numpy(), MPI.FLOAT], source=self.rank+1, tag=0)
-
-                    # BACKWARD LAYER 2
-                    outputs_step2.backward(torch.tensor(grad_from_3).to(self.gpu_rank))
-
-                    # SEND LAYER 2 GRADIENT
-                    self.comm.Send(outputs_step1.grad.data.cpu().numpy(), dest=self.rank-1, tag=0)
+                    # Compute activations for stage 1 (final output)
+                    outputs = self.model(received_activations)
                     
-
-
-                elif self.gpu_rank == 3:
-
-                    # WAITING LAYER 3   
-                    outputs_step2 = torch.empty((len(batch_data), 256), dtype=torch.float32)
-                    self.comm.Recv([outputs_step2.numpy(), MPI.FLOAT], source=self.rank-1, tag=0)
-
-                    # FORWARD LAYER 3
-                    outputs_step2 = outputs_step2.to(self.gpu_rank)
-                    outputs_step2.requires_grad_()
-                    outputs = self.model(outputs_step2)
-
-                    # BACKWARD LAYER 3 FROM LOSS
+                    # Compute loss
                     inputs = batch_data.view(-1, 28*28).to(self.gpu_rank)
-                    loss = self.criterion(inputs, outputs)
+                    loss = self.criterion(outputs, inputs)
+
+                    # Store necessary info for backward pass
+                    activations_storage[0] = received_activations # Input to this stage
+                    gradients_storage[0] = loss # Store loss to initiate backward later
+
+                # --- Backward Pass ---
+                # Iterate backward through micro-batches for correctness (GPipe schedule)
+                if self.rank == 1: # Last stage
+                    loss = gradients_storage[0]
                     total_loss += loss.item()
-                    loss.backward()
+                    input_activation = activations_storage[0]
 
-                    # SEND LAYER 3 GRADIENT
-                    self.comm.Send([outputs_step2.grad.data.cpu().numpy(), MPI.FLOAT], dest=self.rank - 1, tag=0)
-
-                    #total_loss += loss.item()
-
-                    self.optimizer.step()
-                    self.optimizer.zero_grad()
+                    # Initiate backward pass for this micro-batch's loss
+                    # Gradients computed locally for stage1 parameters
+                    # Need to retain graph if not the last micro-batch overall for the stage input
+                    #retain_graph_flag = (i != 0) 
+                    loss.backward() 
                     
-                else:
-                    print(f"[RANK {self.rank}] Error on GPU rank")
+                    # Send gradient of input activation back to previous stage (rank 0)
+                    grad_to_send = input_activation.grad.cpu() 
+                    self.comm.Send(grad_to_send, dest=0, tag=0)
+
+                elif self.rank == 0: # First stage
+                    # Receive gradient from the next stage (rank 1)
+                    grad_received = torch.empty((len(batch_data), 256), dtype=torch.float32)
+                    self.comm.Recv(grad_received, source=1, tag=0)
+                    grad_received = grad_received.to(self.gpu_rank)
+
+                    # Continue backward pass using received gradient
+                    output_activation = activations_storage[0]
+                    # Gradients computed locally for stage0 parameters
+                    output_activation.backward(gradient=grad_received)
+
+                # --- Optimizer Step ---
+                # After processing all micro-batches, update weights
+                self.optimizer.step()
+                self.optimizer.zero_grad()
+
+                # if self.gpu_rank == 0:
+                #     #print(f"-> Epoch {epoch} | Batch: {batch_idx}", flush=True)
+
+                #     # FORWARD LAYER 0
+                #     inputs = batch_data.view(-1, 28*28).to(self.gpu_rank)
+                #     inputs.requires_grad_()
+                #     outputs_step0 = self.model(inputs)
+                #     outputs_step0.retain_grad()
+
+                #     # SEND LAYER 0
+                #     self.comm.Send(outputs_step0.detach().cpu().numpy(), dest=self.rank+1, tag=0)
+
+                #     # WAITING LAYER 1 GRADIENT
+                #     grad_from_1 = torch.empty((len(batch_data), 256), dtype=torch.float32)
+                #     self.comm.Recv([grad_from_1.numpy(), MPI.FLOAT], source=self.rank+1, tag=0)
+
+                #     # BACKWARD LAYER 0
+                #     self.optimizer.zero_grad()
+                #     outputs_step0.backward(grad_from_1.to(self.gpu_rank).detach().clone().requires_grad_(True))
+                #     #print("Encoder output grad norm:", outputs_step0.grad.norm(), flush=True)
+                #     self.optimizer.step()
+
+                #     # NODES SYNCHRONIZATION
+                #     # sync_start_time = MPI.Wtime()
+                #     # print(f"{self.rank} GPU {self.gpu_rank} -> Epoch {epoch} | Batch: {batch_idx} SYNCHING START", flush=True)
+                #     # self._synchronize_gradients() # in questo caso solo tra le gpu 3
+                #     # print(f"{self.rank} GPU {self.gpu_rank} -> Epoch {epoch} | Batch: {batch_idx} SYNCHING END", flush=True)
+                #     # sync_end_time = MPI.Wtime()
+                #     # local_syncs_lat.append(sync_end_time-sync_start_time)
+                #     # req.Wait() #non va messa qui
+
+                # elif self.gpu_rank == 1:
+
+                #     # WAITING LAYER 3   
+                #     outputs_step0 = torch.empty((len(batch_data), 256), dtype=torch.float32)
+                #     self.comm.Recv([outputs_step0.numpy(), MPI.FLOAT], source=self.rank-1, tag=0)
+
+                #     # FORWARD LAYER 3
+                #     outputs_step0 = outputs_step0.to(self.gpu_rank).detach().clone().requires_grad_(True)
+                #     outputs = self.model(outputs_step0)
+
+                #     # BACKWARD LAYER 3 FROM LOSS
+                #     inputs = batch_data.view(-1, 28*28).to(self.gpu_rank)
+                #     loss = self.criterion(inputs, outputs)
+                #     total_loss += loss.item()
+                #     self.optimizer.zero_grad()
+                #     loss.backward()
+                #     #print("Decoder input grad norm:", outputs_step0.grad.norm(), flush=True)
+                #     self.optimizer.step()
+                #     # SEND LAYER 3 GRADIENT
+                #     self.comm.Send([outputs_step0.grad.cpu().numpy(), MPI.FLOAT], dest=self.rank - 1, tag=0)
+
+                # else:
+                #     print(f"[RANK {self.rank}] Error on GPU rank")
+            
 
             self.comm.Barrier()
-            if self.gpu_rank == 3:
+            if self.gpu_rank == 1:
                 print(f'Epoch [{epoch+1}/{epochs}], Loss: {total_loss/len(self.train_data):.6f}', flush=True)
 
             '''
@@ -280,28 +278,29 @@ def load_distribute_data(
     train_dataset = datasets.MNIST(root='./data', train=True, download=False, transform=transform)
     test_dataset = datasets.MNIST(root='./data', train=False, download=False, transform=transform)
 
-    # Split dataset into subsets for each rank
-    total_samples = len(train_dataset)
-    if rank == 0:
-        print(f"[RANK {rank}] This dataset has {total_samples} samples", flush=True)
+    # # Split dataset into subsets for each rank
+    # total_samples = len(train_dataset)
+    # if rank == 0:
+    #     print(f"[RANK {rank}] This dataset has {total_samples} samples", flush=True)
 
-    sample_per_rank = total_samples // size
-    remainder = total_samples % size
-    indices = list(range(total_samples))
+    # sample_per_rank = total_samples // size
+    # remainder = total_samples % size
+    # indices = list(range(total_samples))
 
-    # Distribute samples among ranks
-    start_index = rank * sample_per_rank + min(rank, remainder)
-    extra = 1 if rank < remainder else 0
-    local_samples = sample_per_rank + extra
-    end_index = start_index + local_samples
-    local_indices = indices[start_index:end_index]
-    print(f"[RANK {rank}] I have {local_samples} samples. From {start_index} to {end_index}", flush=True)
+    # # Distribute samples among ranks
+    # start_index = rank * sample_per_rank + min(rank, remainder)
+    # extra = 1 if rank < remainder else 0
+    # local_samples = sample_per_rank + extra
+    # end_index = start_index + local_samples
+    # local_indices = indices[start_index:end_index]
+    # print(f"[RANK {rank}] I have {local_samples} samples. From {start_index} to {end_index}", flush=True)
 
-    # Create DataLoader for local dataset
-    # Bisogna passare local_indices
-    local_dataset = Subset(train_dataset, local_indices)
+    # # Create DataLoader for local dataset
+    # # Bisogna passare local_indices
+    # local_dataset = Subset(train_dataset, local_indices)
+
     train_loader = DataLoader(
-        local_dataset, batch_size=batch_size, shuffle=True
+        train_dataset, batch_size=batch_size, shuffle=True
     )
     test_loader = DataLoader(
         test_dataset, batch_size=batch_size, shuffle=False
@@ -351,20 +350,11 @@ def main(
     # Tutti dovrebbe fare discesa, forse è meglio se 3 manda a 0-1-2. 0-1-2-3 fanno discesa e poi fanno aggregazione tutti (tutti i processi di tutti i nodi)
 
     # MODEL INIT
-    model = Autoencoder_PIPE(28*28, 32)
-    criterion = nn.MSELoss()
-    optimizer = optim.Adam(model.parameters(), lr=1e-3)
-
-    model = model.to(gpu_rank)
-    # not needed
-    #model = DDP(model, device_ids=[gpu_rank])
 
     # #MODEL TRAINING
     print(f"[RANK {rank}] Trainer is running...", flush=True) if rank == 0 else None
 
-    model = Autoencoder_PIPE(28*28, 32)
-
-    layers = [Layer0, Layer1, Layer2, Layer3]
+    layers = [Layer0, Layer3]
     model = layers[rank]().to(gpu_rank)
     optimizer = optim.Adam(model.parameters(), lr=1e-3)
     criterion = nn.MSELoss()
@@ -395,7 +385,7 @@ def main(
 
 if __name__ == "__main__":
 
-    epochs = 50
+    epochs = 10
     batch_size = 64
     save_every = 1
     latent_linear_size = 32

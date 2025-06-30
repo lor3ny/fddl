@@ -128,7 +128,9 @@ class Trainer:
                     self.comm.Recv([grad_from_1.numpy(), MPI.FLOAT], source=self.rank+1, tag=0)
 
                     # BACKWARD LAYER 0
+                    self.optimizer.zero_grad()
                     outputs_step0.backward(torch.tensor(grad_from_1).to(self.gpu_rank))
+                    self.optimizer.step()
 
                     # NODES SYNCHRONIZATION
                     # sync_start_time = MPI.Wtime()
@@ -158,7 +160,9 @@ class Trainer:
                     self.comm.Recv([grad_from_2.numpy(), MPI.FLOAT], source=self.rank+1, tag=0)
 
                     # BACKWARD LAYER 1
+                    self.optimizer.zero_grad()
                     outputs_step1.backward(torch.tensor(grad_from_2).to(self.gpu_rank))
+                    self.optimizer.step()
 
                     # SEND LAYER 1 GRADIENT
                     self.comm.Send(outputs_step0.grad.data.cpu().numpy(), dest=self.rank-1, tag=0)
@@ -182,7 +186,9 @@ class Trainer:
                     self.comm.Recv([grad_from_3.numpy(), MPI.FLOAT], source=self.rank+1, tag=0)
 
                     # BACKWARD LAYER 2
+                    self.optimizer.zero_grad()
                     outputs_step2.backward(torch.tensor(grad_from_3).to(self.gpu_rank))
+                    self.optimizer.step()
 
                     # SEND LAYER 2 GRADIENT
                     self.comm.Send(outputs_step1.grad.data.cpu().numpy(), dest=self.rank-1, tag=0)
@@ -204,18 +210,16 @@ class Trainer:
                     inputs = batch_data.view(-1, 28*28).to(self.gpu_rank)
                     loss = self.criterion(inputs, outputs)
                     total_loss += loss.item()
+                    self.optimizer.zero_grad()
                     loss.backward()
+                    self.optimizer.step()
 
                     # SEND LAYER 3 GRADIENT
                     self.comm.Send([outputs_step2.grad.data.cpu().numpy(), MPI.FLOAT], dest=self.rank - 1, tag=0)
-
-                    #total_loss += loss.item()
-
-                    self.optimizer.step()
-                    self.optimizer.zero_grad()
                     
                 else:
                     print(f"[RANK {self.rank}] Error on GPU rank")
+            
 
             self.comm.Barrier()
             if self.gpu_rank == 3:
@@ -264,28 +268,29 @@ def load_distribute_data(
     train_dataset = datasets.MNIST(root='./data', train=True, download=False, transform=transform)
     test_dataset = datasets.MNIST(root='./data', train=False, download=False, transform=transform)
 
-    # Split dataset into subsets for each rank
-    total_samples = len(train_dataset)
-    if rank == 0:
-        print(f"[RANK {rank}] This dataset has {total_samples} samples", flush=True)
+    # # Split dataset into subsets for each rank
+    # total_samples = len(train_dataset)
+    # if rank == 0:
+    #     print(f"[RANK {rank}] This dataset has {total_samples} samples", flush=True)
 
-    sample_per_rank = total_samples // size
-    remainder = total_samples % size
-    indices = list(range(total_samples))
+    # sample_per_rank = total_samples // size
+    # remainder = total_samples % size
+    # indices = list(range(total_samples))
 
-    # Distribute samples among ranks
-    start_index = rank * sample_per_rank + min(rank, remainder)
-    extra = 1 if rank < remainder else 0
-    local_samples = sample_per_rank + extra
-    end_index = start_index + local_samples
-    local_indices = indices[start_index:end_index]
-    print(f"[RANK {rank}] I have {local_samples} samples. From {start_index} to {end_index}", flush=True)
+    # # Distribute samples among ranks
+    # start_index = rank * sample_per_rank + min(rank, remainder)
+    # extra = 1 if rank < remainder else 0
+    # local_samples = sample_per_rank + extra
+    # end_index = start_index + local_samples
+    # local_indices = indices[start_index:end_index]
+    # print(f"[RANK {rank}] I have {local_samples} samples. From {start_index} to {end_index}", flush=True)
 
-    # Create DataLoader for local dataset
-    # Bisogna passare local_indices
-    local_dataset = Subset(train_dataset, local_indices)
+    # # Create DataLoader for local dataset
+    # # Bisogna passare local_indices
+    # local_dataset = Subset(train_dataset, local_indices)
+
     train_loader = DataLoader(
-        local_dataset, batch_size=batch_size, shuffle=True
+        train_dataset, batch_size=batch_size, shuffle=True
     )
     test_loader = DataLoader(
         test_dataset, batch_size=batch_size, shuffle=False
@@ -379,7 +384,7 @@ def main(
 
 if __name__ == "__main__":
 
-    epochs = 50
+    epochs = 10
     batch_size = 64
     save_every = 1
     latent_linear_size = 32

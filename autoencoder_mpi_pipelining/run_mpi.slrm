@@ -3,10 +3,10 @@
 #SBATCH --output=logs/%j.out
 #SBATCH --error=logs/%j.err
 #SBATCH --nodes=1
-#SBATCH --gpus-per-node=4
-#SBATCH --gres=gpu:4
-#SBATCH --ntasks-per-node=4
-#SBATCH --cpus-per-task=4
+#SBATCH --gpus-per-node=2
+#SBATCH --gres=gpu:2
+#SBATCH --ntasks-per-node=2
+#SBATCH --cpus-per-task=2
 #SBATCH --time=00:05:00
 #SBATCH --partition=boost_usr_prod
 #SBATCH --qos=boost_qos_dbg
@@ -38,4 +38,4 @@ echo "CUDA_VISIBLE_DEVICES=$CUDA_VISIBLE_DEVICES"
 echo "NODES=$SLURM_NNODES"
 echo "+ ----------------------------------------- +"
 
-srun python train_ddp_pipe_mpi.py --ntasks $SLURM_NTASKS
+srun python train_ddp_pipe_mpi_2.py --ntasks $SLURM_NTASKS
