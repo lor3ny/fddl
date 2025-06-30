@@ -21,6 +21,11 @@ model1.load_state_dict(torch.load("layer1.pth", map_location="cuda:0"))
 model2.load_state_dict(torch.load("layer2.pth", map_location="cuda:0"))
 model3.load_state_dict(torch.load("layer3.pth", map_location="cuda:0"))
 
+print(next(iter(model0.state_dict().values())).view(-1)[:10])
+print(next(iter(model1.state_dict().values())).view(-1)[:10])
+print(next(iter(model2.state_dict().values())).view(-1)[:10])
+print(next(iter(model3.state_dict().values())).view(-1)[:10])
+
 model0.eval()  # Set to evaluation mode
 model1.eval()  # Set to evaluation mode
 model2.eval()  # Set to evaluation mode
@@ -40,23 +45,33 @@ model3 = model3.to(device)
 
 
 with torch.no_grad():
-    img, _ = data.testloader.dataset[0]
-    img_linear = img.view(-1).unsqueeze(0).to(device)
+    for i in range(5):
+        img, _ = data.testloader.dataset[i]
+        img_linear = img.view(-1).unsqueeze(0).to(device)
 
-    model0_output = model0(img_linear)
-    model1_output = model1(model0_output)
-    model2_output = model2(model1_output)
-    output = model3(model2_output)
+        model0_output = model0(img_linear)
+        model1_output = model1(model0_output)
+        model2_output = model2(model1_output)
+        output = model3(model2_output)
 
-    # Visualize original and reconstructed image
-    fig, axs = plt.subplots(1, 2)
-    axs[0].imshow(img.squeeze(), cmap='gray')
-    axs[0].set_title('Original')
+        # Visualize original and reconstructed image
+        fig, axs = plt.subplots(1, 5)
+        axs[0].imshow(img.squeeze(), cmap='gray')
+        axs[0].set_title('Original')
 
-    axs[1].imshow(output[0].view(28, 28).cpu(), cmap='gray')
-    axs[1].set_title('Reconstructed')
-    for ax in axs: ax.axis('off')
-    plt.show()
+        axs[1].imshow(model0_output[0].view(16, 8).cpu(), cmap='gray')
+        axs[1].set_title('Encoded 0')
+
+        axs[2].imshow(model1_output[0].view(8, 4).cpu(), cmap='gray')
+        axs[2].set_title('Encoded 1')
+
+        axs[3].imshow(model2_output[0].view(16, 8).cpu(), cmap='gray')
+        axs[3].set_title('Decoded 0')
+
+        axs[4].imshow(output[0].view(28, 28).cpu(), cmap='gray')
+        axs[4].set_title('Decoded 1: Reconstructed')
+        for ax in axs: ax.axis('off')
+        plt.show()
 
 plt.figure(figsize=(8, 4))
 plt.subplot(1, 2, 1)
@@ -66,5 +81,20 @@ plt.axis('off')
 
 plt.subplot(1, 2, 2)
 plt.imshow(output, cmap='gray')
-plt.title("Reconstructed Image")
+plt.title("Encoded 0")
+plt.axis('off')
+
+plt.subplot(1, 2, 3)
+plt.imshow(output, cmap='gray')
+plt.title("Encoded 1")
+plt.axis('off')
+
+plt.subplot(1, 2, 4)
+plt.imshow(output, cmap='gray')
+plt.title("Decoded 0")
+plt.axis('off')
+
+plt.subplot(1, 2, 5)
+plt.imshow(output, cmap='gray')
+plt.title("Decoded 1: Reconstructed Image")
 plt.axis('off')
