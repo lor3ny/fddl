@@ -1,4 +1,4 @@
-Mon Jun 30 18:39:16 2025       
+Tue Jul  1 01:25:49 2025       
 +---------------------------------------------------------------------------------------+
 | NVIDIA-SMI 530.30.02              Driver Version: 530.30.02    CUDA Version: 12.1     |
 |-----------------------------------------+----------------------+----------------------+
@@ -7,11 +7,11 @@ Mon Jun 30 18:39:16 2025
 |                                         |                      |               MIG M. |
 |=========================================+======================+======================|
 |   0  NVIDIA A100-SXM-64GB            On | 00000000:1D:00.0 Off |                    0 |
-| N/A   43C    P0               61W / 460W|      0MiB / 65536MiB |      0%      Default |
+| N/A   43C    P0               61W / 461W|      0MiB / 65536MiB |      0%      Default |
 |                                         |                      |             Disabled |
 +-----------------------------------------+----------------------+----------------------+
 |   1  NVIDIA A100-SXM-64GB            On | 00000000:C8:00.0 Off |                    0 |
-| N/A   43C    P0               61W / 457W|      0MiB / 65536MiB |      0%      Default |
+| N/A   42C    P0               60W / 454W|      0MiB / 65536MiB |      0%      Default |
 |                                         |                      |             Disabled |
 +-----------------------------------------+----------------------+----------------------+
                                                                                          
@@ -26,15 +26,13 @@ Mon Jun 30 18:39:16 2025
 CUDA_VISIBLE_DEVICES=0,1
 NODES=1
 + ----------------------------------------- +
-Rank 0 | Epoch 0 | Batch 937
-Rank 1 | Epoch 0 | Batch 937 | Loss: 0.0649
-Rank 1 | Epoch 1 | Batch 937 | Loss: 0.0654
-Rank 0 | Epoch 1 | Batch 937
-Rank 1 | Epoch 2 | Batch 937 | Loss: 0.0691
-Rank 0 | Epoch 2 | Batch 937
-Rank 1 | Epoch 3 | Batch 937 | Loss: 0.0691
-Rank 0 | Epoch 3 | Batch 937
-Rank 1 | Epoch 4 | Batch 937 | Loss: 0.0709
-Rank 0 | Epoch 4 | Batch 937
-Rank 1 | Epoch 5 | Batch 937 | Loss: 0.0713
-Rank 0 | Epoch 5 | Batch 937
++ ---------- TORCH LIBRARY CHECK ---------- +
+PyTorch version: 2.7.1+cu126
+PyTorch CUDA version: 12.6
+PyTorch CUDNN version: 90501
+GPUs per node 2
+Training with GPUs :)
++ ----------------------------------------- +
+[Rank 0] GPU_RANK=0 on CUDA device 0 hostname=lrdn0751.leonardo.local
+[Rank 1] GPU_RANK=1 on CUDA device 1 hostname=lrdn0751.leonardo.local
+[RANK 0] Trainer is running...
