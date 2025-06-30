@@ -1,4 +1,4 @@
-Mon Jun 30 16:15:11 2025       
+Mon Jun 30 16:26:05 2025       
 +---------------------------------------------------------------------------------------+
 | NVIDIA-SMI 530.30.02              Driver Version: 530.30.02    CUDA Version: 12.1     |
 |-----------------------------------------+----------------------+----------------------+
@@ -6,12 +6,12 @@ Mon Jun 30 16:15:11 2025
 | Fan  Temp  Perf            Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
 |                                         |                      |               MIG M. |
 |=========================================+======================+======================|
-|   0  NVIDIA A100-SXM-64GB            On | 00000000:8F:00.0 Off |                    0 |
-| N/A   42C    P0               62W / 466W|      0MiB / 65536MiB |      0%      Default |
+|   0  NVIDIA A100-SXM-64GB            On | 00000000:1D:00.0 Off |                    0 |
+| N/A   42C    P0               60W / 458W|      0MiB / 65536MiB |      0%      Default |
 |                                         |                      |             Disabled |
 +-----------------------------------------+----------------------+----------------------+
-|   1  NVIDIA A100-SXM-64GB            On | 00000000:C8:00.0 Off |                    0 |
-| N/A   42C    P0               62W / 469W|      0MiB / 65536MiB |      0%      Default |
+|   1  NVIDIA A100-SXM-64GB            On | 00000000:56:00.0 Off |                    0 |
+| N/A   42C    P0               61W / 462W|      0MiB / 65536MiB |      0%      Default |
 |                                         |                      |             Disabled |
 +-----------------------------------------+----------------------+----------------------+
                                                                                          
@@ -33,49 +33,49 @@ PyTorch CUDNN version: 90501
 GPUs per node 2
 Training with GPUs :)
 + ----------------------------------------- +
-[Rank 0] GPU_RANK=0 on CUDA device 0 hostname=lrdn2465.leonardo.local
-[Rank 1] GPU_RANK=1 on CUDA device 1 hostname=lrdn2465.leonardo.local
+[Rank 0] GPU_RANK=0 on CUDA device 0 hostname=lrdn2211.leonardo.local
+[Rank 1] GPU_RANK=1 on CUDA device 1 hostname=lrdn2211.leonardo.local
 [RANK 0] Trainer is running...
 [RANK 0 GPU 0] Epoch 0 | Batches: 157
 [RANK 0 GPU 0] Epoch 1 | Batches: 157
-Epoch [1/20], Loss: 0.069505
+Epoch [1/20], Loss: 0.070206
 [RANK 0 GPU 0] Epoch 2 | Batches: 157
-Epoch [2/20], Loss: 0.067558
+Epoch [2/20], Loss: 0.063095
+Epoch [3/20], Loss: 0.067584
 [RANK 0 GPU 0] Epoch 3 | Batches: 157
-Epoch [3/20], Loss: 0.067413
+Epoch [4/20], Loss: 0.064952
 [RANK 0 GPU 0] Epoch 4 | Batches: 157
-Epoch [4/20], Loss: 0.067381
 [RANK 0 GPU 0] Epoch 5 | Batches: 157
-Epoch [5/20], Loss: 0.067363
+Epoch [5/20], Loss: 0.070826
+Epoch [6/20], Loss: 0.063821
 [RANK 0 GPU 0] Epoch 6 | Batches: 157
-Epoch [6/20], Loss: 0.067346
 [RANK 0 GPU 0] Epoch 7 | Batches: 157
-Epoch [7/20], Loss: 0.067336
+Epoch [7/20], Loss: 0.068025
 [RANK 0 GPU 0] Epoch 8 | Batches: 157
-Epoch [8/20], Loss: 0.067331
+Epoch [8/20], Loss: 0.066433
 [RANK 0 GPU 0] Epoch 9 | Batches: 157
-Epoch [9/20], Loss: 0.067329
+Epoch [9/20], Loss: 0.065489
 [RANK 0 GPU 0] Epoch 10 | Batches: 157
-Epoch [10/20], Loss: 0.067321
+Epoch [10/20], Loss: 0.067261
 [RANK 0 GPU 0] Epoch 11 | Batches: 157
-Epoch [11/20], Loss: 0.067317
+Epoch [11/20], Loss: 0.063608
 [RANK 0 GPU 0] Epoch 12 | Batches: 157
-Epoch [12/20], Loss: 0.067309
+Epoch [12/20], Loss: 0.070422
 [RANK 0 GPU 0] Epoch 13 | Batches: 157
-Epoch [13/20], Loss: 0.067306
+Epoch [13/20], Loss: 0.066996
+Epoch [14/20], Loss: 0.071150
 [RANK 0 GPU 0] Epoch 14 | Batches: 157
-Epoch [14/20], Loss: 0.067304
+Epoch [15/20], Loss: 0.066532
 [RANK 0 GPU 0] Epoch 15 | Batches: 157
-Epoch [15/20], Loss: 0.067309
 [RANK 0 GPU 0] Epoch 16 | Batches: 157
-Epoch [16/20], Loss: 0.067300
+Epoch [16/20], Loss: 0.068740
+Epoch [17/20], Loss: 0.066270
 [RANK 0 GPU 0] Epoch 17 | Batches: 157
-Epoch [17/20], Loss: 0.067301
 [RANK 0 GPU 0] Epoch 18 | Batches: 157
-Epoch [18/20], Loss: 0.067296
+Epoch [18/20], Loss: 0.068420
 [RANK 0 GPU 0] Epoch 19 | Batches: 157
-Epoch [19/20], Loss: 0.067298
-Epoch [20/20], Loss: 0.067295
+Epoch [19/20], Loss: 0.070856
 [RANK 0] Training done.
-[RANK: 1] Model saved to layer1.pth
+Epoch [20/20], Loss: 0.063609
 [RANK: 0] Model saved to layer0.pth
+[RANK: 1] Model saved to layer1.pth

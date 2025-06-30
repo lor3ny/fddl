@@ -55,7 +55,7 @@ with torch.no_grad():
         output = model3(model0_output)
 
         # Visualize original and reconstructed image
-        fig, axs = plt.subplots(1, 5)
+        fig, axs = plt.subplots(1, 3)
         axs[0].imshow(img.squeeze(), cmap='gray')
         axs[0].set_title('Original')
 
@@ -68,8 +68,8 @@ with torch.no_grad():
         # axs[3].imshow(model2_output[0].view(16, 16).cpu(), cmap='gray')
         # axs[3].set_title('Decoded 0')
 
-        axs[4].imshow(output[0].view(28, 28).cpu(), cmap='gray')
-        axs[4].set_title('Decoded 1: Reconstructed')
+        axs[2].imshow(output[0].view(28, 28).cpu(), cmap='gray')
+        axs[2].set_title('Decoded 1: Reconstructed')
         for ax in axs: ax.axis('off')
         plt.show()
 

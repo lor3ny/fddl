@@ -103,7 +103,6 @@ class Trainer:
         for epoch in range(max_epochs):
             print(f"[RANK {self.rank} GPU {self.gpu_rank}] Epoch {epoch} | Batches: {len(self.test_data)}", flush=True) if self.rank == 0 else None
             e_start_time = MPI.Wtime()
-            total_loss = 0.0
 
             self.comm.Barrier()  # Synchronize all ranks before starting the epoch
 
@@ -121,7 +120,7 @@ class Trainer:
 
                     # Send activations to the next stage (rank 1)
                     #dist.send(activations.cpu(), dst=1, tag=i) # Send CPU tensor to avoid GPU sync issues)
-                    self.comm.Send(activations.detach().cpu(), dest=self.rank+1, tag=0)
+                    self.comm.Send(activations.detach().cpu(), dest=1, tag=0)
                     activations_storage[0] = activations # Store for backward pass
 
                 elif self.rank  == 1: # Last stage
@@ -146,14 +145,13 @@ class Trainer:
                 # Iterate backward through micro-batches for correctness (GPipe schedule)
                 if self.rank == 1: # Last stage
                     loss = gradients_storage[0]
-                    total_loss += loss.item()
                     input_activation = activations_storage[0]
 
                     # Initiate backward pass for this micro-batch's loss
                     # Gradients computed locally for stage1 parameters
                     # Need to retain graph if not the last micro-batch overall for the stage input
                     #retain_graph_flag = (i != 0) 
-                    loss.backward() 
+                    loss.backward(retain_graph=True) 
                     
                     # Send gradient of input activation back to previous stage (rank 0)
                     grad_to_send = input_activation.grad.cpu() 
@@ -175,86 +173,66 @@ class Trainer:
                 self.optimizer.step()
                 self.optimizer.zero_grad()
 
-                # if self.gpu_rank == 0:
-                #     #print(f"-> Epoch {epoch} | Batch: {batch_idx}", flush=True)
-
-                #     # FORWARD LAYER 0
-                #     inputs = batch_data.view(-1, 28*28).to(self.gpu_rank)
-                #     inputs.requires_grad_()
-                #     outputs_step0 = self.model(inputs)
-                #     outputs_step0.retain_grad()
-
-                #     # SEND LAYER 0
-                #     self.comm.Send(outputs_step0.detach().cpu().numpy(), dest=self.rank+1, tag=0)
-
-                #     # WAITING LAYER 1 GRADIENT
-                #     grad_from_1 = torch.empty((len(batch_data), 256), dtype=torch.float32)
-                #     self.comm.Recv([grad_from_1.numpy(), MPI.FLOAT], source=self.rank+1, tag=0)
-
-                #     # BACKWARD LAYER 0
-                #     self.optimizer.zero_grad()
-                #     outputs_step0.backward(grad_from_1.to(self.gpu_rank).detach().clone().requires_grad_(True))
-                #     #print("Encoder output grad norm:", outputs_step0.grad.norm(), flush=True)
-                #     self.optimizer.step()
-
-                #     # NODES SYNCHRONIZATION
-                #     # sync_start_time = MPI.Wtime()
-                #     # print(f"{self.rank} GPU {self.gpu_rank} -> Epoch {epoch} | Batch: {batch_idx} SYNCHING START", flush=True)
-                #     # self._synchronize_gradients() # in questo caso solo tra le gpu 3
-                #     # print(f"{self.rank} GPU {self.gpu_rank} -> Epoch {epoch} | Batch: {batch_idx} SYNCHING END", flush=True)
-                #     # sync_end_time = MPI.Wtime()
-                #     # local_syncs_lat.append(sync_end_time-sync_start_time)
-                #     # req.Wait() #non va messa qui
-
-                # elif self.gpu_rank == 1:
-
-                #     # WAITING LAYER 3   
-                #     outputs_step0 = torch.empty((len(batch_data), 256), dtype=torch.float32)
-                #     self.comm.Recv([outputs_step0.numpy(), MPI.FLOAT], source=self.rank-1, tag=0)
-
-                #     # FORWARD LAYER 3
-                #     outputs_step0 = outputs_step0.to(self.gpu_rank).detach().clone().requires_grad_(True)
-                #     outputs = self.model(outputs_step0)
-
-                #     # BACKWARD LAYER 3 FROM LOSS
-                #     inputs = batch_data.view(-1, 28*28).to(self.gpu_rank)
-                #     loss = self.criterion(inputs, outputs)
-                #     total_loss += loss.item()
-                #     self.optimizer.zero_grad()
-                #     loss.backward()
-                #     #print("Decoder input grad norm:", outputs_step0.grad.norm(), flush=True)
-                #     self.optimizer.step()
-                #     # SEND LAYER 3 GRADIENT
-                #     self.comm.Send([outputs_step0.grad.cpu().numpy(), MPI.FLOAT], dest=self.rank - 1, tag=0)
-
-                # else:
-                #     print(f"[RANK {self.rank}] Error on GPU rank")
-            
-
             self.comm.Barrier()
             if self.gpu_rank == 1:
-                print(f'Epoch [{epoch+1}/{epochs}], Loss: {total_loss/len(self.train_data):.6f}', flush=True)
+                print(f'Epoch [{epoch+1}/{epochs}], Loss: {loss.item():.6f}', flush=True)
 
-            '''
-            if self.gpu_id == 0 and epoch % self.save_every == 0:
-                self._save_checkpoint(epoch)
-            '''
 
-            # local_epochs_lat.append(MPI.Wtime() - e_start_time)
-            # avg_loss = total_loss / len(self.train_data)
-            # all_avg_loss = (self.comm.allreduce(avg_loss, op=MPI.SUM) / self.size)
-            # print(f"-> Epoch {epoch} | Avg Loss: {all_avg_loss}") if self.rank == 0 else None
+# if self.gpu_rank == 0:
+#     #print(f"-> Epoch {epoch} | Batch: {batch_idx}", flush=True)
 
-            # test_accuracy = self._evaluate()
-            
-        # local_training_time = MPI.Wtime() - start_time
-        # max_training_time = self.comm.allreduce(local_training_time, op=MPI.MAX)
+#     # FORWARD LAYER 0
+#     inputs = batch_data.view(-1, 28*28).to(self.gpu_rank)
+#     inputs.requires_grad_()
+#     outputs_step0 = self.model(inputs)
+#     outputs_step0.retain_grad()
 
-        # Printare Epochs Time (voglio mantenere l'associazione per epoch) #ogni pro crea un file e salva i tempi, il file riporta il suo rank
-        # Printare Syncs Time (non so se voglio mantenere l'associazione per epoch) #ogni pro crea un file e salva i tempi, il file riporta il suo rank
-        # Per fare plot
+#     # SEND LAYER 0
+#     self.comm.Send(outputs_step0.detach().cpu().numpy(), dest=self.rank+1, tag=0)
 
-        # print(f"Final execution time: {max_training_time}s") if self.rank == 0 else None
+#     # WAITING LAYER 1 GRADIENT
+#     grad_from_1 = torch.empty((len(batch_data), 256), dtype=torch.float32)
+#     self.comm.Recv([grad_from_1.numpy(), MPI.FLOAT], source=self.rank+1, tag=0)
+
+#     # BACKWARD LAYER 0
+#     self.optimizer.zero_grad()
+#     outputs_step0.backward(grad_from_1.to(self.gpu_rank).detach().clone().requires_grad_(True))
+#     #print("Encoder output grad norm:", outputs_step0.grad.norm(), flush=True)
+#     self.optimizer.step()
+
+#     # NODES SYNCHRONIZATION
+#     # sync_start_time = MPI.Wtime()
+#     # print(f"{self.rank} GPU {self.gpu_rank} -> Epoch {epoch} | Batch: {batch_idx} SYNCHING START", flush=True)
+#     # self._synchronize_gradients() # in questo caso solo tra le gpu 3
+#     # print(f"{self.rank} GPU {self.gpu_rank} -> Epoch {epoch} | Batch: {batch_idx} SYNCHING END", flush=True)
+#     # sync_end_time = MPI.Wtime()
+#     # local_syncs_lat.append(sync_end_time-sync_start_time)
+#     # req.Wait() #non va messa qui
+
+# elif self.gpu_rank == 1:
+
+#     # WAITING LAYER 3   
+#     outputs_step0 = torch.empty((len(batch_data), 256), dtype=torch.float32)
+#     self.comm.Recv([outputs_step0.numpy(), MPI.FLOAT], source=self.rank-1, tag=0)
+
+#     # FORWARD LAYER 3
+#     outputs_step0 = outputs_step0.to(self.gpu_rank).detach().clone().requires_grad_(True)
+#     outputs = self.model(outputs_step0)
+
+#     # BACKWARD LAYER 3 FROM LOSS
+#     inputs = batch_data.view(-1, 28*28).to(self.gpu_rank)
+#     loss = self.criterion(inputs, outputs)
+#     total_loss += loss.item()
+#     self.optimizer.zero_grad()
+#     loss.backward()
+#     #print("Decoder input grad norm:", outputs_step0.grad.norm(), flush=True)
+#     self.optimizer.step()
+#     # SEND LAYER 3 GRADIENT
+#     self.comm.Send([outputs_step0.grad.cpu().numpy(), MPI.FLOAT], dest=self.rank - 1, tag=0)
+
+# else:
+#     print(f"[RANK {self.rank}] Error on GPU rank")
+
 
 
 
