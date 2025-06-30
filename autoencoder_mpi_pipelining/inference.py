@@ -62,7 +62,7 @@ with torch.no_grad():
         axs[1].imshow(model0_output[0].view(16, 8).cpu(), cmap='gray')
         axs[1].set_title('Encoded 0')
 
-        axs[2].imshow(model1_output[0].view(8, 4).cpu(), cmap='gray')
+        axs[2].imshow(model1_output[0].view(37, 3).cpu(), cmap='gray')
         axs[2].set_title('Encoded 1')
 
         axs[3].imshow(model2_output[0].view(16, 8).cpu(), cmap='gray')
@@ -73,7 +73,7 @@ with torch.no_grad():
         for ax in axs: ax.axis('off')
         plt.show()
 
-plt.figure(figsize=(8, 4))
+plt.figure(figsize=(16, 32))
 plt.subplot(1, 2, 1)
 plt.imshow(img, cmap='gray')
 plt.title("Input Image")
