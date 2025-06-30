@@ -19,7 +19,7 @@ model3 = Layer3()
 model0.load_state_dict(torch.load("layer0.pth", map_location="cuda:0"))
 #model1.load_state_dict(torch.load("layer1.pth", map_location="cuda:0"))
 #model2.load_state_dict(torch.load("layer2.pth", map_location="cuda:0"))
-model3.load_state_dict(torch.load("layer3.pth", map_location="cuda:0"))
+model3.load_state_dict(torch.load("layer1.pth", map_location="cuda:0"))
 
 print(next(iter(model0.state_dict().values())).view(-1)[:10])
 #print(next(iter(model1.state_dict().values())).view(-1)[:10])
