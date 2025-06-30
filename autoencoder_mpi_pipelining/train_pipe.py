@@ -112,6 +112,22 @@ class Trainer:
 
             for batch_idx, (batch_data, batch_target) in enumerate(self.train_data):
 
+                inputs = batch_data.view(-1, 28*28).to(self.gpu_rank)
+                inputs.requires_grad_()
+                outputs_step0 = self.model(inputs)
+                outputs_step1 = self.model(outputs_step0)
+                outputs_step2 = self.model(outputs_step1)
+                outputs = self.model(outputs_step2)
+
+                inputs = batch_data.view(-1, 28*28).to(self.gpu_rank)
+                loss = self.criterion(inputs, outputs)
+                total_loss += loss.item()
+                loss.backward() #3
+                outputs_step2.backward(outputs_step2.grad.to(self.gpu_rank))
+                outputs_step1.backward(outputs_step1.grad.to(self.gpu_rank))
+                outputs_step0.backward(outputs_step0.grad.to(self.gpu_rank))
+
+
                 if self.gpu_rank == 0:
                     #print(f"-> Epoch {epoch} | Batch: {batch_idx}", flush=True)
 
@@ -124,11 +140,11 @@ class Trainer:
                     self.comm.Send(outputs_step0.detach().cpu().numpy(), dest=self.rank+1, tag=0)
 
                     # WAITING LAYER 1 GRADIENT
-                    grad_from_1 = torch.empty((len(batch_data), 256), dtype=torch.float32)
+                    grad_from_1 = torch.empty((len(batch_data), 784), dtype=torch.float32)
                     self.comm.Recv([grad_from_1.numpy(), MPI.FLOAT], source=self.rank+1, tag=0)
 
                     # BACKWARD LAYER 0
-                    outputs_step0.backward(torch.tensor(grad_from_1).to(self.gpu_rank))
+                    inputs.backward(torch.tensor(grad_from_1).to(self.gpu_rank))
 
                     # NODES SYNCHRONIZATION
                     # sync_start_time = MPI.Wtime()

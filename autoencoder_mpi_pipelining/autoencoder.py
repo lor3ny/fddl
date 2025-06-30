@@ -113,7 +113,7 @@ class Layer3(nn.Module):
         super().__init__()
         self.layer = nn.Sequential(
             nn.Linear(256, 784),
-            nn.Sigmoid()
+            #nn.Sigmoid()
         )
     def forward(self, x):
         return self.layer(x)  # output layer (no activation)
