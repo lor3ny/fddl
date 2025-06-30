@@ -2,17 +2,20 @@
 import torch
 import matplotlib.pyplot as plt
 
-from autoencoder import Autoencoder, Autoencoder_PIPE
+from autoencoder import Autoencoder, Autoencoder_PIPE, Encoder, Decoder 
 from mnist_loader import MNISTLoader
 
 
 # Load model architecture
-model =  Autoencoder_PIPE(28*28, 32)
+modelEncoder = Encoder()
+modelDecoder = Decoder()
 data = MNISTLoader('./data/MNIST')
 
 # Load saved weights
-model.load_state_dict(torch.load("autoencoder.pth"))
-model.eval()  # Set to evaluation mode
+modelEncoder.load_state_dict(torch.load("encoder.pth"))
+modelDecoder.load_state_dict(torch.load("decoder.pth"))
+modelEncoder.eval()  # Set to evaluation mode
+modelDecoder.eval()  # Set to evaluation mode
 
 device = torch.device('cuda')
 if torch.cuda.is_available():
@@ -20,14 +23,15 @@ if torch.cuda.is_available():
 else:
     print("Using CPU for training")
     device = torch.device('cpu')
-model.to(device)
-
+modelEncoder.to(device)
+modelDecoder.to(device)
 
 with torch.no_grad():
     img, _ = data.testloader.dataset[0]
     img_linear = img.view(-1).unsqueeze(0).to(device)
 
-    output = model(img_linear)
+    outA = modelEncoder(img_linear)
+    output = modelDecoder(outA)
 
     # Visualize original and reconstructed image
     fig, axs = plt.subplots(1, 2)
