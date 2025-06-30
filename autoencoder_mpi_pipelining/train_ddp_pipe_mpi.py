@@ -154,7 +154,7 @@ class Trainer:
 
                     print(f"{self.rank} GPU {self.gpu_rank} -> Epoch {epoch} | Batch: {batch_idx} SENT", flush=True)
 
-                    grad_from_2 = torch.empty((len(batch_data), 32), dtype=torch.float32)
+                    grad_from_2 = torch.empty((len(batch_data), 111), dtype=torch.float32)
                     self.comm.Recv([grad_from_2.numpy(), MPI.FLOAT], source=self.rank+1, tag=0)
 
                     print(f"{self.rank} GPU {self.gpu_rank} -> Epoch {epoch} | Batch: {batch_idx} GRAD RECEIVED", flush=True)
@@ -168,7 +168,7 @@ class Trainer:
 
                 elif self.gpu_rank == 2:
                     print(f"{self.rank} GPU {self.gpu_rank} -> Epoch {epoch} | Batch: {batch_idx} TAKEN", flush=True)
-                    outputs_step1 = torch.empty((len(batch_data), 32), dtype=torch.float32)
+                    outputs_step1 = torch.empty((len(batch_data), 111), dtype=torch.float32)
                     self.comm.Recv([outputs_step1.numpy(), MPI.FLOAT], source=self.rank-1, tag=0)
 
                     outputs_step1 = outputs_step1.to(self.gpu_rank)
@@ -380,7 +380,7 @@ def main(
 
 if __name__ == "__main__":
 
-    epochs = 128
+    epochs = 50
     batch_size = 64
     save_every = 1
     latent_linear_size = 32
