@@ -1,5 +1,4 @@
 from torch.utils.data import DataLoader
-from torch.utils.data.distributed import DistributedSampler
 from torchvision import datasets, transforms
 import os
 
@@ -20,11 +19,10 @@ class MNISTLoader:
             download_data = False
             print("MNIST dataset already exists. Skipping download.")
 
-        
-        trainset = datasets.MNIST(root='/leonardo/home/userexternal/lpiarull/fddl/autoencoder_ddp/data', train=True, download=download_data, transform=transform)
-        testset = datasets.MNIST(root='/leonardo/home/userexternal/lpiarull/fddl/autoencoder_ddp/data', train=False, download=download_data, transform=transform)
+        trainset = datasets.MNIST(root='./data', train=True, download=download_data, transform=transform)
+        testset = datasets.MNIST(root='./data', train=False, download=download_data, transform=transform)
 
-        trainloader = DataLoader(trainset, batch_size=64, shuffle=True, sampler=DistributedSampler(trainset))
-        testloader = DataLoader(testset, batch_size=64, shuffle=False, sampler=DistributedSampler(testset))
+        trainloader = DataLoader(trainset, batch_size=64, shuffle=True)
+        testloader = DataLoader(testset, batch_size=64, shuffle=False)
 
         return trainloader, testloader

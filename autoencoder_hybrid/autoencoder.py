@@ -68,10 +68,13 @@ class ManualLinear(nn.Module):
         # weight: (out_features, in_features)
         # bias: (out_features)
         #print(f"RANK {self.rank} GPU {self.gpu_rank} Started MATMUL!", flush=True)
-        if self.rank == 0:
-            return DistributedOperations.DistributedMatmul(self.rank, self.gpu_rank, self.size, self.comm, A=x, B=self.weight.t()) + self.bias #torch.matmul(x, self.weight.t()) + self.bias
+        if False:
+            if self.rank == 0:
+                return DistributedOperations.DistributedMatmul(self.rank, self.gpu_rank, self.size, self.comm, A=x, B=self.weight.t()) + self.bias #torch.matmul(x, self.weight.t()) + self.bias
+            else:
+                return DistributedOperations.DistributedMatmul(self.rank, self.gpu_rank, self.size, self.comm, A=x, B=self.weight.t())
         else:
-            return DistributedOperations.DistributedMatmul(self.rank, self.gpu_rank, self.size, self.comm, A=x, B=self.weight.t())
+            return torch.matmul(x, self.weight.t()) + self.bias
 
 class Autoencoder(nn.Module):
     def __init__(self, rank=None, gpu_rank=None, comm=None, size=None):
