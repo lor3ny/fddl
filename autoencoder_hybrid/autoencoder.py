@@ -9,20 +9,6 @@ from mpi4py import MPI
 class DistributedOperations():
     def DistributedMatmul(rank, gpu_rank, size, comm, A=None, B=None):
 
-        #comm.Ibcast(None, root=0, tag=2)
-        
-        # if rank == 0:
-        #     N = A.size(dim=0)
-        #     K = B.size(dim=0)
-        #     M = B.size(dim=1)
-        #     comm.Bcast([N, MPI.FLOAT], root=0, tag=2)
-        #     comm.Bcast([K, MPI.FLOAT], root=0, tag=2)
-        #     comm.Bcast([M, MPI.FLOAT], root=0, tag=2)
-        # else:
-        #     N = comm.Bcast([N, MPI.FLOAT], root=0, tag=2)
-        #     K = comm.Bcast([K, MPI.FLOAT], root=0, tag=2)
-        #     M = comm.Bcast([M, MPI.FLOAT], root=0, tag=2)
-
         N = A.size(dim=0)
         K = B.size(dim=0)
         M = B.size(dim=1)
@@ -68,7 +54,7 @@ class ManualLinear(nn.Module):
         # weight: (out_features, in_features)
         # bias: (out_features)
         #print(f"RANK {self.rank} GPU {self.gpu_rank} Started MATMUL!", flush=True)
-        if False:
+        if True:
             if self.rank == 0:
                 return DistributedOperations.DistributedMatmul(self.rank, self.gpu_rank, self.size, self.comm, A=x, B=self.weight.t()) + self.bias #torch.matmul(x, self.weight.t()) + self.bias
             else:

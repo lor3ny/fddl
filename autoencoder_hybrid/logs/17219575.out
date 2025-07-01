@@ -1,0 +1,101 @@
+Tue Jul  1 21:35:32 2025       
++---------------------------------------------------------------------------------------+
+| NVIDIA-SMI 530.30.02              Driver Version: 530.30.02    CUDA Version: 12.1     |
+|-----------------------------------------+----------------------+----------------------+
+| GPU  Name                  Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp  Perf            Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
+|                                         |                      |               MIG M. |
+|=========================================+======================+======================|
+|   0  NVIDIA A100-SXM-64GB            On | 00000000:1D:00.0 Off |                    0 |
+| N/A   43C    P0               64W / 471W|      0MiB / 65536MiB |      0%      Default |
+|                                         |                      |             Disabled |
++-----------------------------------------+----------------------+----------------------+
+|   1  NVIDIA A100-SXM-64GB            On | 00000000:56:00.0 Off |                    0 |
+| N/A   43C    P0               65W / 475W|      0MiB / 65536MiB |      0%      Default |
+|                                         |                      |             Disabled |
++-----------------------------------------+----------------------+----------------------+
+|   2  NVIDIA A100-SXM-64GB            On | 00000000:8F:00.0 Off |                    0 |
+| N/A   43C    P0               61W / 454W|      0MiB / 65536MiB |      0%      Default |
+|                                         |                      |             Disabled |
++-----------------------------------------+----------------------+----------------------+
+|   3  NVIDIA A100-SXM-64GB            On | 00000000:C8:00.0 Off |                    0 |
+| N/A   41C    P0               58W / 448W|      0MiB / 65536MiB |      0%      Default |
+|                                         |                      |             Disabled |
++-----------------------------------------+----------------------+----------------------+
+                                                                                         
++---------------------------------------------------------------------------------------+
+| Processes:                                                                            |
+|  GPU   GI   CI        PID   Type   Process name                            GPU Memory |
+|        ID   ID                                                             Usage      |
+|=======================================================================================|
+|  No running processes found                                                           |
++---------------------------------------------------------------------------------------+
++ -------------- SLURM CHECK -------------- +
+CUDA_VISIBLE_DEVICES=0,1,2,3
+NODES=1
++ ----------------------------------------- +
++ ---------- TORCH LIBRARY CHECK ---------- +
+PyTorch version: 2.7.1+cu126
+PyTorch CUDA version: 12.6
+PyTorch CUDNN version: 90501
+GPUs per node 4
+Training with GPUs :)
++ ----------------------------------------- +
+[Rank 0] GPU_RANK=0 on CUDA device 0 hostname=lrdn0190.leonardo.local
+[Rank 1] GPU_RANK=1 on CUDA device 1 hostname=lrdn0190.leonardo.local
+[Rank 2] GPU_RANK=2 on CUDA device 2 hostname=lrdn0190.leonardo.local
+[Rank 3] GPU_RANK=3 on CUDA device 3 hostname=lrdn0190.leonardo.local
+[RANK 0] Trainer is running...
+[RANK 0 GPU 0] Epoch 0 | Batches: 157
+-> Epoch 0 | Avg Loss: 0.16807582195220724
+[RANK 0 GPU 0] Epoch 1 | Batches: 157
+-> Epoch 1 | Avg Loss: 0.10377178614391193
+[RANK 0 GPU 0] Epoch 2 | Batches: 157
+-> Epoch 2 | Avg Loss: 0.0827849313998019
+[RANK 0 GPU 0] Epoch 3 | Batches: 157
+-> Epoch 3 | Avg Loss: 0.07479418957157176
+[RANK 0 GPU 0] Epoch 4 | Batches: 157
+-> Epoch 4 | Avg Loss: 0.07123629512118378
+[RANK 0 GPU 0] Epoch 5 | Batches: 157
+-> Epoch 5 | Avg Loss: 0.06947346636131882
+[RANK 0 GPU 0] Epoch 6 | Batches: 157
+-> Epoch 6 | Avg Loss: 0.0685284580471419
+[RANK 0 GPU 0] Epoch 7 | Batches: 157
+-> Epoch 7 | Avg Loss: 0.06800293060206274
+[RANK 0 GPU 0] Epoch 8 | Batches: 157
+-> Epoch 8 | Avg Loss: 0.06769915554187954
+[RANK 0 GPU 0] Epoch 9 | Batches: 157
+-> Epoch 9 | Avg Loss: 0.06752282208296409
+[RANK 0 GPU 0] Epoch 10 | Batches: 157
+-> Epoch 10 | Avg Loss: 0.06741667011065651
+[RANK 0 GPU 0] Epoch 11 | Batches: 157
+-> Epoch 11 | Avg Loss: 0.06735105162410975
+[RANK 0 GPU 0] Epoch 12 | Batches: 157
+-> Epoch 12 | Avg Loss: 0.06731287899937456
+[RANK 0 GPU 0] Epoch 13 | Batches: 157
+-> Epoch 13 | Avg Loss: 0.06729059197358105
+[RANK 0 GPU 0] Epoch 14 | Batches: 157
+-> Epoch 14 | Avg Loss: 0.06727560671137721
+[RANK 0 GPU 0] Epoch 15 | Batches: 157
+-> Epoch 15 | Avg Loss: 0.06726493894148355
+[RANK 0 GPU 0] Epoch 16 | Batches: 157
+-> Epoch 16 | Avg Loss: 0.06725996713648473
+[RANK 0 GPU 0] Epoch 17 | Batches: 157
+-> Epoch 17 | Avg Loss: 0.0672541820307149
+[RANK 0 GPU 0] Epoch 18 | Batches: 157
+-> Epoch 18 | Avg Loss: 0.06725497852002126
+[RANK 0 GPU 0] Epoch 19 | Batches: 157
+-> Epoch 19 | Avg Loss: 0.06725222557020594
+[RANK 0 GPU 0] Epoch 20 | Batches: 157
+-> Epoch 20 | Avg Loss: 0.06725264101156167
+[RANK 0 GPU 0] Epoch 21 | Batches: 157
+-> Epoch 21 | Avg Loss: 0.06724923728768632
+[RANK 0 GPU 0] Epoch 22 | Batches: 157
+-> Epoch 22 | Avg Loss: 0.06725387590160883
+[RANK 0 GPU 0] Epoch 23 | Batches: 157
+-> Epoch 23 | Avg Loss: 0.06725146032885702
+[RANK 0 GPU 0] Epoch 24 | Batches: 157
+-> Epoch 24 | Avg Loss: 0.06724969762713034
+[RANK 0 GPU 0] Epoch 25 | Batches: 157
+-> Epoch 25 | Avg Loss: 0.0672520319941138
+[RANK 0 GPU 0] Epoch 26 | Batches: 157
