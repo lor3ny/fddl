@@ -1,0 +1,177 @@
+Traceback (most recent call last):
+Traceback (most recent call last):
+Traceback (most recent call last):
+  File "/leonardo/home/userexternal/lpiarull/fddl/autoencoder_hybrid/train_hybrid.py", line 288, in <module>
+    main(
+    ~~~~^
+        epochs=epochs,
+        ^^^^^^^^^^^^^^
+        batch_size=batch_size,
+        ^^^^^^^^^^^^^^^^^^^^^^
+        save_every=save_every
+        ^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/leonardo/home/userexternal/lpiarull/fddl/autoencoder_hybrid/train_hybrid.py", line 265, in main
+    trainer.train(epochs)
+    ~~~~~~~~~~~~~^^^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/fddl/autoencoder_hybrid/train_hybrid.py", line 132, in train
+    self.model(inputs)
+    ~~~~~~~~~~^^^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/fddl/autoencoder_hybrid/train_hybrid.py", line 288, in <module>
+    main(
+    ~~~~^
+        epochs=epochs,
+        ^^^^^^^^^^^^^^
+        batch_size=batch_size,
+        ^^^^^^^^^^^^^^^^^^^^^^
+        save_every=save_every
+        ^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/leonardo/home/userexternal/lpiarull/fddl/autoencoder_hybrid/train_hybrid.py", line 265, in main
+    trainer.train(epochs)
+    ~~~~~~~~~~~~~^^^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/fddl/autoencoder_hybrid/train_hybrid.py", line 132, in train
+    self.model(inputs)
+    ~~~~~~~~~~^^^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1751, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1762, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/leonardo/home/userexternal/lpiarull/fddl/autoencoder_hybrid/autoencoder.py", line 93, in forward
+    encoded = self.encoder(x)
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1751, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1762, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/nn/modules/container.py", line 240, in forward
+    input = module(input)
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1751, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1762, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1751, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1762, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/leonardo/home/userexternal/lpiarull/fddl/autoencoder_hybrid/autoencoder.py", line 93, in forward
+    encoded = self.encoder(x)
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1751, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1762, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/nn/modules/container.py", line 240, in forward
+    input = module(input)
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1751, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1762, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/leonardo/home/userexternal/lpiarull/fddl/autoencoder_hybrid/autoencoder.py", line 71, in forward
+    return DistributedOperations.DistributedMatmul(self.rank, self.gpu_rank, self.size, self.comm, A=x, B=self.weight.t())
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/fddl/autoencoder_hybrid/autoencoder.py", line 21, in DistributedMatmul
+    A_cp = A.copy()
+           ^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/fddl/autoencoder_hybrid/autoencoder.py", line 71, in forward
+    return DistributedOperations.DistributedMatmul(self.rank, self.gpu_rank, self.size, self.comm, A=x, B=self.weight.t())
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/fddl/autoencoder_hybrid/autoencoder.py", line 21, in DistributedMatmul
+    A_cp = A.copy()
+           ^^^^^^
+AttributeError: 'Tensor' object has no attribute 'copy'. Did you mean: 'copy_'?
+AttributeError: 'Tensor' object has no attribute 'copy'. Did you mean: 'copy_'?
+  File "/leonardo/home/userexternal/lpiarull/fddl/autoencoder_hybrid/train_hybrid.py", line 288, in <module>
+    main(
+    ~~~~^
+        epochs=epochs,
+        ^^^^^^^^^^^^^^
+        batch_size=batch_size,
+        ^^^^^^^^^^^^^^^^^^^^^^
+        save_every=save_every
+        ^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/leonardo/home/userexternal/lpiarull/fddl/autoencoder_hybrid/train_hybrid.py", line 265, in main
+    trainer.train(epochs)
+    ~~~~~~~~~~~~~^^^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/fddl/autoencoder_hybrid/train_hybrid.py", line 132, in train
+    self.model(inputs)
+    ~~~~~~~~~~^^^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1751, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1762, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/leonardo/home/userexternal/lpiarull/fddl/autoencoder_hybrid/autoencoder.py", line 93, in forward
+    encoded = self.encoder(x)
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1751, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1762, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/nn/modules/container.py", line 240, in forward
+    input = module(input)
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1751, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1762, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/leonardo/home/userexternal/lpiarull/fddl/autoencoder_hybrid/autoencoder.py", line 71, in forward
+    return DistributedOperations.DistributedMatmul(self.rank, self.gpu_rank, self.size, self.comm, A=x, B=self.weight.t())
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/fddl/autoencoder_hybrid/autoencoder.py", line 21, in DistributedMatmul
+    A_cp = A.copy()
+           ^^^^^^
+AttributeError: 'Tensor' object has no attribute 'copy'. Did you mean: 'copy_'?
+Traceback (most recent call last):
+  File "/leonardo/home/userexternal/lpiarull/fddl/autoencoder_hybrid/train_hybrid.py", line 288, in <module>
+    main(
+    ~~~~^
+        epochs=epochs,
+        ^^^^^^^^^^^^^^
+        batch_size=batch_size,
+        ^^^^^^^^^^^^^^^^^^^^^^
+        save_every=save_every
+        ^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/leonardo/home/userexternal/lpiarull/fddl/autoencoder_hybrid/train_hybrid.py", line 265, in main
+    trainer.train(epochs)
+    ~~~~~~~~~~~~~^^^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/fddl/autoencoder_hybrid/train_hybrid.py", line 115, in train
+    outputs = self.model(inputs)
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1751, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1762, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/leonardo/home/userexternal/lpiarull/fddl/autoencoder_hybrid/autoencoder.py", line 93, in forward
+    encoded = self.encoder(x)
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1751, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1762, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/nn/modules/container.py", line 240, in forward
+    input = module(input)
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1751, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1762, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/leonardo/home/userexternal/lpiarull/fddl/autoencoder_hybrid/autoencoder.py", line 69, in forward
+    return DistributedOperations.DistributedMatmul(self.rank, self.gpu_rank, self.size, self.comm, A=x, B=self.weight.t()) + self.bias #torch.matmul(x, self.weight.t()) + self.bias
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/fddl/autoencoder_hybrid/autoencoder.py", line 21, in DistributedMatmul
+    A_cp = A.copy()
+           ^^^^^^
+AttributeError: 'Tensor' object has no attribute 'copy'. Did you mean: 'copy_'?
+srun: error: lrdn0123: tasks 0-2: Exited with exit code 1
+srun: error: lrdn0123: task 3: Exited with exit code 1

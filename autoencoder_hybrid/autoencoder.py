@@ -15,23 +15,34 @@ class DistributedOperations():
         
         local_rows = N // size
 
+        # I think that I'm losing the gradient here, verify printing the gradient.
+        # Have to exists a way to maintain the gradient here.
+
+        # Copy() doesn't exist, how can I do?
+        A_cp = A.copy()
+        B_cp = B.copy()
+
+        # Scatter A over the ranks
         A_local = torch.empty(local_rows, K, dtype=torch.float32)
-        comm.Scatter([A.detach().cpu(), MPI.FLOAT], [A_local, MPI.FLOAT], root=0)
+        comm.Scatter([A_cp.detach().cpu(), MPI.FLOAT], [A_local, MPI.FLOAT], root=0)
+        # Give weights B to every process
+        comm.Bcast([B_cp.detach().cpu(), MPI.FLOAT], root=0)
 
-        comm.Bcast([B.detach().cpu(), MPI.FLOAT], root=0)
-
+        # Bring everything to the GPU
         A_local = A_local.to(gpu_rank)
         B = B.to(gpu_rank)
 
+        # Actual matmul
         C_local = torch.matmul(A_local, B)
 
-        C_local_cpu = C_local.detach().cpu()
-
         if rank == 0:
+            C_local_cpu = C_local.detach().cpu()
             C = torch.empty(N, M, dtype=torch.float32)
             comm.Gather([C_local_cpu, MPI.FLOAT], [C, MPI.FLOAT], root=0)
+            C.grad = A.grad
             return C.to(gpu_rank)
         else:
+            C_local_cpu = C_local.detach().cpu()
             comm.Gather([C_local_cpu, MPI.FLOAT], None, root=0)
             return torch.zeros(N, M, device=f"cuda:{gpu_rank}") 
 
