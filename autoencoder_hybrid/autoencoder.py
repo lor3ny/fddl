@@ -30,58 +30,71 @@ class DistributedOperations():
         local_rows = N // size
 
         A_local = torch.empty(local_rows, K, dtype=torch.float32)
-        comm.Scatter([A, MPI.FLOAT], [A_local, MPI.FLOAT], root=0)
+        comm.Scatter([A.detach().cpu(), MPI.FLOAT], [A_local, MPI.FLOAT], root=0)
 
-        comm.Bcast([B, MPI.FLOAT], root=0)
+        comm.Bcast([B.detach().cpu(), MPI.FLOAT], root=0)
 
-        A_local = A_local.to()
+        A_local = A_local.to(gpu_rank)
         B = B.to(gpu_rank)
 
         C_local = torch.matmul(A_local, B)
 
-        C_local_cpu = C_local.cpu()
-
-        comm.Gather([C_local_cpu, MPI.FLOAT], [C, MPI.FLOAT], root=0)
+        C_local_cpu = C_local.detach().cpu()
 
         if rank == 0:
             C = torch.empty(N, M, dtype=torch.float32)
+            comm.Gather([C_local_cpu, MPI.FLOAT], [C, MPI.FLOAT], root=0)
+            return C.to(gpu_rank)
         else:
-            C = None
-
-        return C
+            comm.Gather([C_local_cpu, MPI.FLOAT], None, root=0)
+            return torch.zeros(N, M, device=f"cuda:{gpu_rank}") 
 
 class ManualLinear(nn.Module):
-    def __init__(self, in_features, out_features):
+    def __init__(self, in_features, out_features, rank, gpu_rank, comm, size):
         super(ManualLinear, self).__init__()
         self.in_features = in_features
         self.out_features = out_features
+        self.rank = rank
+        self.gpu_rank = gpu_rank
+        self.comm = comm
+        self.size = size
 
         # Inizializzazione dei pesi e bias (con parametri ottimizzabili)
         self.weight = nn.Parameter(torch.randn(out_features, in_features) * 0.01)
         self.bias = nn.Parameter(torch.zeros(out_features))
 
-    def forward(self, x, rank, gpu_rank, comm):
+    def forward(self, x):
         # x: (batch_size, in_features)
         # weight: (out_features, in_features)
         # bias: (out_features)
-        return DistributedOperations.DistributedMatmul(rank, gpu_rank, comm, A=x, B=self.weight.t()) + self.bias #torch.matmul(x, self.weight.t()) + self.bias
-    
+        #print(f"RANK {self.rank} GPU {self.gpu_rank} Started MATMUL!", flush=True)
+        if self.rank == 0:
+            return DistributedOperations.DistributedMatmul(self.rank, self.gpu_rank, self.size, self.comm, A=x, B=self.weight.t()) + self.bias #torch.matmul(x, self.weight.t()) + self.bias
+        else:
+            return DistributedOperations.DistributedMatmul(self.rank, self.gpu_rank, self.size, self.comm, A=x, B=self.weight.t())
 
 class Autoencoder(nn.Module):
-    def __init__(self):
+    def __init__(self, rank, gpu_rank, comm, size):
         super(Autoencoder, self).__init__()
+        self.rank = rank
+        self.gpu_rank = gpu_rank
+        self.comm = comm
+        self.size = size
+
         self.encoder = nn.Sequential(
-            ManualLinear(28*28, 256),
+            ManualLinear(28*28, 256, rank, gpu_rank, comm, size),
             nn.ReLU(True)
         )
         self.decoder = nn.Sequential(
-            ManualLinear(256, 28*28),
+            ManualLinear(256, 28*28, rank, gpu_rank, comm, size),
             nn.Sigmoid()
         )
 
     def forward(self, x):
         encoded = self.encoder(x)
+        #print(f"RANK {self.rank} GPU {self.gpu_rank} Finished Encoder!", flush=True)
         decoded = self.decoder(encoded)
+        #print(f"RANK {self.rank} GPU {self.gpu_rank} Finished Decoder!", flush=True)
         return decoded
     
     # PIPELINING

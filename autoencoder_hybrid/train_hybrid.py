@@ -101,8 +101,6 @@ class Trainer:
 
         start_time = MPI.Wtime()
 
-
-            
         for epoch in range(max_epochs):
             print(f"[RANK {self.rank} GPU {self.gpu_rank}] Epoch {epoch} | Batches: {len(self.test_data)}") if self.rank == 0 else None
             e_start_time = MPI.Wtime()
@@ -131,7 +129,7 @@ class Trainer:
                 else:
                     inputs = batch_data.view(-1, 28*28)
                     inputs = inputs.to(self.gpu_rank)
-                    output = self.model(inputs, self.rank, self.gpu_rank, self.comm)
+                    self.model(inputs)
             
             '''
             if self.gpu_id == 0 and epoch % self.save_every == 0:
@@ -181,28 +179,28 @@ def load_distribute_data(
     train_dataset = datasets.MNIST(root='./data', train=True, download=False, transform=transform)
     test_dataset = datasets.MNIST(root='./data', train=False, download=False, transform=transform)
 
-    # Split dataset into subsets for each rank
-    total_samples = len(train_dataset)
-    if rank == 0:
-        print(f"[RANK {rank}] This dataset has {total_samples} samples", flush=True)
+    # # Split dataset into subsets for each rank
+    # total_samples = len(train_dataset)
+    # if rank == 0:
+    #     print(f"[RANK {rank}] This dataset has {total_samples} samples", flush=True)
 
-    sample_per_rank = total_samples // size
-    remainder = total_samples % size
-    indices = list(range(total_samples))
+    # sample_per_rank = total_samples // size
+    # remainder = total_samples % size
+    # indices = list(range(total_samples))
 
-    # Distribute samples among ranks
-    start_index = rank * sample_per_rank + min(rank, remainder)
-    extra = 1 if rank < remainder else 0
-    local_samples = sample_per_rank + extra
-    end_index = start_index + local_samples
-    local_indices = indices[start_index:end_index]
-    print(f"[RANK {rank}] I have {local_samples} samples. From {start_index} to {end_index}", flush=True)
+    # # Distribute samples among ranks
+    # start_index = rank * sample_per_rank + min(rank, remainder)
+    # extra = 1 if rank < remainder else 0
+    # local_samples = sample_per_rank + extra
+    # end_index = start_index + local_samples
+    # local_indices = indices[start_index:end_index]
+    # print(f"[RANK {rank}] I have {local_samples} samples. From {start_index} to {end_index}", flush=True)
 
-    # Create DataLoader for local dataset
-    # Bisogna passare local_indices
-    local_dataset = Subset(train_dataset, local_indices)
+    # # Create DataLoader for local dataset
+    # # Bisogna passare local_indices
+    # local_dataset = Subset(train_dataset, local_indices)
     train_loader = DataLoader(
-        local_dataset, batch_size=batch_size, shuffle=True
+        train_dataset, batch_size=batch_size, shuffle=True
     )
     test_loader = DataLoader(
         test_dataset, batch_size=batch_size, shuffle=False
@@ -240,7 +238,7 @@ def main(
     train_loader, test_loader = load_distribute_data(rank=rank, size=size, batch_size=batch_size, comm=comm)
 
     # MODEL INIT
-    model = Autoencoder(28*28, 32)
+    model = Autoencoder(rank, gpu_rank, comm, size)
     criterion = nn.MSELoss()
     optimizer = optim.Adam(model.parameters(), lr=1e-3)
 
@@ -277,7 +275,7 @@ def main(
 
 if __name__ == "__main__":
 
-    epochs = 32
+    epochs = 10
     batch_size = 64
     save_every = 1
     latent_linear_size = 32
@@ -286,7 +284,6 @@ if __name__ == "__main__":
     parser.add_argument("--ntasks", type=int, help="Number of tasks", default=1)
     args = parser.parse_args()
     world_size = args.ntasks
-
 
     main(
         epochs=epochs,
