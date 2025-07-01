@@ -1,0 +1,41 @@
+#!/bin/bash
+#SBATCH --job-name=fddl_lor
+#SBATCH --output=logs/%j.out
+#SBATCH --error=logs/%j.err
+#SBATCH --nodes=2
+#SBATCH --gpus-per-node=4
+#SBATCH --gres=gpu:4
+#SBATCH --ntasks-per-node=4
+#SBATCH --cpus-per-task=4
+#SBATCH --time=00:05:00
+#SBATCH --partition=boost_usr_prod
+#SBATCH --qos=boost_qos_dbg
+#SBATCH --account=IscrB_SWING
+
+# module purge
+# module load python
+# module load anaconda3
+# module load openmpi
+# module load cuda/12.1 
+# module load nccl/2.19.1-1--gcc--12.2.0-cuda-12.1 
+
+# #conda env create -f my_env.yml
+# conda init
+# source ~/.bashrc
+# conda activate fddl
+
+# NODES=( $( scontrol show hostnames $SLURM_JOB_NODELIST ) )
+# NODES_ARRAY=($NODES)
+# HEAD_NODE=${NODES_ARRAY[0]}
+# HEAD_NODE_IP=$(srun --nodes=1 --ntasks=1 -w "$HEAD_NODE" hostname --ip-address)
+# MASTER_PORT=29600
+
+# export WORLD_SIZE=$SLURM_NTASKS
+
+nvidia-smi
+echo "+ -------------- SLURM CHECK -------------- +"
+echo "CUDA_VISIBLE_DEVICES=$CUDA_VISIBLE_DEVICES"
+echo "NODES=$SLURM_NNODES"
+echo "+ ----------------------------------------- +"
+
+srun python train_ddp_pipe_mpi.py --ntasks $SLURM_NTASKS

@@ -27,7 +27,7 @@ class Autoencoder(nn.Module):
             nn.ReLU(True)
         )
         self.decoder = nn.Sequential(
-            ManualLinear(256, 128),
+            ManualLinear(256, 28*28),
             nn.Sigmoid()
         )
 

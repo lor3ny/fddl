@@ -7,11 +7,11 @@ from mnist_loader import MNISTLoader
 
 
 # Load model architecture
-model = Autoencoder()
+model = Autoencoder(28*28, 32)
 data = MNISTLoader('./data/MNIST')
 
 # Load saved weights
-model.load_state_dict(torch.load("autoencoder.pth"))
+model.load_state_dict(torch.load("autoencoder_ddp.pth"))
 model.eval()  # Set to evaluation mode
 
 device = torch.device('cuda')
@@ -22,18 +22,19 @@ else:
     device = torch.device('cpu')
 model.to(device)
 
+
 with torch.no_grad():
     img, _ = data.testloader.dataset[0]
     img_linear = img.view(-1).unsqueeze(0).to(device)
 
-    out = model(img_linear)
+    output = model(img_linear)
 
     # Visualize original and reconstructed image
     fig, axs = plt.subplots(1, 2)
     axs[0].imshow(img.squeeze(), cmap='gray')
     axs[0].set_title('Original')
 
-    axs[1].imshow(out[0].view(28, 28).cpu(), cmap='gray')
+    axs[1].imshow(output[0].view(28, 28).cpu(), cmap='gray')
     axs[1].set_title('Reconstructed')
     for ax in axs: ax.axis('off')
     plt.show()
@@ -45,6 +46,6 @@ plt.title("Input Image")
 plt.axis('off')
 
 plt.subplot(1, 2, 2)
-plt.imshow(out, cmap='gray')
+plt.imshow(output, cmap='gray')
 plt.title("Reconstructed Image")
 plt.axis('off')

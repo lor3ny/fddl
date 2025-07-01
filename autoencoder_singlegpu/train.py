@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 
-from autoencoder import Autoencoder, Encoder, Decoder
+from autoencoder import Autoencoder
 from mnist_loader import MNISTLoader
 
 data = MNISTLoader('./data/MNIST')
