@@ -107,7 +107,7 @@ class Trainer:
             total_loss = 0.0
 
             for batch_idx, (batch_data, _) in enumerate(self.train_data):
-                print(f"-> Epoch {epoch} | Batch: {batch_idx}") if self.rank == 0 else None
+                #print(f"-> Epoch {epoch} | Batch: {batch_idx}") if self.rank == 0 else None
 
                 if self.rank == 0:
                     inputs = batch_data.view(-1, 28*28)
@@ -136,10 +136,11 @@ class Trainer:
                 self._save_checkpoint(epoch)
             '''
 
-            local_epochs_lat.append(MPI.Wtime() - e_start_time)
-            avg_loss = total_loss / len(self.train_data)
-            all_avg_loss = (self.comm.allreduce(avg_loss, op=MPI.SUM) / self.size)
-            print(f"-> Epoch {epoch} | Avg Loss: {all_avg_loss}") if self.rank == 0 else None
+            if self.rank == 0:
+                #local_epochs_lat.append(MPI.Wtime() - e_start_time)
+                avg_loss = total_loss / len(self.train_data)
+                #all_avg_loss = (self.comm.allreduce(avg_loss, op=MPI.SUM) / self.size)
+                print(f"-> Epoch {epoch} | Avg Loss: {avg_loss}") if self.rank == 0 else None
 
             #test_accuracy = self._evaluate()
             
@@ -275,10 +276,9 @@ def main(
 
 if __name__ == "__main__":
 
-    epochs = 10
+    epochs = 30
     batch_size = 64
     save_every = 1
-    latent_linear_size = 32
     
     parser = argparse.ArgumentParser(description="Example of parsing many CLI arguments.")
     parser.add_argument("--ntasks", type=int, help="Number of tasks", default=1)
