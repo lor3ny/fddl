@@ -1,4 +1,4 @@
-Tue Jul  1 01:25:49 2025       
+Tue Jul  1 12:26:42 2025       
 +---------------------------------------------------------------------------------------+
 | NVIDIA-SMI 530.30.02              Driver Version: 530.30.02    CUDA Version: 12.1     |
 |-----------------------------------------+----------------------+----------------------+
@@ -6,12 +6,8 @@ Tue Jul  1 01:25:49 2025
 | Fan  Temp  Perf            Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
 |                                         |                      |               MIG M. |
 |=========================================+======================+======================|
-|   0  NVIDIA A100-SXM-64GB            On | 00000000:1D:00.0 Off |                    0 |
-| N/A   43C    P0               61W / 461W|      0MiB / 65536MiB |      0%      Default |
-|                                         |                      |             Disabled |
-+-----------------------------------------+----------------------+----------------------+
-|   1  NVIDIA A100-SXM-64GB            On | 00000000:C8:00.0 Off |                    0 |
-| N/A   42C    P0               60W / 454W|      0MiB / 65536MiB |      0%      Default |
+|   0  NVIDIA A100-SXM-64GB            On | 00000000:8F:00.0 Off |                    0 |
+| N/A   43C    P0               61W / 455W|      0MiB / 65536MiB |      0%      Default |
 |                                         |                      |             Disabled |
 +-----------------------------------------+----------------------+----------------------+
                                                                                          
@@ -23,16 +19,11 @@ Tue Jul  1 01:25:49 2025
 |  No running processes found                                                           |
 +---------------------------------------------------------------------------------------+
 + -------------- SLURM CHECK -------------- +
-CUDA_VISIBLE_DEVICES=0,1
+CUDA_VISIBLE_DEVICES=0
 NODES=1
 + ----------------------------------------- +
-+ ---------- TORCH LIBRARY CHECK ---------- +
-PyTorch version: 2.7.1+cu126
-PyTorch CUDA version: 12.6
-PyTorch CUDNN version: 90501
-GPUs per node 2
-Training with GPUs :)
-+ ----------------------------------------- +
-[Rank 0] GPU_RANK=0 on CUDA device 0 hostname=lrdn0751.leonardo.local
-[Rank 1] GPU_RANK=1 on CUDA device 1 hostname=lrdn0751.leonardo.local
-[RANK 0] Trainer is running...
+MNIST dataset already exists. Skipping download.
+Using GPU for training
+Epoch [1/10], Loss: 0.0298
+Epoch [2/10], Loss: 0.0191
+Epoch [3/10], Loss: 0.0147

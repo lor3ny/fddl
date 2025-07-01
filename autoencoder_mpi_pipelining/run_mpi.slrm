@@ -39,4 +39,13 @@ echo "NODES=$SLURM_NNODES"
 echo "+ ----------------------------------------- +"
 
 
-srun python train_ddp_pipe_mpi_2.py --ntasks $SLURM_NTASKS
+#srun python train_ddp_pipe_mpi_2.py --ntasks $SLURM_NTASKS
+
+
+NODES=( $( scontrol show hostnames $SLURM_JOB_NODELIST ) )
+NODES_ARRAY=($NODES)
+HEAD_NODE=${NODES_ARRAY[0]}
+HEAD_NODE_IP=$(srun --nodes=1 --ntasks=1 -w "$HEAD_NODE" hostname --ip-address)
+MASTER_PORT=29600
+
+srun torchrun --nnodes $SLURM_NNODES --nproc_per_node 2 --rdzv_backend c10d --rdzv_endpoint "$HEAD_NODE_IP:$MASTER_PORT" train_ddp_pipe_mpi_2.py --ntasks $SLURM_NTASKS

@@ -5,7 +5,7 @@ from torch.utils.data import Dataset, DataLoader, Subset
 from torchvision import datasets, transforms
 import torch.distributed as dist
 
-from mpi4py import MPI
+#from mpi4py import MPI
 import numpy as np
 import os
 import argparse
@@ -27,9 +27,9 @@ class Trainer:
         save_every: int,
         rank: int,
         gpu_rank: int,
-        size: int,
-        comm: MPI.Comm,
-        sync_comm: MPI.Comm
+        #size: int,
+        #comm: MPI.Comm,
+        #sync_comm: MPI.Comm
     ) -> None:
         self.train_data = train_data
         self.test_data = test_data
@@ -39,9 +39,9 @@ class Trainer:
         self.model = model
         self.gpu_rank = gpu_rank
         self.rank = rank
-        self.size = size
-        self.comm = comm
-        self.sync_comm = sync_comm  # Used for synchronizing gradients
+        #self.size = size
+        #self.comm = comm
+        #self.sync_comm = sync_comm  # Used for synchronizing gradients
         self.device="cuda" #  #  Expected one of cpu, cuda, ipu, xpu, mkldnn, opengl, opencl, ideep, hip, ve, fpga, maia, xla, lazy, vulkan, mps, meta, hpu,
 
 
@@ -52,21 +52,21 @@ class Trainer:
         print(f"Epoch {epoch} | Training checkpoint saved at {PATH}")
 
         
-    def _synchronize_gradients(self) -> None:
+    # def _synchronize_gradients(self) -> None:
 
-        for param in self.model.parameters():
-            if param.grad is None:
-                continue
-            # Gather gradients from all ranks
-            grad = param.grad.data.cpu().numpy() # why cpu?
-            avg_grad = np.zeros_like(grad)
-            try:
-                self.sync_comm.Allreduce(grad, avg_grad, op=MPI.SUM)
-                avg_grad /= self.size  # Average the gradients
-                param.grad.data = torch.tensor(avg_grad, device=self.device)
+    #     for param in self.model.parameters():
+    #         if param.grad is None:
+    #             continue
+    #         # Gather gradients from all ranks
+    #         grad = param.grad.data.cpu().numpy() # why cpu?
+    #         avg_grad = np.zeros_like(grad)
+    #         try:
+    #             self.sync_comm.Allreduce(grad, avg_grad, op=MPI.SUM)
+    #             avg_grad /= self.size  # Average the gradients
+    #             param.grad.data = torch.tensor(avg_grad, device=self.device)
 
-            except Exception as e:
-                raise RuntimeError(f"Error synchronizing gradients: {e}.", flush=True)
+    #         except Exception as e:
+    #             raise RuntimeError(f"Error synchronizing gradients: {e}.", flush=True)
             
 
 
@@ -74,14 +74,12 @@ class Trainer:
         local_syncs_lat = []
         local_epochs_lat = []
 
-        dist.init_process_group('gloo', rank=self.rank, world_size=self.size)
-
-        start_time = MPI.Wtime()
+        #start_time = MPI.Wtime()
         for epoch in range(max_epochs):
             print(f"[RANK {self.rank} GPU {self.gpu_rank}] Epoch {epoch} | Batches: {len(self.test_data)}", flush=True) if self.rank == 0 else None
-            e_start_time = MPI.Wtime()
+            #e_start_time = MPI.Wtime()
 
-            self.comm.Barrier()  # Synchronize all ranks before starting the epoch
+            dist.barrier()  # Synchronize all ranks before starting the epoch
 
             print(f"{self.rank} - {sum(p.numel() for p in self.model.parameters())}", flush=True) # Ensure model parameters are initialized
 
@@ -96,21 +94,26 @@ class Trainer:
                     # Compute activations for stage 0
                     inputs = batch_data.view(-1, 28*28).to(self.gpu_rank).requires_grad_()
                     activations = self.model(inputs.to(self.gpu_rank))
+                    activations.retain_grad()
 
                     # Send activations to the next stage (rank 1)
-                    dist.send(activations.cpu(), dest=1, tag=batch_idx)
+                    activations = activations.detach().requires_grad_()
+                    dist.send(activations.cpu(), dst=1, tag=batch_idx)
 
-                    #grad_received = torch.empty((len(batch_data), 256), dtype=torch.float32)
-                    dist.recv(grad_received, source=1, tag=batch_idx)
+                    grad_received = torch.empty((len(batch_data), 256), dtype=torch.float32, device='cpu')
+                    dist.recv(grad_received, src=1, tag=batch_idx)
                     grad_received = grad_received.to(self.gpu_rank)
                     self.optimizer.zero_grad()  # Reset gradients before backward pass
                     activations.backward(gradient=grad_received)
 
+                    #print(activations.grad, flush=True)
+
                 elif self.rank == 1: # Last stage
                     # Receive activations from the previous stage (rank 0)
-                    #received_activations = torch.empty((len(batch_data), 256), dtype=torch.float32)
-                    dist.recv(received_activations, source=0, tag=batch_idx)
-                    received_activations = received_activations.to(self.gpu_rank).requires_grad_()
+                    received_activations = torch.empty((len(batch_data), 256), dtype=torch.float32, device='cpu')
+                    dist.recv(received_activations, src=0, tag=batch_idx)
+                    received_activations = received_activations.to(self.gpu_rank)
+                    received_activations.requires_grad_()
                     #received_activations.retain_grad()
                     
                     # Compute activations for stage 1 (final output)
@@ -118,17 +121,16 @@ class Trainer:
                     outputs = self.model(received_activations)
                     inputs = batch_data.view(-1, 28*28).to(self.gpu_rank)
                     loss = self.criterion(outputs, inputs)
-                    loss.backward(retain_graph=True)
+                    loss.backward()
 
                     latent_grad = received_activations.grad.cpu()
-                    dist.send(latent_grad, dest=0, tag=batch_idx)
+                    dist.send(latent_grad, dst=0, tag=batch_idx)
 
                 self.optimizer.step()
 
-            dist.Barrier()
+            dist.barrier()
             if self.gpu_rank == 1:
                 print(f'Epoch [{epoch+1}/{epochs}], Loss: {loss.item():.6f}', flush=True)
-
 
 
 
@@ -142,13 +144,35 @@ class Trainer:
 #     # req.Wait() #non va messa qui
 
 
+# def manual_model_split(model) -> PipelineStage:
+#    if stage_index == 0:
+#       # prepare the first stage model
+#       for i in range(4, 8):
+#             del model.layers[str(i)]
+#       model.norm = None
+#       model.output = None
+
+#    elif stage_index == 1:
+#       # prepare the second stage model
+#       for i in range(4):
+#             del model.layers[str(i)]
+#       model.tok_embeddings = None
+
+#    stage = PipelineStage(
+#       model,
+#       stage_index,
+#       num_stages,
+#       device,
+#    )
+#    return stage
+
 
 
 def load_distribute_data(
         rank: int, 
         size: int, 
         batch_size: int,
-        comm: MPI.Comm
+        #comm: MPI.Comm
     ) -> tuple[DataLoader, DataLoader]:
 
 
@@ -158,7 +182,7 @@ def load_distribute_data(
             datasets.MNIST(root='./data', train=True, download=False, transform=transform)
             datasets.MNIST(root='./data', train=False, download=True, transform=transform)
             print(f"[RANK: {rank}] DONE.")
-    comm.barrier()
+    dist.barrier()
 
     transform = transforms.ToTensor()
     train_dataset = datasets.MNIST(root='./data', train=True, download=False, transform=transform)
@@ -177,20 +201,26 @@ def main(
     epochs: int,
     batch_size: int,
     save_every: int,
+    world_size: int
 ):
     # Initialize MPI
-    comm = MPI.COMM_WORLD
-    rank = comm.Get_rank()
-    size = comm.Get_size()
+    # comm = MPI.COMM_WORLD
+    # rank = comm.Get_rank()
+    # size = comm.Get_size()
+    local_rank = int(os.environ["LOCAL_RANK"])
+    backend = 'gloo' #if torch.cuda.is_available() else 'gloo'
+    dist.init_process_group(backend=backend, init_method="env://")
+    print(f"STARTING", flush=True)
+    rank = dist.get_rank()
 
-    group_ranks = [0]
-    world_group = comm.Get_group()
-    sub_group = world_group.Incl(group_ranks)
-    sub_comm = comm.Create(sub_group)
+    # group_ranks = [0]
+    # world_group = comm.Get_group()
+    # sub_group = world_group.Incl(group_ranks)
+    # sub_comm = comm.Create(sub_group)
 
     gpu_rank = rank % torch.cuda.device_count()
     torch.cuda.set_device(gpu_rank)
-
+    print(f"STARTING", flush=True)
     if rank == 0:
         print("+ ---------- TORCH LIBRARY CHECK ---------- +")
         print(f"PyTorch version: {torch.__version__}", flush=True)
@@ -200,14 +230,14 @@ def main(
         print(f"Training with GPUs :)") if torch.cuda.is_available() else print("Training with CPUs", flush=True)
         print("+ ----------------------------------------- +")
     
-    comm.Barrier()
+    dist.barrier()
     print(f"[Rank {rank}] GPU_RANK={gpu_rank} on CUDA device {torch.cuda.current_device()} hostname={os.uname()[1]}", flush=True)
 
     # DATA MUST BE DIVIDED MANUALLY
-    comm.Barrier()
+    dist.barrier()
 
     # if rank == 0:
-    train_loader, test_loader = load_distribute_data(rank=rank, size=size, batch_size=batch_size, comm=comm)
+    train_loader, test_loader = load_distribute_data(rank=rank, size=world_size, batch_size=batch_size)
 
     # #MODEL TRAINING
     print(f"[RANK {rank}] Trainer is running...", flush=True) if rank == 0 else None
@@ -229,9 +259,9 @@ def main(
         save_every=save_every,
         rank=rank,
         gpu_rank=gpu_rank,
-        size=size,
-        comm=comm,
-        sync_comm=sub_comm if rank in group_ranks else MPI.COMM_NULL
+        #size=size,
+        #comm=comm,
+        #sync_comm=sub_comm if rank in group_ranks else MPI.COMM_NULL
     )
     trainer.train(epochs)
 
@@ -240,6 +270,8 @@ def main(
     #if(rank == 0):
     torch.save(model.state_dict(), f"layer{gpu_rank}.pth")
     print(f"[RANK: {rank}] Model saved to layer{gpu_rank}.pth")
+
+    dist.destroy_process_group()
 
 
 if __name__ == "__main__":
@@ -254,9 +286,9 @@ if __name__ == "__main__":
     args = parser.parse_args()
     world_size = args.ntasks
 
-
     main(
         epochs=epochs,
         batch_size=batch_size,
-        save_every=save_every
+        save_every=save_every,
+        world_size=world_size
     )

@@ -120,6 +120,7 @@ class Layer3(nn.Module):
         return self.layer(x)  # output layer (no activation)
 
 
+
 # Define the two stages
 class Encoder(nn.Module):
     def __init__(self):
@@ -144,3 +145,6 @@ class Decoder(nn.Module):
 
     def forward(self, x):
         return self.layer(x)
+
+
+
