@@ -74,7 +74,7 @@ class ManualLinear(nn.Module):
             return DistributedOperations.DistributedMatmul(self.rank, self.gpu_rank, self.size, self.comm, A=x, B=self.weight.t())
 
 class Autoencoder(nn.Module):
-    def __init__(self, rank, gpu_rank, comm, size):
+    def __init__(self, rank=None, gpu_rank=None, comm=None, size=None):
         super(Autoencoder, self).__init__()
         self.rank = rank
         self.gpu_rank = gpu_rank

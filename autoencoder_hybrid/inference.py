@@ -7,7 +7,7 @@ from mnist_loader import MNISTLoader
 
 
 # Load model architecture
-model = Autoencoder(28*28, 32)
+model = Autoencoder()
 data = MNISTLoader('./data/MNIST')
 
 # Load saved weights
