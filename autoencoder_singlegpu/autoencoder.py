@@ -1,18 +1,33 @@
+import torch
 import torch.nn as nn
+import torch.nn.functional as F
+
+class ManualLinear(nn.Module):
+    def __init__(self, in_features, out_features):
+        super(ManualLinear, self).__init__()
+        self.in_features = in_features
+        self.out_features = out_features
+
+        # Inizializzazione dei pesi e bias (con parametri ottimizzabili)
+        self.weight = nn.Parameter(torch.randn(out_features, in_features) * 0.01)
+        self.bias = nn.Parameter(torch.zeros(out_features))
+
+    def forward(self, x):
+        # x: (batch_size, in_features)
+        # weight: (out_features, in_features)
+        # bias: (out_features)
+        return torch.matmul(x, self.weight.t()) + self.bias
+    
 
 class Autoencoder(nn.Module):
-    def __init__(self, input_dim, hidden_dim):
+    def __init__(self):
         super(Autoencoder, self).__init__()
         self.encoder = nn.Sequential(
-            nn.Linear(input_dim, 128),
-            nn.ReLU(True),
-            nn.Linear(128, hidden_dim),
-            nn.ReLU(True),
+            ManualLinear(28*28, 256),
+            nn.ReLU(True)
         )
         self.decoder = nn.Sequential(
-            nn.Linear(hidden_dim, 128),
-            nn.ReLU(True),
-            nn.Linear(128, input_dim),
+            ManualLinear(256, 128),
             nn.Sigmoid()
         )
 
@@ -25,63 +40,4 @@ class Autoencoder(nn.Module):
 
     def encode(self, x):
         return self.encoder(x)
-    
-
-class Autoencoder_PIPE(nn.Module):
-    def __init__(self, input_dim, hidden_dim):
-        super(Autoencoder_PIPE, self).__init__()
-        self.encoder_PIPE1 = nn.Sequential(
-            nn.Linear(input_dim, 128),
-            nn.ReLU(True),
-        )
-        self.encoder_PIPE2 = nn.Sequential(
-            nn.Linear(128, hidden_dim),
-            nn.ReLU(True),
-        )
-        self.decoder_PIPE1 = nn.Sequential(
-            nn.Linear(hidden_dim, 128),
-            nn.ReLU(True),
-        )
-        self.decoder_PIPE2 = nn.Sequential(
-            nn.Linear(128, input_dim),
-            nn.Sigmoid()
-        )
-
-    def forward(self, x):
-        encoded_1 = self.encoder_PIPE1(x)
-        encoded_2 = self.encoder_PIPE2(encoded_1)
-        decoded_1 = self.decoder_PIPE1(encoded_2)
-        decoded_2 = self.decoder_PIPE2(decoded_1)
-        return decoded_2
-    
-    # PIPELINING
-
-    def encode(self, x):
-        return self.encoder(x)
-    
-
-# Define the two stages
-class Encoder(nn.Module):
-    def __init__(self):
-        super().__init__()
-        self.layer = nn.Sequential(
-            #nn.Flatten(),
-            nn.Linear(784, 256),
-            nn.ReLU(True)
-        )
-
-    def forward(self, x):
-        return self.layer(x)
-
-class Decoder(nn.Module):
-    def __init__(self):
-        super().__init__()
-        self.layer = nn.Sequential(
-            nn.Linear(256, 784),
-            nn.Sigmoid(),  # Or remove and use BCEWithLogitsLoss
-            #nn.Unflatten(1, (1, 28, 28))
-        )
-
-    def forward(self, x):
-        return self.layer(x)
     

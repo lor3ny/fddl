@@ -69,68 +69,72 @@ class Trainer:
     #             raise RuntimeError(f"Error synchronizing gradients: {e}.", flush=True)
             
 
-
     def train(self, max_epochs: int):
-        local_syncs_lat = []
-        local_epochs_lat = []
-
-        #start_time = MPI.Wtime()
         for epoch in range(max_epochs):
-            print(f"[RANK {self.rank} GPU {self.gpu_rank}] Epoch {epoch} | Batches: {len(self.test_data)}", flush=True) if self.rank == 0 else None
-            #e_start_time = MPI.Wtime()
+            print(f"[RANK {self.rank} GPU {self.gpu_rank}] Epoch {epoch}", flush=True) if self.rank == 0 else None
 
-            dist.barrier()  # Synchronize all ranks before starting the epoch
+            dist.barrier()  # Sincronizzazione inizio epoca
 
-            print(f"{self.rank} - {sum(p.numel() for p in self.model.parameters())}", flush=True) # Ensure model parameters are initialized
+            for batch_idx, (batch_data, _) in enumerate(self.train_data):
+                # Flatten input
+                inputs = batch_data.view(-1, 28*28).to(self.gpu_rank)
 
-            for batch_idx, (batch_data, batch_target) in enumerate(self.train_data):
+                if self.rank == 0:
+                    # --- FORWARD SU RANK 0 ---
+                    inputs.requires_grad_()
+                    activations = self.model(inputs)
 
-                #activations_storage = [None] * 1 # To store activations for backward pass
-                #gradients_storage = [None] * 1 # To store gradients for backward pass
-
-                 # --- Forward Pass ---
-
-                if self.rank == 0: # First stage
-                    # Compute activations for stage 0
-                    inputs = batch_data.view(-1, 28*28).to(self.gpu_rank).requires_grad_()
-                    activations = self.model(inputs.to(self.gpu_rank))
-                    activations.retain_grad()
-
-                    # Send activations to the next stage (rank 1)
-                    activations = activations.detach().requires_grad_()
+                    # Invia attivazioni a Rank 1
                     dist.send(activations.cpu(), dst=1, tag=batch_idx)
 
-                    grad_received = torch.empty((len(batch_data), 256), dtype=torch.float32, device='cpu')
-                    dist.recv(grad_received, src=1, tag=batch_idx)
-                    grad_received = grad_received.to(self.gpu_rank)
-                    self.optimizer.zero_grad()  # Reset gradients before backward pass
-                    activations.backward(gradient=grad_received)
+                    # Riceve il gradiente del tensore intermedio da Rank 1
+                    grad_from_next = torch.empty((len(batch_data), 256), dtype=torch.float32)
+                    dist.recv(grad_from_next, src=1, tag=batch_idx)
+                    grad_from_next = grad_from_next.to(self.gpu_rank)
 
-                    #print(activations.grad, flush=True)
+                    # --- BACKWARD SU RANK 0 ---
+                    self.optimizer.zero_grad()
+                    activations.backward(gradient=grad_from_next)
+                    for name, p in self.model.named_parameters():
+                        if p.grad is not None:
+                            print(f"[Rank 0] Grad {name}: {p.grad.norm().item():.6f}", flush=True)
+                        else:
+                            print(f"[Rank 0] Grad {name}: None", flush=True)
+                    self.optimizer.step()
 
-                elif self.rank == 1: # Last stage
-                    # Receive activations from the previous stage (rank 0)
-                    received_activations = torch.empty((len(batch_data), 256), dtype=torch.float32, device='cpu')
+                elif self.rank == 1:
+                    # --- RICEVE ESECUZIONE DA RANK 0 ---
+                    received_activations = torch.empty((len(batch_data), 256), dtype=torch.float32)
                     dist.recv(received_activations, src=0, tag=batch_idx)
                     received_activations = received_activations.to(self.gpu_rank)
                     received_activations.requires_grad_()
-                    #received_activations.retain_grad()
-                    
-                    # Compute activations for stage 1 (final output)
-                    self.optimizer.zero_grad()  # Reset gradients before forward pass
+                    print(f"[Rank 1] Activations mean/std: {received_activations.mean():.4f} / {received_activations.std():.4f}", flush=True)
+                    # --- FORWARD + BACKWARD SU RANK 1 ---
+                    self.optimizer.zero_grad()
                     outputs = self.model(received_activations)
-                    inputs = batch_data.view(-1, 28*28).to(self.gpu_rank)
-                    loss = self.criterion(outputs, inputs)
+
+                    targets = batch_data.view(-1, 28*28).to(self.gpu_rank)
+                    loss = self.criterion(outputs, targets)
+
                     loss.backward()
+                    if received_activations.grad is not None:
+                        print(f"[Rank 1] Grad input: {received_activations.grad.norm():.6f}", flush=True)
+                    else:
+                        print("[Rank 1] Grad input is None!", flush=True)
+                    self.optimizer.step()
 
-                    latent_grad = received_activations.grad.cpu()
-                    dist.send(latent_grad, dst=0, tag=batch_idx)
+                    # Invia gradiente a Rank 0
+                    grad_to_send = received_activations.grad.detach().cpu()
+                    dist.send(grad_to_send, dst=0, tag=batch_idx)
 
-                self.optimizer.step()
+                    # Stampa loss ogni 10 batch
+                    if batch_idx % 10 == 0:
+                        print(f"[RANK 1] Epoch [{epoch+1}/{max_epochs}], Batch [{batch_idx}], Loss: {loss.item():.6f}", flush=True)
 
-            dist.barrier()
-            if self.gpu_rank == 1:
-                print(f'Epoch [{epoch+1}/{epochs}], Loss: {loss.item():.6f}', flush=True)
+            dist.barrier()  # Sincronizzazione fine epoca
+
+        if self.rank == 1:
+            print(f"[RANK 1] Training completo. Ultima loss: {loss.item():.6f}", flush=True)
 
 
 
