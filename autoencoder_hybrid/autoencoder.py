@@ -55,63 +55,31 @@ class LinearMPI(torch.autograd.Function):
         K = B.size(dim=0)
         M = B.size(dim=1)
 
-        # # if rank == 0:
-        # #     print("-----FOR-----", flush=True)
-        # #     print(A.size(), flush=True)
-        # #     print(B.size(), flush=True)
-        # #     print("-----FOR-----", flush=True)
-        
-        # local_rows = N // size
+        local_rows = N // size
 
-        # # Scatter A over the ranks
-        # A_local = torch.empty(local_rows, K, dtype=torch.float32)
-        # comm.Scatter([A.contiguous().detach().cpu(), MPI.FLOAT], [A_local, MPI.FLOAT], root=0)
-        # # Give weights B to every process
-        # comm.Bcast([B.contiguous().detach().cpu(), MPI.FLOAT], root=0)
+        comm.bcast(local_rows, root = 0)
+        comm.bcast(K, root = 0)
+        comm.bcast(M, root = 0)
 
-        # # Bring everything to the GPU
-        # A_local = A_local.to(gpu_rank)
-        # B = B.to(gpu_rank)
+        A_local = torch.zeros(local_rows, K, dtype=torch.float32)
+        comm.Scatter([A.contiguous().detach().cpu(), MPI.FLOAT], [A_local, MPI.FLOAT], root=0)
+        comm.Bcast([B.contiguous().detach().cpu(), MPI.FLOAT], root=0)
 
-        # comm.Barrier()
+        A_local = A_local.to(gpu_rank)
+        B = B.to(gpu_rank)
 
-        # # Actual matmul
-        # C_local = A_local @ B
+        comm.Barrier()
 
-        A_parts = A.chunk(4, dim=0)
-    
-        # Calcola le parti su GPU diverse
-        if rank == 0:
-            C_local = torch.matmul(A_parts[0].to(gpu_rank), B.to(gpu_rank))
-        elif rank == 1:
-            C_local = torch.matmul(A_parts[1].to(gpu_rank), B.to(gpu_rank))
-        elif rank == 2:
-            C_local = torch.matmul(A_parts[2].to(gpu_rank), B.to(gpu_rank))
-        elif rank == 3:
-            C_local = torch.matmul(A_parts[3].to(gpu_rank), B.to(gpu_rank))
-    
+        # Actual matmul
+        C_local = A_local @ B
 
-        if rank == 0:
-            
-            C_local_cpu = C_local.cpu()
-            C_total = torch.zeros(N, M, dtype=torch.float32)
-            comm.Barrier()
-            comm.Gather([C_local_cpu, MPI.FLOAT], [C_total, MPI.FLOAT], root=0)
-            comm.Barrier()
+        C_total = torch.zeros(N, M, dtype=torch.float32)
+        comm.Gather([C_local.cpu(), MPI.FLOAT], [C_total, MPI.FLOAT], root=0)
 
-            print("-----FOR-MPI-----", flush=True)
-            print(C_total, flush=True)
-            print("::::::::::::::::::")
-            print((A@B), flush=True)
-            print("-----FOR-BASE-----", flush=True)
+        # print(f"RESULT: {C_total.to(gpu_rank)}", flush=True)
+        # print(f"TEST: {(A @ B)}", flush=True)
+        return C_total.to(gpu_rank) + bias.to(gpu_rank)
 
-            return C_total.to(gpu_rank) + bias.to(gpu_rank)
-        else:
-            C_local_cpu = C_local.cpu()
-            comm.Barrier()
-            comm.Gather([C_local_cpu, MPI.FLOAT], None, root=0)
-            comm.Barrier()
-            return torch.zeros(N, M).to(gpu_rank)
 
     # This function has only a single output, so it gets only one gradient
     @staticmethod

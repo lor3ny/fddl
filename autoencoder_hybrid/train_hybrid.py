@@ -126,9 +126,47 @@ class Trainer:
 
                     self.optimizer.step()
                 else:
-                    inputs = batch_data.view(-1, 28*28)
-                    inputs = inputs.to(self.gpu_rank)
-                    self.model(inputs, batch_idx)
+                    # inputs = batch_data.view(-1, 28*28)
+                    # inputs = inputs.to(self.gpu_rank)
+                    # self.model(inputs, batch_idx)
+
+                    for layers in range(2):
+
+                        #print(f"{self.rank} qui")
+                        local_N = None
+                        K = None
+                        M = None
+
+                        local_N = self.comm.bcast(local_N, root = 0)
+                        K = self.comm.bcast(K, root = 0)
+                        M = self.comm.bcast(M, root = 0)
+
+                        #print(f"{self.rank} qui2")
+
+                        # Scatter A over the ranks
+                        A_local = torch.zeros(local_N, K, dtype=torch.float32)
+                        weights_local = torch.zeros(K, M, dtype=torch.float32)
+                        self.comm.Scatter(None, [A_local, MPI.FLOAT], root=0)
+                        self.comm.Bcast(weights_local, root=0)
+
+                        #print(f"{self.rank} qui3")
+
+                        # Bring everything to the GPU
+                        A_local = A_local.to(self.gpu_rank)
+                        weights_local = weights_local.to(self.gpu_rank)
+
+                        self.comm.Barrier()
+
+                        #print(f"{self.rank} qui4")
+
+                        # Actual matmul
+                        C_local = A_local @ weights_local
+                        C_local_cpu = C_local.cpu()
+
+                        #print(f"{self.rank} qui3")
+
+                        self.comm.Gather([C_local_cpu, MPI.FLOAT], None, root=0)
+
             
             '''
             if self.gpu_id == 0 and epoch % self.save_every == 0:
