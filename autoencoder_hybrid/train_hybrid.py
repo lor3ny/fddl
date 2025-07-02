@@ -95,7 +95,6 @@ class Trainer:
 
     def train(self, max_epochs: int):
 
-
         local_syncs_lat = []
         local_epochs_lat = []
 

@@ -3,19 +3,63 @@ import torch.nn as nn
 import torch.nn.functional as F
 from mpi4py import MPI
 
+
+class LinearTEST(torch.autograd.Function):
+    @staticmethod
+    def forward(ctx, A, B, bias, rank, gpu_rank, size, comm):
+        
+        ctx.save_for_backward(A, B, bias)
+        B = B.t()
+        C = A @ B
+        return C + bias
+
+
+    # This function has only a single output, so it gets only one gradient
+    @staticmethod
+    def backward(ctx, grad_output):
+        # This is a pattern that is very convenient - at the top of backward
+        # unpack saved_tensors and initialize all gradients w.r.t. inputs to
+        # None. Thanks to the fact that additional trailing Nones are
+        # ignored, the return statement is simple even when the function has
+        # optional inputs.
+        input, weight, bias = ctx.saved_tensors
+        grad_input = grad_weight = grad_bias = None
+
+        # These needs_input_grad checks are optional and there only to
+        # improve efficiency. If you want to make your code simpler, you can
+        # skip them. Returning gradients for inputs that don't require it is
+        # not an error.
+
+        # print("-----BACK-----", flush=True)
+        # print(grad_output.size(), flush=True)
+        # print(weight.t().size(), flush=True)
+        # print("-----BACK-----", flush=True)
+
+
+        if ctx.needs_input_grad[0]:
+            grad_input = grad_output.mm(weight)
+        if ctx.needs_input_grad[1]:
+            grad_weight = grad_output.t().mm(input)
+        if bias is not None and ctx.needs_input_grad[2]:
+            grad_bias = grad_output.sum(0)
+
+        return grad_input, grad_weight, grad_bias, None, None, None, None
+
 class LinearMPI(torch.autograd.Function):
     @staticmethod
-    def forward(ctx,
-            async_grad_allreduce,
-            rank, gpu_rank, size, comm, A=None, B=None, bias=None):
+    def forward(ctx, A, B, bias, rank, gpu_rank, size, comm):
         
-        ctx.save_for_backward(A, B)
-        ctx.use_bias = bias is not None
-        ctx.async_grad_allreduce = async_grad_allreduce
-
+        ctx.save_for_backward(A, B, bias)
+        B = B.t()
         N = A.size(dim=0)
         K = B.size(dim=0)
         M = B.size(dim=1)
+
+        # if rank == 0:
+        #     print("-----FOR-----", flush=True)
+        #     print(A.size(), flush=True)
+        #     print(B.size(), flush=True)
+        #     print("-----FOR-----", flush=True)
         
         local_rows = N // size
 
@@ -29,50 +73,63 @@ class LinearMPI(torch.autograd.Function):
         A_local = A_local.to(gpu_rank)
         B = B.to(gpu_rank)
 
+        comm.Barrier()
+
         # Actual matmul
-        C_local = torch.matmul(A_local, B)
+        C_local = A_local @ B
 
         if rank == 0:
-            C_local_cpu = C_local.detach().cpu()
-            C = torch.empty(N, M, dtype=torch.float32)
+            
+            C_local_cpu = C_local.cpu()
+            C = torch.zeros(N, M, dtype=torch.float32)
+            comm.Barrier()
             comm.Gather([C_local_cpu, MPI.FLOAT], [C, MPI.FLOAT], root=0)
-            C.grad = A.grad
-            return C.to(gpu_rank)
+            comm.Barrier()
+
+            # print("-----FOR-MPI-----", flush=True)
+            # print(C, flush=True)
+            # print("::::::::::::::::::")
+            # print((A@B), flush=True)
+            # print("-----FOR-BASE-----", flush=True)
+
+            return C.to(gpu_rank) + bias.to(gpu_rank)
         else:
             C_local_cpu = C_local.detach().cpu()
+            comm.Barrier()
             comm.Gather([C_local_cpu, MPI.FLOAT], None, root=0)
-            return torch.zeros(N, M, device=f"cuda:{gpu_rank}") 
+            comm.Barrier()
+            return torch.zeros(N, M).to(gpu_rank)
 
+    # This function has only a single output, so it gets only one gradient
     @staticmethod
-    def backward(ctx, 
-            grad_output):
-        input, weight = ctx.saved_tensors
-        use_bias = ctx.use_bias
-        grad_input = grad_output.matmul(weight)
-        grad_output = grad_output.contiguous()
+    def backward(ctx, grad_output):
+        # This is a pattern that is very convenient - at the top of backward
+        # unpack saved_tensors and initialize all gradients w.r.t. inputs to
+        # None. Thanks to the fact that additional trailing Nones are
+        # ignored, the return statement is simple even when the function has
+        # optional inputs.
+        input, weight, bias = ctx.saved_tensors
+        grad_input = grad_weight = grad_bias = None
 
-        '''
-        if ctx.async_grad_allreduce:
-            # Asynchronous all-reduce
-            """
-            From PyTorch docs: this reduces the tensor data across all machines in
-            a way that all get the final reduced result. Default reduction op
-            is SUM (torch.distributed.ReduceOp.SUM) specified by the parameter
-            'op'.
-            """
-            handle = torch.distributed.all_reduce(
-                grad_input, group=get_tensor_model_parallel_group(), async_op=True
-            )
-        '''    
-        grad_weight = grad_output.t().matmul(input)
-        grad_bias = grad_output.sum(dim=0) if use_bias else None
+        # These needs_input_grad checks are optional and there only to
+        # improve efficiency. If you want to make your code simpler, you can
+        # skip them. Returning gradients for inputs that don't require it is
+        # not an error.
 
-        '''
-        if ctx.async_grad_allreduce:
-            handle.wait()
-        '''
-        return grad_input, grad_weight, grad_bias, None, None, None
+        # print("-----BACK-----", flush=True)
+        # print(grad_output.size(), flush=True)
+        # print(weight.t().size(), flush=True)
+        # print("-----BACK-----", flush=True)
 
+
+        if ctx.needs_input_grad[0]:
+            grad_input = grad_output.mm(weight)
+        if ctx.needs_input_grad[1]:
+            grad_weight = grad_output.t().mm(input)
+        if bias is not None and ctx.needs_input_grad[2]:
+            grad_bias = grad_output.sum(0)
+
+        return grad_input, grad_weight, grad_bias, None, None, None, None
 
 class DistributedOperations():
     def DistributedMatmul(rank, gpu_rank, size, comm, A=None, B=None):
@@ -107,15 +164,12 @@ class DistributedOperations():
             C_local_cpu = C_local.detach().cpu()
             C = torch.empty(N, M, dtype=torch.float32)
             comm.Gather([C_local_cpu, MPI.FLOAT], [C, MPI.FLOAT], root=0)
-            C.grad = A.grad
             return C.to(gpu_rank)
         else:
             C_local_cpu = C_local.detach().cpu()
             comm.Gather([C_local_cpu, MPI.FLOAT], None, root=0)
-            return torch.zeros(N, M, device=f"cuda:{gpu_rank}") 
+            return torch.zeros(N, M).to(gpu_rank)
 
-def LinearMPI_fn(async_grad_allreduce, rank, gpu_rank, size, comm, A=None, B=None, bias=None):
-    return  LinearMPI.apply(async_grad_allreduce, rank, gpu_rank, size, comm, A=A, B=B, bias=bias)
 
 class ManualLinear(nn.Module):
     def __init__(self, in_features, out_features, rank, gpu_rank, comm, size):
@@ -136,11 +190,11 @@ class ManualLinear(nn.Module):
         # weight: (out_features, in_features)
         # bias: (out_features)
         #print(f"RANK {self.rank} GPU {self.gpu_rank} Started MATMUL!", flush=True)
-        if True:
-            out = LinearMPI_fn(False, self.rank, self.gpu_rank, self.size, self.comm, x, self.weight.t(), self.bias)
+        if self.size > 1:
+            out = LinearMPI.apply(x, self.weight, self.bias, self.rank, self.gpu_rank, self.size, self.comm)
             return out
         else:
-            return torch.matmul(x, self.weight.t()) + self.bias
+            return LinearTEST.apply(x, self.weight, self.bias, self.rank, self.gpu_rank, self.size, self.comm)#torch.matmul(x, self.weight.t()) + self.bias
 
 class Autoencoder(nn.Module):
     def __init__(self, rank=None, gpu_rank=None, comm=None, size=None):
