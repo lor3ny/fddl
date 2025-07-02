@@ -24,20 +24,21 @@ model.to(device)
 
 
 with torch.no_grad():
-    img, _ = data.testloader.dataset[0]
-    img_linear = img.view(-1).unsqueeze(0).to(device)
+    for i in range(5):
+        img, _ = data.testloader.dataset[i]
+        img_linear = img.view(-1).unsqueeze(0).to(device)
 
-    output = model(img_linear)
+        out = model(img_linear)
 
-    # Visualize original and reconstructed image
-    fig, axs = plt.subplots(1, 2)
-    axs[0].imshow(img.squeeze(), cmap='gray')
-    axs[0].set_title('Original')
+        # Visualize original and reconstructed image
+        fig, axs = plt.subplots(1, 2)
+        axs[0].imshow(img.squeeze(), cmap='gray')
+        axs[0].set_title('Original')
 
-    axs[1].imshow(output[0].view(28, 28).cpu(), cmap='gray')
-    axs[1].set_title('Reconstructed')
-    for ax in axs: ax.axis('off')
-    plt.show()
+        axs[1].imshow(out[0].view(28, 28).cpu(), cmap='gray')
+        axs[1].set_title('Reconstructed')
+        for ax in axs: ax.axis('off')
+        plt.show()
 
 plt.figure(figsize=(8, 4))
 plt.subplot(1, 2, 1)
