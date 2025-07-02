@@ -195,7 +195,7 @@ class Autoencoder(nn.Module):
             nn.Sigmoid()
         )
 
-    def forward(self, x, tag):
+    def forward(self, x):
         encoded = self.encoder(x)
         #print(f"RANK {self.rank} GPU {self.gpu_rank} Finished Encoder!", flush=True)
         decoded = self.decoder(encoded)
