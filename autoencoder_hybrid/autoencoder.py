@@ -114,6 +114,9 @@ class DistributedOperations():
             comm.Gather([C_local_cpu, MPI.FLOAT], None, root=0)
             return torch.zeros(N, M, device=f"cuda:{gpu_rank}") 
 
+def LinearMPI_fn(async_grad_allreduce, rank, gpu_rank, size, comm, A=None, B=None, bias=None):
+    return  LinearMPI.apply(async_grad_allreduce, rank, gpu_rank, size, comm, A=A, B=B, bias=bias)
+
 class ManualLinear(nn.Module):
     def __init__(self, in_features, out_features, rank, gpu_rank, comm, size):
         super(ManualLinear, self).__init__()
@@ -134,7 +137,7 @@ class ManualLinear(nn.Module):
         # bias: (out_features)
         #print(f"RANK {self.rank} GPU {self.gpu_rank} Started MATMUL!", flush=True)
         if True:
-            out = LinearMPI.apply(False, self.rank, self.gpu_rank, self.size, self.comm, A=x, B=self.weight.t(), self.bias)
+            out = LinearMPI_fn(False, self.rank, self.gpu_rank, self.size, self.comm, x, self.weight.t(), self.bias)
             return out
         else:
             return torch.matmul(x, self.weight.t()) + self.bias
