@@ -31,7 +31,8 @@ class Trainer:
         rank: int,
         gpu_rank: int,
         size: int,
-        comm: MPI.Comm
+        comm: MPI.Comm,
+        comm_0: MPI.Comm
     ) -> None:
         self.train_data = train_data
         self.test_data = test_data
@@ -43,6 +44,7 @@ class Trainer:
         self.rank = rank
         self.size = size
         self.comm = comm
+        self.comm_0 = comm_0
         self.device="cuda" #  #  Expected one of cpu, cuda, ipu, xpu, mkldnn, opengl, opencl, ideep, hip, ve, fpga, maia, xla, lazy, vulkan, mps, meta, hpu,
 
 
@@ -86,7 +88,7 @@ class Trainer:
             grad = param.grad.data.cpu().numpy()
             avg_grad = np.zeros_like(grad)
             try:
-                self.comm.Allreduce(grad, avg_grad, op=MPI.SUM)
+                self.comm_0.Allreduce(grad, avg_grad, op=MPI.SUM)
                 avg_grad /= self.size  # Average the gradients
                 param.grad.data = torch.tensor(avg_grad, device=self.device)
 
@@ -108,17 +110,18 @@ class Trainer:
             for batch_idx, (batch_data, _) in enumerate(self.train_data):
                 #print(f"-> Epoch {epoch} | Batch: {batch_idx}") if self.rank == 0 else None
 
-                if self.rank == 0:
+                if self.gpu_rank == 0:
                     inputs = batch_data.view(-1, 28*28)
                     inputs = inputs.to(self.gpu_rank)
-                    outputs = self.model(inputs, batch_idx)
+
+                    outputs = self.model(inputs)
                     loss = self.criterion(inputs, outputs)
                     
                     self.optimizer.zero_grad()
                     loss.backward()
 
                     sync_start_time = MPI.Wtime()
-                    #self._synchronize_gradients() # VA FATTO SOLO SU 0
+                    self._synchronize_gradients() # VA FATTO SOLO SU 0
                     sync_end_time = MPI.Wtime()
 
                     local_syncs_lat.append(sync_end_time-sync_start_time)
@@ -167,12 +170,6 @@ class Trainer:
 
                         self.comm.Gather([C_local_cpu, MPI.FLOAT], None, root=0)
 
-            
-            '''
-            if self.gpu_id == 0 and epoch % self.save_every == 0:
-                self._save_checkpoint(epoch)
-            '''
-
             if self.rank == 0:
                 #local_epochs_lat.append(MPI.Wtime() - e_start_time)
                 avg_loss = total_loss / len(self.train_data)
@@ -186,17 +183,6 @@ class Trainer:
 
         print(f"Final execution time: {max_training_time}s") if self.rank == 0 else None
         
-        # elif self.rank != 0:
-        #     while True:
-        #         # You can use tags or predefined commands
-        #         status = MPI.Status()
-        #         self.comm.probe(source=0, tag=MPI.ANY_TAG, status=status)
-        #         if status.tag == 0:  # SHUTDOWN signal
-        #             break
-        #         elif status.tag == 1:  # e.g., MatMul request
-        #             # Receive tensors, perform ops, send back
-        #             DOS.DistributedMatmul(rank=self.rank, gpu_rank=self.gpu_rank, comm=self.comm)
-
 def load_distribute_data(
         rank: int, 
         size: int, 
@@ -256,6 +242,20 @@ def main(
     rank = comm.Get_rank()
     size = comm.Get_size()
 
+    # Os group communicator
+    included_ranks = [0, 4]
+    world_group = comm.Get_group()
+    group_0 = world_group.Incl(included_ranks)
+    comm_0 = comm.Create(group_0)
+
+    # Node group communicator 
+    my_node = rank // 4
+    start_rank = my_node * 4
+    node_ranks = list(range(start_rank, start_rank + 4))
+    world_group = comm.Get_group()
+    node_group = world_group.Incl(node_ranks)
+    node_comm = comm.Create(node_group)
+
     gpu_rank = rank % torch.cuda.device_count()
     torch.cuda.set_device(gpu_rank)
 
@@ -276,7 +276,7 @@ def main(
     train_loader, test_loader = load_distribute_data(rank=rank, size=size, batch_size=batch_size, comm=comm)
 
     # MODEL INIT
-    model = Autoencoder(rank, gpu_rank, comm, size)
+    model = Autoencoder(rank, gpu_rank, node_comm, size//2)
     criterion = nn.MSELoss()
     optimizer = optim.Adam(model.parameters(), lr=1e-3)
 
@@ -297,7 +297,8 @@ def main(
         rank=rank,
         gpu_rank=gpu_rank,
         size=size,
-        comm=comm
+        comm=node_comm,
+        comm_0=comm_0
     )
     trainer.train(epochs)
     comm.Barrier()
@@ -314,7 +315,7 @@ def main(
 if __name__ == "__main__":
 
     epochs = 10
-    batch_size = 64
+    batch_size = 1024
     save_every = 1
     
     parser = argparse.ArgumentParser(description="Example of parsing many CLI arguments.")
