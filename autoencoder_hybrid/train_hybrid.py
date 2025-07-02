@@ -313,7 +313,7 @@ def main(
 
 if __name__ == "__main__":
 
-    epochs = 30
+    epochs = 10
     batch_size = 64
     save_every = 1
     

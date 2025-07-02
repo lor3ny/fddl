@@ -1,4 +1,4 @@
-Wed Jul  2 18:32:45 2025       
+Wed Jul  2 19:00:57 2025       
 +---------------------------------------------------------------------------------------+
 | NVIDIA-SMI 530.30.02              Driver Version: 530.30.02    CUDA Version: 12.1     |
 |-----------------------------------------+----------------------+----------------------+
@@ -7,19 +7,19 @@ Wed Jul  2 18:32:45 2025
 |                                         |                      |               MIG M. |
 |=========================================+======================+======================|
 |   0  NVIDIA A100-SXM-64GB            On | 00000000:1D:00.0 Off |                    0 |
-| N/A   42C    P0               62W / 467W|      0MiB / 65536MiB |      0%      Default |
+| N/A   43C    P0               64W / 476W|      0MiB / 65536MiB |      0%      Default |
 |                                         |                      |             Disabled |
 +-----------------------------------------+----------------------+----------------------+
 |   1  NVIDIA A100-SXM-64GB            On | 00000000:56:00.0 Off |                    0 |
-| N/A   42C    P0               63W / 469W|      0MiB / 65536MiB |      0%      Default |
+| N/A   43C    P0               61W / 471W|      0MiB / 65536MiB |      0%      Default |
 |                                         |                      |             Disabled |
 +-----------------------------------------+----------------------+----------------------+
 |   2  NVIDIA A100-SXM-64GB            On | 00000000:8F:00.0 Off |                    0 |
-| N/A   43C    P0               64W / 463W|      0MiB / 65536MiB |      0%      Default |
+| N/A   43C    P0               63W / 462W|      0MiB / 65536MiB |      0%      Default |
 |                                         |                      |             Disabled |
 +-----------------------------------------+----------------------+----------------------+
 |   3  NVIDIA A100-SXM-64GB            On | 00000000:C8:00.0 Off |                    0 |
-| N/A   42C    P0               60W / 453W|      0MiB / 65536MiB |      0%      Default |
+| N/A   43C    P0               63W / 468W|      0MiB / 65536MiB |      0%      Default |
 |                                         |                      |             Disabled |
 +-----------------------------------------+----------------------+----------------------+
                                                                                          
@@ -41,15 +41,31 @@ PyTorch CUDNN version: 90501
 GPUs per node 4
 Training with GPUs :)
 + ----------------------------------------- +
-[Rank 0] GPU_RANK=0 on CUDA device 0 hostname=lrdn3396.leonardo.local
-[Rank 1] GPU_RANK=1 on CUDA device 1 hostname=lrdn3396.leonardo.local
-[Rank 2] GPU_RANK=2 on CUDA device 2 hostname=lrdn3396.leonardo.local
-[Rank 3] GPU_RANK=3 on CUDA device 3 hostname=lrdn3396.leonardo.local
+[Rank 0] GPU_RANK=0 on CUDA device 0 hostname=lrdn1166.leonardo.local
+[Rank 1] GPU_RANK=1 on CUDA device 1 hostname=lrdn1166.leonardo.local
+[Rank 2] GPU_RANK=2 on CUDA device 2 hostname=lrdn1166.leonardo.local
+[Rank 3] GPU_RANK=3 on CUDA device 3 hostname=lrdn1166.leonardo.local
 [RANK 0] Trainer is running...
 [RANK 0 GPU 0] Epoch 0 | Batches: 157
--> Epoch 0 | Avg Loss: 0.02669977990767436
+-> Epoch 0 | Avg Loss: 0.025864164890058196
 [RANK 0 GPU 0] Epoch 1 | Batches: 157
--> Epoch 1 | Avg Loss: 0.0064022299922458625
+-> Epoch 1 | Avg Loss: 0.006220242879820118
 [RANK 0 GPU 0] Epoch 2 | Batches: 157
--> Epoch 2 | Avg Loss: 0.003603057467194
+-> Epoch 2 | Avg Loss: 0.00352982573855573
 [RANK 0 GPU 0] Epoch 3 | Batches: 157
+-> Epoch 3 | Avg Loss: 0.0025908605836983175
+[RANK 0 GPU 0] Epoch 4 | Batches: 157
+-> Epoch 4 | Avg Loss: 0.002122047975577954
+[RANK 0 GPU 0] Epoch 5 | Batches: 157
+-> Epoch 5 | Avg Loss: 0.001846471645021394
+[RANK 0 GPU 0] Epoch 6 | Batches: 157
+-> Epoch 6 | Avg Loss: 0.0016515860727467915
+[RANK 0 GPU 0] Epoch 7 | Batches: 157
+-> Epoch 7 | Avg Loss: 0.0015108609835911137
+[RANK 0 GPU 0] Epoch 8 | Batches: 157
+-> Epoch 8 | Avg Loss: 0.001406541672909557
+[RANK 0 GPU 0] Epoch 9 | Batches: 157
+-> Epoch 9 | Avg Loss: 0.001325305258142335
+Final execution time: 558.1482341850001s
+[RANK 0] Training done.
+[RANK: 0] Model saved to autoencoder_ddp.pth
