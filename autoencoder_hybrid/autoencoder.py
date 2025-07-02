@@ -55,46 +55,59 @@ class LinearMPI(torch.autograd.Function):
         K = B.size(dim=0)
         M = B.size(dim=1)
 
-        # if rank == 0:
-        #     print("-----FOR-----", flush=True)
-        #     print(A.size(), flush=True)
-        #     print(B.size(), flush=True)
-        #     print("-----FOR-----", flush=True)
+        # # if rank == 0:
+        # #     print("-----FOR-----", flush=True)
+        # #     print(A.size(), flush=True)
+        # #     print(B.size(), flush=True)
+        # #     print("-----FOR-----", flush=True)
         
-        local_rows = N // size
+        # local_rows = N // size
 
-        # Scatter A over the ranks
-        A_local = torch.empty(local_rows, K, dtype=torch.float32)
-        comm.Scatter([A.detach().cpu(), MPI.FLOAT], [A_local, MPI.FLOAT], root=0)
-        # Give weights B to every process
-        comm.Bcast([B.detach().cpu(), MPI.FLOAT], root=0)
+        # # Scatter A over the ranks
+        # A_local = torch.empty(local_rows, K, dtype=torch.float32)
+        # comm.Scatter([A.contiguous().detach().cpu(), MPI.FLOAT], [A_local, MPI.FLOAT], root=0)
+        # # Give weights B to every process
+        # comm.Bcast([B.contiguous().detach().cpu(), MPI.FLOAT], root=0)
 
-        # Bring everything to the GPU
-        A_local = A_local.to(gpu_rank)
-        B = B.to(gpu_rank)
+        # # Bring everything to the GPU
+        # A_local = A_local.to(gpu_rank)
+        # B = B.to(gpu_rank)
 
-        comm.Barrier()
+        # comm.Barrier()
 
-        # Actual matmul
-        C_local = A_local @ B
+        # # Actual matmul
+        # C_local = A_local @ B
+
+        A_parts = A.chunk(4, dim=0)
+    
+        # Calcola le parti su GPU diverse
+        if rank == 0:
+            C_local = torch.matmul(A_parts[0].to(gpu_rank), B.to(gpu_rank))
+        elif rank == 1:
+            C_local = torch.matmul(A_parts[1].to(gpu_rank), B.to(gpu_rank))
+        elif rank == 2:
+            C_local = torch.matmul(A_parts[2].to(gpu_rank), B.to(gpu_rank))
+        elif rank == 3:
+            C_local = torch.matmul(A_parts[3].to(gpu_rank), B.to(gpu_rank))
+    
 
         if rank == 0:
             
             C_local_cpu = C_local.cpu()
-            C = torch.zeros(N, M, dtype=torch.float32)
+            C_total = torch.zeros(N, M, dtype=torch.float32)
             comm.Barrier()
-            comm.Gather([C_local_cpu, MPI.FLOAT], [C, MPI.FLOAT], root=0)
+            comm.Gather([C_local_cpu, MPI.FLOAT], [C_total, MPI.FLOAT], root=0)
             comm.Barrier()
 
-            # print("-----FOR-MPI-----", flush=True)
-            # print(C, flush=True)
-            # print("::::::::::::::::::")
-            # print((A@B), flush=True)
-            # print("-----FOR-BASE-----", flush=True)
+            print("-----FOR-MPI-----", flush=True)
+            print(C_total, flush=True)
+            print("::::::::::::::::::")
+            print((A@B), flush=True)
+            print("-----FOR-BASE-----", flush=True)
 
-            return C.to(gpu_rank) + bias.to(gpu_rank)
+            return C_total.to(gpu_rank) + bias.to(gpu_rank)
         else:
-            C_local_cpu = C_local.detach().cpu()
+            C_local_cpu = C_local.cpu()
             comm.Barrier()
             comm.Gather([C_local_cpu, MPI.FLOAT], None, root=0)
             comm.Barrier()
@@ -110,6 +123,7 @@ class LinearMPI(torch.autograd.Function):
         # optional inputs.
         input, weight, bias = ctx.saved_tensors
         grad_input = grad_weight = grad_bias = None
+        grad_output = grad_output.contiguous()
 
         # These needs_input_grad checks are optional and there only to
         # improve efficiency. If you want to make your code simpler, you can
@@ -213,7 +227,7 @@ class Autoencoder(nn.Module):
             nn.Sigmoid()
         )
 
-    def forward(self, x):
+    def forward(self, x, tag):
         encoded = self.encoder(x)
         #print(f"RANK {self.rank} GPU {self.gpu_rank} Finished Encoder!", flush=True)
         decoded = self.decoder(encoded)

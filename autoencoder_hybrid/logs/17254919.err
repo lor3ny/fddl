@@ -1,3 +1,0 @@
-slurmstepd: error: *** STEP 17254919.0 ON lrdn3256 CANCELLED AT 2025-07-02T16:16:03 ***
-slurmstepd: error: *** JOB 17254919 ON lrdn3256 CANCELLED AT 2025-07-02T16:16:03 ***
-srun: Job step aborted: Waiting up to 92 seconds for job step to finish.

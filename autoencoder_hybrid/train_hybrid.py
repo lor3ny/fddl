@@ -111,7 +111,7 @@ class Trainer:
                 if self.rank == 0:
                     inputs = batch_data.view(-1, 28*28)
                     inputs = inputs.to(self.gpu_rank)
-                    outputs = self.model(inputs)
+                    outputs = self.model(inputs, batch_idx)
                     loss = self.criterion(inputs, outputs)
                     
                     self.optimizer.zero_grad()
@@ -128,7 +128,7 @@ class Trainer:
                 else:
                     inputs = batch_data.view(-1, 28*28)
                     inputs = inputs.to(self.gpu_rank)
-                    self.model(inputs)
+                    self.model(inputs, batch_idx)
             
             '''
             if self.gpu_id == 0 and epoch % self.save_every == 0:
