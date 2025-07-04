@@ -7,10 +7,18 @@ import torch.optim as optim
 import numpy as np
 import os
 import argparse
+import csv
 
 # My API
 from autoencoder import Autoencoder
 
+
+def SaveLatenciesCSV(name, latencies):
+    with open(f'{name}.csv', mode='w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow([name])  # Header
+        for number in latencies:
+            writer.writerow([number])
 
 class Trainer:
     def __init__(
@@ -47,30 +55,6 @@ class Trainer:
         torch.save(ckp, PATH)
         print(f"Epoch {epoch} | Training checkpoint saved at {PATH}")
 
-
-    # Actually we are using this trainer with an Autoencoder, so I don't really know if this evaluator is good
-    '''
-    def _evaluate (self) -> None:
-        
-        self.model.eval()
-        correct = 0
-        total = 0
-
-        with torch.no_grad():
-            for data, target in self.test_data:
-                data, target = data.to(self.device), target.to(self.device)
-
-                output = self.model(data)
-                pred = output.argmax(
-                    dim=1, keepdim=True
-                )  # Get the index of the max log-probability
-                correct += pred.eq(target.view_as(pred)).sum().item()
-                total += target.size(0)
-
-        accuracy = 100 * correct / total
-        
-        return accuracy
-    '''
         
     def _synchronize_gradients(self) -> None:
 
@@ -90,7 +74,7 @@ class Trainer:
 
     def train(self, max_epochs: int):
 
-        local_allreduce_lat = []
+        batch_lat = []
 
         start_time = MPI.Wtime()
 
@@ -100,6 +84,8 @@ class Trainer:
 
             if self.gpu_rank == 0:
                 for batch_idx, (batch_data, _) in enumerate(self.train_data):
+
+                    start_time = MPI.Wtime()
 
                     # GPU 0 as coordinator and slave
                     inputs = batch_data.view(-1, 28*28)
@@ -111,14 +97,13 @@ class Trainer:
                     self.optimizer.zero_grad()
                     loss.backward()
 
-                    sync_start_time = MPI.Wtime()
                     self._synchronize_gradients() # Is done only on GPU 0s
-                    sync_end_time = MPI.Wtime()
 
-                    local_allreduce_lat.append(sync_end_time-sync_start_time)
                     total_loss += loss.item()
 
                     self.optimizer.step()
+
+                    batch_lat.append(MPI.Wtime() - start_time)
 
             else:
                 for batch_idx in range(self.batch_count):
@@ -158,6 +143,8 @@ class Trainer:
         max_training_time = self.comm.allreduce(local_training_time, op=MPI.MAX)
 
         print(f"Final execution time: {max_training_time}s") if self.rank == 0 else None
+
+        SaveLatenciesCSV("Batch Tensor Parallel", batch_lat)
         
 def load_distribute_data(
         rank: int, 
@@ -211,8 +198,7 @@ def load_distribute_data(
 
 def main(
     epochs: int,
-    batch_size: int,
-    save_every: int,
+    batch_size: int
 ):
     # Initialize MPI
     comm = MPI.COMM_WORLD
@@ -296,7 +282,6 @@ if __name__ == "__main__":
 
     epochs = 20
     batch_size = 1024
-    save_every = 1
     
     parser = argparse.ArgumentParser(description="Example of parsing many CLI arguments.")
     parser.add_argument("--ntasks", type=int, help="Number of tasks", default=1)
@@ -306,5 +291,4 @@ if __name__ == "__main__":
     main(
         epochs=epochs,
         batch_size=batch_size,
-        save_every=save_every
     )

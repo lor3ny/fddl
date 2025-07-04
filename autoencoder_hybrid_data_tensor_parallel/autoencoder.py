@@ -4,9 +4,9 @@ import torch.nn.functional as F
 from mpi4py import MPI
 
 
-class LinearTEST(torch.autograd.Function):
+class LinearOverrideTEST(torch.autograd.Function):
     @staticmethod
-    def forward(ctx, A, B, bias, rank, gpu_rank, size, comm):
+    def forward(ctx, A, B, bias):
 
         ctx.save_for_backward(A, B, bias)
         B = B.t()
@@ -81,45 +81,6 @@ class LinearMPI(torch.autograd.Function):
 
         return grad_input, grad_weight, grad_bias, None, None, None, None
 
-class DistributedOperations():
-    def DistributedMatmul(rank, gpu_rank, size, comm, A=None, B=None):
-
-        N = A.size(dim=0)
-        K = B.size(dim=0)
-        M = B.size(dim=1)
-        
-        local_rows = N // size
-
-        # I think that I'm losing the gradient here, verify printing the gradient.
-        # Have to exists a way to maintain the gradient here.
-
-        # Copy() doesn't exist, how can I do?
-        A_cp = A.copy()
-        B_cp = B.copy()
-
-        # Scatter A over the ranks
-        A_local = torch.empty(local_rows, K, dtype=torch.float32)
-        comm.Scatter([A_cp.detach().cpu(), MPI.FLOAT], [A_local, MPI.FLOAT], root=0)
-        # Give weights B to every process
-        comm.Bcast([B_cp.detach().cpu(), MPI.FLOAT], root=0)
-
-        # Bring everything to the GPU
-        A_local = A_local.to(gpu_rank)
-        B = B.to(gpu_rank)
-
-        # Actual matmul
-        C_local = torch.matmul(A_local, B)
-
-        if rank == 0:
-            C_local_cpu = C_local.detach().cpu()
-            C = torch.empty(N, M, dtype=torch.float32)
-            comm.Gather([C_local_cpu, MPI.FLOAT], [C, MPI.FLOAT], root=0)
-            return C.to(gpu_rank)
-        else:
-            C_local_cpu = C_local.detach().cpu()
-            comm.Gather([C_local_cpu, MPI.FLOAT], None, root=0)
-            return torch.zeros(N, M).to(gpu_rank)
-
 
 class ManualLinear(nn.Module):
     def __init__(self, in_features, out_features, rank, gpu_rank, comm, size):
@@ -130,21 +91,16 @@ class ManualLinear(nn.Module):
         self.gpu_rank = gpu_rank
         self.comm = comm
         self.size = size
-
-        # Inizializzazione dei pesi e bias (con parametri ottimizzabili)
         self.weight = nn.Parameter(torch.randn(out_features, in_features) * 0.01)
         self.bias = nn.Parameter(torch.zeros(out_features))
 
     def forward(self, x):
-        # x: (batch_size, in_features)
-        # weight: (out_features, in_features)
-        # bias: (out_features)
-        #print(f"RANK {self.rank} GPU {self.gpu_rank} Started MATMUL!", flush=True)
         if self.size > 1:
             out = LinearMPI.apply(x, self.weight, self.bias, self.rank, self.gpu_rank, self.size, self.comm)
             return out
         else:
-            return LinearTEST.apply(x, self.weight, self.bias, self.rank, self.gpu_rank, self.size, self.comm)#torch.matmul(x, self.weight.t()) + self.bias
+            return LinearOverrideTEST.apply(x, self.weight, self.bias)
+        
 
 class Autoencoder(nn.Module):
     def __init__(self, rank=None, gpu_rank=None, comm=None, size=None):

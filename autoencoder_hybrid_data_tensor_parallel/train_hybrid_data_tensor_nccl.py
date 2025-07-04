@@ -1,17 +1,16 @@
-import torch
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, Subset
 from torchvision import datasets, transforms
-from mpi4py import MPI
+import torch.distributed as dist
+import torch
 import torch.nn as nn
 import torch.optim as optim
-import torch.distributed as dist
 import numpy as np
 import os
+import time
 import argparse
 
 # My API
-from autoencoder import Autoencoder
-
+from autoencoder_nccl import Autoencoder
 
 
 class Trainer:
@@ -22,24 +21,24 @@ class Trainer:
         test_data: DataLoader,
         optimizer: torch.optim.Optimizer,
         criterion: torch.nn.Module,
-        save_every: int,
+        batch_count: int,
         rank: int,
         gpu_rank: int,
         size: int,
-        group_node: dist.ProcessGroup,
-        group_0: dist.ProcessGroup
+        node_group: dist.ProcessGroup,
+        node_0: dist.ProcessGroup
     ) -> None:
         self.train_data = train_data
         self.test_data = test_data
         self.optimizer = optimizer
         self.criterion = criterion
-        self.save_every = save_every
+        self.batch_count = batch_count
         self.model = model
         self.gpu_rank = gpu_rank
         self.rank = rank
         self.size = size
-        self.group_node = group_node
-        self.group_0 = group_0
+        self.node_group = node_group
+        self.node_0 = node_0
         self.device="cuda" #  #  Expected one of cpu, cuda, ipu, xpu, mkldnn, opengl, opencl, ideep, hip, ve, fpga, maia, xla, lazy, vulkan, mps, meta, hpu,
 
 
@@ -66,22 +65,20 @@ class Trainer:
             except Exception as e:
                 raise RuntimeError(f"Error synchronizing gradients: {e}.", flush=True)
 
-
     def train(self, max_epochs: int):
 
-        local_syncs_lat = []
-        local_epochs_lat = []
+        local_allreduce_lat = []
 
-        start_time = MPI.Wtime()
+        start_time = time.perf_counter()
 
         for epoch in range(max_epochs):
             print(f"[RANK {self.rank} GPU {self.gpu_rank}] Epoch {epoch} | Batches: {len(self.test_data)}") if self.rank == 0 else None
-            e_start_time = MPI.Wtime()
             total_loss = 0.0
 
-            for batch_idx, (batch_data, _) in enumerate(self.train_data):
+            if self.gpu_rank == 0:
+                for batch_idx, (batch_data, _) in enumerate(self.train_data):
 
-                if self.gpu_rank == 0:
+                    # GPU 0 as coordinator and slave
                     inputs = batch_data.view(-1, 28*28)
                     inputs = inputs.to(self.gpu_rank)
 
@@ -91,64 +88,53 @@ class Trainer:
                     self.optimizer.zero_grad()
                     loss.backward()
 
-                    sync_start_time = MPI.Wtime()
-                    self._synchronize_gradients() # VA FATTO SOLO SU 0
-                    sync_end_time = MPI.Wtime()
+                    sync_start_time = time.perf_counter()
+                    self._synchronize_gradients() # Is done only on GPU 0s
+                    sync_end_time = time.perf_counter()
 
-                    local_syncs_lat.append(sync_end_time-sync_start_time)
+                    local_allreduce_lat.append(sync_end_time-sync_start_time)
                     total_loss += loss.item()
 
                     self.optimizer.step()
-                else:
 
-                    for layers in range(2):
+            else:
+                for batch_idx in range(self.batch_count):
+                    for layer_idx in range(2):
 
+                        # GPUs 1, 2 , 3 are slaves
                         local_N = None
                         K = None
                         M = None
 
-                        print(f"{self.rank} qui 0")
-
-                        dist.broadcast(local_N, src=0, group=self.group_node)
-                        dist.broadcast(K, src=0, group=self.group_node)
-                        dist.broadcast(M, src=0, group=self.group_node)
-
-                        print(f"{self.rank} qui 1")
+                        dist.broadcast(local_N, src=0, group=self.node_group)
+                        dist.broadcast(K, src=0, group=self.node_group)
+                        dist.broadcast(M, src=0, group=self.node_group)
 
                         # Scatter A over the ranks
-                        A_local = torch.empty(local_N, K, dtype=torch.float32, device=self.gpu_rank)
-                        weights_local = torch.empty(K, M, dtype=torch.float32, device=self.gpu_rank)
-                        dist.scatter(tensor=A_local, scatter_list=None, src=0, group=self.group_node)
-                        dist.broadcastcast(weights_local, src=0, group=self.group_node)
+                        A_local = torch.zeros(int(local_N), int(K), dtype=torch.float32)
+                        weights_local = torch.zeros(int(K), int(M), dtype=torch.float32)
+                        dist.scatter(tensor=A_local, scatter_list=None, src=0, group=self.node_group)
+                        dist.broadcast(weights_local, src=0, group=self.node_group)
 
-                        # # Bring everything to the GPU
-                        # A_local = A_local.to(self.gpu_rank)
-                        # weights_local = weights_local.to(self.gpu_rank)
-
-                        print(f"{self.rank} qui 2")
+                        # Bring everything to the GPU
+                        A_local = A_local.to(self.gpu_rank)
+                        weights_local = weights_local.to(self.gpu_rank)
 
                         dist.barrier()
 
-                        print(f"{self.rank} qui 3")
-
                         # Actual matmul
                         C_local = A_local @ weights_local
-
-                        #print(f"{self.rank} qui3")
-                        dist.gather(C_local, gather_list=None, dst=0, group=self.group_node)
+                        C_local_cpu = C_local.cpu()
+                        dist.gather(C_local, gather_list=None, dst=0, group=self.node_group)
 
             if self.rank == 0:
-                #local_epochs_lat.append(MPI.Wtime() - e_start_time)
                 avg_loss = total_loss / len(self.train_data)
-                #all_avg_loss = (self.comm.allreduce(avg_loss, op=MPI.SUM) / self.size)
                 print(f"-> Epoch {epoch} | Avg Loss: {avg_loss}") if self.rank == 0 else None
-
-            #test_accuracy = self._evaluate()
             
-        training_time = MPI.Wtime() - start_time
-        dist.all_reduce(training_time, op=MPI.MAX)
+        local_training_time = time.perf_counter() - start_time
+        max_training_time = dist.allreduce(local_training_time, op=dist.ReduceOp.SUM, group=self.node_group)
 
-        print(f"Final execution time: {training_time}s") if self.rank == 0 else None
+        print(f"Final execution time: {max_training_time}s") if self.rank == 0 else None
         
 def load_distribute_data(
         rank: int, 
@@ -170,28 +156,29 @@ def load_distribute_data(
     train_dataset = datasets.MNIST(root='./data', train=True, download=False, transform=transform)
     test_dataset = datasets.MNIST(root='./data', train=False, download=False, transform=transform)
 
-    # # Split dataset into subsets for each rank
-    # total_samples = len(train_dataset)
-    # if rank == 0:
-    #     print(f"[RANK {rank}] This dataset has {total_samples} samples", flush=True)
+    # Split dataset into subsets for each rank
+    total_samples = len(train_dataset)
+    if rank == 0:
+        print(f"[RANK {rank}] This dataset has {total_samples} samples", flush=True)
 
-    # sample_per_rank = total_samples // size
-    # remainder = total_samples % size
-    # indices = list(range(total_samples))
+    sample_per_rank = total_samples // size
+    remainder = total_samples % size
+    indices = list(range(total_samples))
 
-    # # Distribute samples among ranks
-    # start_index = rank * sample_per_rank + min(rank, remainder)
-    # extra = 1 if rank < remainder else 0
-    # local_samples = sample_per_rank + extra
-    # end_index = start_index + local_samples
-    # local_indices = indices[start_index:end_index]
-    # print(f"[RANK {rank}] I have {local_samples} samples. From {start_index} to {end_index}", flush=True)
+    rank_index = rank//4
+    # Distribute samples among ranks
+    start_index = rank_index * sample_per_rank + min(rank_index, remainder)
+    extra = 1 if rank_index < remainder else 0
+    local_samples = sample_per_rank + extra
+    end_index = start_index + local_samples
+    local_indices = indices[int(start_index):int(end_index)]
+    print(f"[RANK {rank}] I have {local_samples} samples. From {start_index} to {end_index}", flush=True)
 
-    # # Create DataLoader for local dataset
-    # # Bisogna passare local_indices
-    # local_dataset = Subset(train_dataset, local_indices)
+    # Create DataLoader for local dataset
+    local_dataset = Subset(train_dataset, local_indices)
+
     train_loader = DataLoader(
-        train_dataset, batch_size=batch_size, shuffle=True
+        local_dataset, batch_size=batch_size, shuffle=True
     )
     test_loader = DataLoader(
         test_dataset, batch_size=batch_size, shuffle=False
@@ -201,25 +188,19 @@ def load_distribute_data(
 
 def main(
     epochs: int,
-    batch_size: int,
-    save_every: int,
+    batch_size: int
 ):
-    # Initialize MPI
-    print("here 0")
+    # Initialize DIST for NCCL
     local_rank = int(os.environ["LOCAL_RANK"])
     size = int(os.environ["WORLD_SIZE"])
     backend = 'nccl'
     torch.cuda.set_device(local_rank)
-    dist.init_process_group(backend=backend, init_method="env://")
+    dist.init_process_group(backend=backend, init_method="env://", world_size=size, rank=local_rank)
     rank = dist.get_rank()
 
-    print("here 1")
-
-   # Group with specific global ranks
+    # Group with specific global ranks
     included_ranks = [i for i in range(0, size, 4)]
     group_0 = dist.new_group(ranks=included_ranks)
-
-    print("here 2")
 
     # Node-local group: group every 4 ranks
     my_node = rank // 4
@@ -229,8 +210,6 @@ def main(
 
     gpu_rank = rank % torch.cuda.device_count()
     torch.cuda.set_device(gpu_rank)
-
-    print("here 3")
 
     if rank == 0:
         print("+ ---------- TORCH LIBRARY CHECK ---------- +")
@@ -246,10 +225,18 @@ def main(
 
     # DATA MUST BE DIVIDED MANUALLY
     dist.barrier()
-    train_loader, test_loader = load_distribute_data(rank=rank, size=size, batch_size=batch_size, group=group_0)
+    if gpu_rank == 0:
+        train_loader, test_loader = load_distribute_data(rank=rank, size=size//4, batch_size=batch_size, group=group_0)
+        batch_count = len(train_loader)
+        dist.broadcast(batch_count, src=0, group=node_group)
+    else:
+        train_loader, test_loader = None, None
+        batch_count=None
+        dist.broadcast(batch_count, src=0, group=node_group)
 
+        
     # MODEL INIT
-    model = Autoencoder(rank, gpu_rank, node_group, size//2)
+    model = Autoencoder(rank, gpu_rank, node_group, size//(size/4))
     criterion = nn.MSELoss()
     optimizer = optim.Adam(model.parameters(), lr=1e-3)
 
@@ -264,17 +251,15 @@ def main(
         test_data=test_loader,
         optimizer=optimizer,
         criterion=criterion,
-        save_every=save_every,
+        batch_count=batch_count,
         rank=rank,
         gpu_rank=gpu_rank,
         size=size,
-        group_node=node_group,
+        node_group=node_group,
         group_0=group_0
     )
     trainer.train(epochs)
     dist.barrier()
-
-    # # Il training deve gestire l'aggregazione del gradiente con la allreduce, rivederlo
 
     print(f"[RANK {rank}] Training done.", flush=True) if rank == 0 else None
 
@@ -287,9 +272,8 @@ def main(
 
 if __name__ == "__main__":
 
-    epochs = 10
+    epochs = 20
     batch_size = 1024
-    save_every = 1
     
     parser = argparse.ArgumentParser(description="Example of parsing many CLI arguments.")
     parser.add_argument("--ntasks", type=int, help="Number of tasks", default=1)
@@ -299,5 +283,4 @@ if __name__ == "__main__":
     main(
         epochs=epochs,
         batch_size=batch_size,
-        save_every=save_every
     )
