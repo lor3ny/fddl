@@ -129,17 +129,15 @@ class Trainer:
                         K = None
                         M = None
 
-                        my_master_rank = (self.rank // 4) * 4
-
-                        local_N = self.comm.bcast(local_N, root = my_master_rank)
-                        K = self.comm.bcast(K, root = my_master_rank)
-                        M = self.comm.bcast(M, root = my_master_rank)
+                        local_N = self.comm.bcast(local_N, root = 0)
+                        K = self.comm.bcast(K, root = 0)
+                        M = self.comm.bcast(M, root = 0)
 
                         # Scatter A over the ranks
                         A_local = torch.zeros(int(local_N), int(K), dtype=torch.float32)
                         weights_local = torch.zeros(int(K), int(M), dtype=torch.float32)
-                        self.comm.Scatter(None, [A_local, MPI.FLOAT], root=my_master_rank)
-                        self.comm.Bcast(weights_local, root=my_master_rank)
+                        self.comm.Scatter(None, [A_local, MPI.FLOAT], root=0)
+                        self.comm.Bcast(weights_local, root=0)
 
                         # Bring everything to the GPU
                         A_local = A_local.to(self.gpu_rank)
@@ -150,7 +148,7 @@ class Trainer:
                         # Actual matmul
                         C_local = A_local @ weights_local
                         C_local_cpu = C_local.cpu()
-                        self.comm.Gather([C_local_cpu, MPI.FLOAT], None, root=my_master_rank)
+                        self.comm.Gather([C_local_cpu, MPI.FLOAT], None, root=0)
 
             if self.rank == 0:
                 avg_loss = total_loss / len(self.train_data)
@@ -190,9 +188,10 @@ def load_distribute_data(
     remainder = total_samples % size
     indices = list(range(total_samples))
 
+    rank_index = rank//4
     # Distribute samples among ranks
-    start_index = rank * sample_per_rank + min(rank, remainder)
-    extra = 1 if rank < remainder else 0
+    start_index = rank_index * sample_per_rank + min(rank_index, remainder)
+    extra = 1 if rank_index < remainder else 0
     local_samples = sample_per_rank + extra
     end_index = start_index + local_samples
     local_indices = indices[int(start_index):int(end_index)]
@@ -225,7 +224,6 @@ def main(
     world_group = comm.Get_group()
     group_0 = world_group.Incl(included_ranks)
     comm_0 = comm.Create(group_0)
-    my_master_rank = (rank // 4) * 4
 
     # Node group communicator 
     my_node = rank // 4
@@ -255,12 +253,10 @@ def main(
     if gpu_rank == 0:
         train_loader, test_loader = load_distribute_data(rank=rank, size=size//4, batch_size=batch_size, comm=comm_0)
         batch_count = len(train_loader)
-        print(batch_count)
-        node_comm.bcast(batch_count, root=rank)
+        node_comm.bcast(batch_count, root=0)
     else:
         train_loader, test_loader = None, None
         batch_count = node_comm.bcast(None, root=0)
-        print(batch_count)
 
         
     # MODEL INIT
@@ -298,9 +294,7 @@ def main(
 
 if __name__ == "__main__":
 
-    print("Python script launched!")
-
-    epochs = 10
+    epochs = 20
     batch_size = 1024
     save_every = 1
     

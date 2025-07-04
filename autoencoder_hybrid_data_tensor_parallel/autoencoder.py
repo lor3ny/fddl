@@ -40,13 +40,13 @@ class LinearMPI(torch.autograd.Function):
 
         local_rows = int(N // size)
 
-        comm.bcast(local_rows, root = rank)
-        comm.bcast(K, root = rank)
-        comm.bcast(M, root = rank)
+        comm.bcast(local_rows, root = 0)
+        comm.bcast(K, root = 0)
+        comm.bcast(M, root = 0)
 
         A_local = torch.empty(int(local_rows), int(K), dtype=torch.float32)
-        comm.Scatter([A.contiguous().detach().cpu(), MPI.FLOAT], [A_local, MPI.FLOAT], root=rank)
-        comm.Bcast([B.contiguous().detach().cpu(), MPI.FLOAT], root=rank)
+        comm.Scatter([A.contiguous().detach().cpu(), MPI.FLOAT], [A_local, MPI.FLOAT], root=0)
+        comm.Bcast([B.contiguous().detach().cpu(), MPI.FLOAT], root=0)
 
         A_local = A_local.to(gpu_rank)
         B = B.to(gpu_rank)
@@ -58,7 +58,7 @@ class LinearMPI(torch.autograd.Function):
 
         C_total = torch.empty(N, M, dtype=torch.float32)
 
-        comm.Gather([C_local.cpu(), MPI.FLOAT], [C_total, MPI.FLOAT], root=rank)
+        comm.Gather([C_local.cpu(), MPI.FLOAT], [C_total, MPI.FLOAT], root=0)
 
         # print(f"RESULT: {C_total.to(gpu_rank)}", flush=True)
         # print(f"TEST: {(A @ B)}", flush=True)
