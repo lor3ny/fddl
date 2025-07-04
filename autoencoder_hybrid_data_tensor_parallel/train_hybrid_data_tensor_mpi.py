@@ -74,7 +74,7 @@ class Trainer:
 
     def train(self, max_epochs: int):
 
-        batch_lat = []
+        local_batch_lat = []
 
         start_time = MPI.Wtime()
 
@@ -103,7 +103,7 @@ class Trainer:
 
                     self.optimizer.step()
 
-                    batch_lat.append(MPI.Wtime() - start_time)
+                    local_batch_lat.append(MPI.Wtime() - start_time)
 
             else:
                 for batch_idx in range(self.batch_count):
@@ -144,7 +144,11 @@ class Trainer:
 
         print(f"Final execution time: {max_training_time}s") if self.rank == 0 else None
 
-        SaveLatenciesCSV("Batch Tensor Parallel", batch_lat)
+        if self.gpu_rank == 0:
+            global_batch_lat = self.comm_0.allreduce(local_batch_lat, op=MPI.MAX)
+
+        if self.rank == 0:
+            SaveLatenciesCSV("Batch Tensor Parallel", global_batch_lat)
         
 def load_distribute_data(
         rank: int, 

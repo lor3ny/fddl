@@ -110,9 +110,9 @@ class Trainer:
         max_training_time = self.comm.allreduce(local_training_time, op=MPI.MAX)
 
         print(f"Final execution time: {max_training_time}s") if self.rank == 0 else None
+        global_batch_time = self.comm.allreduce(local_batch_time, op=MPI.MAX)
 
         if self.rank == 0:
-            global_batch_time = self.comm.allreduce(local_batch_time, op=MPI.MAX)
             SaveLatenciesCSV("Data Parallel", global_batch_time)
 
 
