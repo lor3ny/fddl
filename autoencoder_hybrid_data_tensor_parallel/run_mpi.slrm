@@ -9,7 +9,7 @@
 #SBATCH --cpus-per-task=4
 #SBATCH --time=00:30:00
 #SBATCH --partition=boost_usr_prod
-#--qos=boost_qos_dbg
+#SBATCH --qos=boost_qos_dbg
 #SBATCH --account=IscrB_SWING
 
 # module purge
@@ -24,13 +24,7 @@
 # source ~/.bashrc
 # conda activate fddl
 
-# NODES=( $( scontrol show hostnames $SLURM_JOB_NODELIST ) )
-# NODES_ARRAY=($NODES)
-# HEAD_NODE=${NODES_ARRAY[0]}
-# HEAD_NODE_IP=$(srun --nodes=1 --ntasks=1 -w "$HEAD_NODE" hostname --ip-address)
-# MASTER_PORT=29600
 
-# export WORLD_SIZE=$SLURM_NTASKS
 
 nvidia-smi
 echo "+ -------------- SLURM CHECK -------------- +"
@@ -38,4 +32,4 @@ echo "CUDA_VISIBLE_DEVICES=$CUDA_VISIBLE_DEVICES"
 echo "NODES=$SLURM_NNODES"
 echo "+ ----------------------------------------- +"
 
-srun python train_hybrid_data_tensor.py --ntasks $SLURM_NTASKS
+srun python train_hybrid_data_tensor_mpi.py --ntasks $SLURM_NTASKS

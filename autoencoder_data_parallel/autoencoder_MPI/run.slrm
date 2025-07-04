@@ -38,4 +38,4 @@ echo "CUDA_VISIBLE_DEVICES=$CUDA_VISIBLE_DEVICES"
 echo "NODES=$SLURM_NNODES"
 echo "+ ----------------------------------------- +"
 
-srun python train_ddp_pipe_mpi.py --ntasks $SLURM_NTASKS
+srun python train_data_mpi.py --ntasks $SLURM_NTASKS

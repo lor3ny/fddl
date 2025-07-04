@@ -1,0 +1,29 @@
+Traceback (most recent call last):
+  File "/leonardo/home/userexternal/lpiarull/fddl/autoencoder_hybrid_data_tensor_parallel/train_hybrid_data_tensor_mpi.py", line 312, in <module>
+    main(
+    ~~~~^
+        epochs=epochs,
+        ^^^^^^^^^^^^^^
+        batch_size=batch_size,
+        ^^^^^^^^^^^^^^^^^^^^^^
+        save_every=save_every
+        ^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/leonardo/home/userexternal/lpiarull/fddl/autoencoder_hybrid_data_tensor_parallel/train_hybrid_data_tensor_mpi.py", line 256, in main
+    train_loader, test_loader = load_distribute_data(rank=rank, size=size//4, batch_size=batch_size, comm=comm_0)
+                                ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/fddl/autoencoder_hybrid_data_tensor_parallel/train_hybrid_data_tensor_mpi.py", line 204, in load_distribute_data
+    train_loader = DataLoader(
+        local_dataset, batch_size=batch_size, shuffle=True
+    )
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/utils/data/dataloader.py", line 385, in __init__
+    sampler = RandomSampler(dataset, generator=generator)  # type: ignore[arg-type]
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/utils/data/sampler.py", line 156, in __init__
+    raise ValueError(
+        f"num_samples should be a positive integer value, but got num_samples={self.num_samples}"
+    )
+ValueError: num_samples should be a positive integer value, but got num_samples=0
+srun: Job step aborted: Waiting up to 92 seconds for job step to finish.
+slurmstepd: error: *** JOB 17347436 ON lrdn2991 CANCELLED AT 2025-07-04T15:59:49 ***
+slurmstepd: error: *** STEP 17347436.0 ON lrdn2991 CANCELLED AT 2025-07-04T15:59:49 ***

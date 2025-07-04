@@ -1,22 +1,17 @@
 import torch
+from torch.utils.data import DataLoader
+from torchvision import datasets, transforms
+from mpi4py import MPI
 import torch.nn as nn
 import torch.optim as optim
-from torch.utils.data import Dataset, DataLoader, Subset
-from torch.utils.data.distributed import DistributedSampler
-from torchvision import datasets, transforms
-
-import torch.multiprocessing as mp
 import torch.distributed as dist
-from torch.utils.data.distributed import DistributedSampler
-from torch.nn.parallel import DistributedDataParallel as DDP
-from mpi4py import MPI
 import numpy as np
 import os
 import argparse
 
+# My API
 from autoencoder import Autoencoder
-from autoencoder import DistributedOperations as DOS
-#from mnist_loader import MNISTLoader
+
 
 
 class Trainer:
@@ -31,8 +26,8 @@ class Trainer:
         rank: int,
         gpu_rank: int,
         size: int,
-        comm: MPI.Comm,
-        comm_0: MPI.Comm
+        group_node: dist.ProcessGroup,
+        group_0: dist.ProcessGroup
     ) -> None:
         self.train_data = train_data
         self.test_data = test_data
@@ -43,8 +38,8 @@ class Trainer:
         self.gpu_rank = gpu_rank
         self.rank = rank
         self.size = size
-        self.comm = comm
-        self.comm_0 = comm_0
+        self.group_node = group_node
+        self.group_0 = group_0
         self.device="cuda" #  #  Expected one of cpu, cuda, ipu, xpu, mkldnn, opengl, opencl, ideep, hip, ve, fpga, maia, xla, lazy, vulkan, mps, meta, hpu,
 
 
@@ -54,30 +49,6 @@ class Trainer:
         torch.save(ckp, PATH)
         print(f"Epoch {epoch} | Training checkpoint saved at {PATH}")
 
-
-    # Actually we are using this trainer with an Autoencoder, so I don't really know if this evaluator is good
-    '''
-    def _evaluate (self) -> None:
-        
-        self.model.eval()
-        correct = 0
-        total = 0
-
-        with torch.no_grad():
-            for data, target in self.test_data:
-                data, target = data.to(self.device), target.to(self.device)
-
-                output = self.model(data)
-                pred = output.argmax(
-                    dim=1, keepdim=True
-                )  # Get the index of the max log-probability
-                correct += pred.eq(target.view_as(pred)).sum().item()
-                total += target.size(0)
-
-        accuracy = 100 * correct / total
-        
-        return accuracy
-    '''
         
     def _synchronize_gradients(self) -> None:
 
@@ -88,12 +59,13 @@ class Trainer:
             grad = param.grad.data.cpu().numpy()
             avg_grad = np.zeros_like(grad)
             try:
-                self.comm_0.Allreduce(grad, avg_grad, op=MPI.SUM)
-                avg_grad /= self.size  # Average the gradients
+                dist.all_reduce(grad, op=dist.ReduceOp.SUM, group=self.group_0)
+                avg_grad = grad / self.size  # Average the gradients
                 param.grad.data = torch.tensor(avg_grad, device=self.device)
 
             except Exception as e:
                 raise RuntimeError(f"Error synchronizing gradients: {e}.", flush=True)
+
 
     def train(self, max_epochs: int):
 
@@ -108,7 +80,6 @@ class Trainer:
             total_loss = 0.0
 
             for batch_idx, (batch_data, _) in enumerate(self.train_data):
-                #print(f"-> Epoch {epoch} | Batch: {batch_idx}") if self.rank == 0 else None
 
                 if self.gpu_rank == 0:
                     inputs = batch_data.view(-1, 28*28)
@@ -129,46 +100,42 @@ class Trainer:
 
                     self.optimizer.step()
                 else:
-                    # inputs = batch_data.view(-1, 28*28)
-                    # inputs = inputs.to(self.gpu_rank)
-                    # self.model(inputs, batch_idx)
 
                     for layers in range(2):
 
-                        #print(f"{self.rank} qui")
                         local_N = None
                         K = None
                         M = None
 
-                        local_N = self.comm.bcast(local_N, root = 0)
-                        K = self.comm.bcast(K, root = 0)
-                        M = self.comm.bcast(M, root = 0)
+                        print(f"{self.rank} qui 0")
 
-                        #print(f"{self.rank} qui2")
+                        dist.broadcast(local_N, src=0, group=self.group_node)
+                        dist.broadcast(K, src=0, group=self.group_node)
+                        dist.broadcast(M, src=0, group=self.group_node)
+
+                        print(f"{self.rank} qui 1")
 
                         # Scatter A over the ranks
-                        A_local = torch.zeros(local_N, K, dtype=torch.float32)
-                        weights_local = torch.zeros(K, M, dtype=torch.float32)
-                        self.comm.Scatter(None, [A_local, MPI.FLOAT], root=0)
-                        self.comm.Bcast(weights_local, root=0)
+                        A_local = torch.empty(local_N, K, dtype=torch.float32, device=self.gpu_rank)
+                        weights_local = torch.empty(K, M, dtype=torch.float32, device=self.gpu_rank)
+                        dist.scatter(tensor=A_local, scatter_list=None, src=0, group=self.group_node)
+                        dist.broadcastcast(weights_local, src=0, group=self.group_node)
 
-                        #print(f"{self.rank} qui3")
+                        # # Bring everything to the GPU
+                        # A_local = A_local.to(self.gpu_rank)
+                        # weights_local = weights_local.to(self.gpu_rank)
 
-                        # Bring everything to the GPU
-                        A_local = A_local.to(self.gpu_rank)
-                        weights_local = weights_local.to(self.gpu_rank)
+                        print(f"{self.rank} qui 2")
 
-                        self.comm.Barrier()
+                        dist.barrier()
 
-                        #print(f"{self.rank} qui4")
+                        print(f"{self.rank} qui 3")
 
                         # Actual matmul
                         C_local = A_local @ weights_local
-                        C_local_cpu = C_local.cpu()
 
                         #print(f"{self.rank} qui3")
-
-                        self.comm.Gather([C_local_cpu, MPI.FLOAT], None, root=0)
+                        dist.gather(C_local, gather_list=None, dst=0, group=self.group_node)
 
             if self.rank == 0:
                 #local_epochs_lat.append(MPI.Wtime() - e_start_time)
@@ -178,16 +145,16 @@ class Trainer:
 
             #test_accuracy = self._evaluate()
             
-        local_training_time = MPI.Wtime() - start_time
-        max_training_time = self.comm.allreduce(local_training_time, op=MPI.MAX)
+        training_time = MPI.Wtime() - start_time
+        dist.all_reduce(training_time, op=MPI.MAX)
 
-        print(f"Final execution time: {max_training_time}s") if self.rank == 0 else None
+        print(f"Final execution time: {training_time}s") if self.rank == 0 else None
         
 def load_distribute_data(
         rank: int, 
         size: int, 
         batch_size: int,
-        comm: MPI.Comm
+        group: dist.ProcessGroup
     ) -> tuple[DataLoader, DataLoader]:
 
 
@@ -197,7 +164,7 @@ def load_distribute_data(
             datasets.MNIST(root='./data', train=True, download=False, transform=transform)
             datasets.MNIST(root='./data', train=False, download=True, transform=transform)
             print(f"[RANK: {rank}] DONE.")
-    comm.barrier()
+    dist.barrier(group=group)
 
     transform = transforms.ToTensor()
     train_dataset = datasets.MNIST(root='./data', train=True, download=False, transform=transform)
@@ -238,26 +205,32 @@ def main(
     save_every: int,
 ):
     # Initialize MPI
-    comm = MPI.COMM_WORLD
-    rank = comm.Get_rank()
-    size = comm.Get_size()
+    print("here 0")
+    local_rank = int(os.environ["LOCAL_RANK"])
+    size = int(os.environ["WORLD_SIZE"])
+    backend = 'nccl'
+    torch.cuda.set_device(local_rank)
+    dist.init_process_group(backend=backend, init_method="env://")
+    rank = dist.get_rank()
 
-    # Os group communicator
-    included_ranks = [0, 4]
-    world_group = comm.Get_group()
-    group_0 = world_group.Incl(included_ranks)
-    comm_0 = comm.Create(group_0)
+    print("here 1")
 
-    # Node group communicator 
+   # Group with specific global ranks
+    included_ranks = [i for i in range(0, size, 4)]
+    group_0 = dist.new_group(ranks=included_ranks)
+
+    print("here 2")
+
+    # Node-local group: group every 4 ranks
     my_node = rank // 4
     start_rank = my_node * 4
     node_ranks = list(range(start_rank, start_rank + 4))
-    world_group = comm.Get_group()
-    node_group = world_group.Incl(node_ranks)
-    node_comm = comm.Create(node_group)
+    node_group = dist.new_group(ranks=node_ranks)
 
     gpu_rank = rank % torch.cuda.device_count()
     torch.cuda.set_device(gpu_rank)
+
+    print("here 3")
 
     if rank == 0:
         print("+ ---------- TORCH LIBRARY CHECK ---------- +")
@@ -268,21 +241,19 @@ def main(
         print(f"Training with GPUs :)") if torch.cuda.is_available() else print("Training with CPUs", flush=True)
         print("+ ----------------------------------------- +")
     
-    comm.Barrier()
+    dist.barrier()
     print(f"[Rank {rank}] GPU_RANK={gpu_rank} on CUDA device {torch.cuda.current_device()} hostname={os.uname()[1]}", flush=True)
 
     # DATA MUST BE DIVIDED MANUALLY
-    comm.Barrier()
-    train_loader, test_loader = load_distribute_data(rank=rank, size=size, batch_size=batch_size, comm=comm)
+    dist.barrier()
+    train_loader, test_loader = load_distribute_data(rank=rank, size=size, batch_size=batch_size, group=group_0)
 
     # MODEL INIT
-    model = Autoencoder(rank, gpu_rank, node_comm, size//2)
+    model = Autoencoder(rank, gpu_rank, node_group, size//2)
     criterion = nn.MSELoss()
     optimizer = optim.Adam(model.parameters(), lr=1e-3)
 
     model = model.to(gpu_rank)
-    # not needed
-    #model = DDP(model, device_ids=[gpu_rank])
 
     # #MODEL TRAINING
     print(f"[RANK {rank}] Trainer is running...", flush=True) if rank == 0 else None
@@ -297,11 +268,11 @@ def main(
         rank=rank,
         gpu_rank=gpu_rank,
         size=size,
-        comm=node_comm,
-        comm_0=comm_0
+        group_node=node_group,
+        group_0=group_0
     )
     trainer.train(epochs)
-    comm.Barrier()
+    dist.barrier()
 
     # # Il training deve gestire l'aggregazione del gradiente con la allreduce, rivederlo
 
@@ -310,6 +281,8 @@ def main(
     if(rank == 0):
         torch.save(model.state_dict(), "autoencoder_ddp.pth")
         print(f"[RANK: {rank}] Model saved to autoencoder_ddp.pth")
+
+    dist.destroy_process_group()
 
 
 if __name__ == "__main__":

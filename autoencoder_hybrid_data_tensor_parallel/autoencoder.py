@@ -7,34 +7,17 @@ from mpi4py import MPI
 class LinearTEST(torch.autograd.Function):
     @staticmethod
     def forward(ctx, A, B, bias, rank, gpu_rank, size, comm):
-        
+
         ctx.save_for_backward(A, B, bias)
         B = B.t()
         C = A @ B
         return C + bias
 
-
-    # This function has only a single output, so it gets only one gradient
     @staticmethod
     def backward(ctx, grad_output):
-        # This is a pattern that is very convenient - at the top of backward
-        # unpack saved_tensors and initialize all gradients w.r.t. inputs to
-        # None. Thanks to the fact that additional trailing Nones are
-        # ignored, the return statement is simple even when the function has
-        # optional inputs.
+
         input, weight, bias = ctx.saved_tensors
         grad_input = grad_weight = grad_bias = None
-
-        # These needs_input_grad checks are optional and there only to
-        # improve efficiency. If you want to make your code simpler, you can
-        # skip them. Returning gradients for inputs that don't require it is
-        # not an error.
-
-        # print("-----BACK-----", flush=True)
-        # print(grad_output.size(), flush=True)
-        # print(weight.t().size(), flush=True)
-        # print("-----BACK-----", flush=True)
-
 
         if ctx.needs_input_grad[0]:
             grad_input = grad_output.mm(weight)
@@ -55,15 +38,15 @@ class LinearMPI(torch.autograd.Function):
         K = B.size(dim=0)
         M = B.size(dim=1)
 
-        local_rows = N // size
+        local_rows = int(N // size)
 
-        comm.bcast(local_rows, root = 0)
-        comm.bcast(K, root = 0)
-        comm.bcast(M, root = 0)
+        comm.bcast(local_rows, root = rank)
+        comm.bcast(K, root = rank)
+        comm.bcast(M, root = rank)
 
-        A_local = torch.zeros(local_rows, K, dtype=torch.float32)
-        comm.Scatter([A.contiguous().detach().cpu(), MPI.FLOAT], [A_local, MPI.FLOAT], root=0)
-        comm.Bcast([B.contiguous().detach().cpu(), MPI.FLOAT], root=0)
+        A_local = torch.empty(int(local_rows), int(K), dtype=torch.float32)
+        comm.Scatter([A.contiguous().detach().cpu(), MPI.FLOAT], [A_local, MPI.FLOAT], root=rank)
+        comm.Bcast([B.contiguous().detach().cpu(), MPI.FLOAT], root=rank)
 
         A_local = A_local.to(gpu_rank)
         B = B.to(gpu_rank)
@@ -73,36 +56,21 @@ class LinearMPI(torch.autograd.Function):
         # Actual matmul
         C_local = A_local @ B
 
-        C_total = torch.zeros(N, M, dtype=torch.float32)
-        comm.Gather([C_local.cpu(), MPI.FLOAT], [C_total, MPI.FLOAT], root=0)
+        C_total = torch.empty(N, M, dtype=torch.float32)
+
+        comm.Gather([C_local.cpu(), MPI.FLOAT], [C_total, MPI.FLOAT], root=rank)
 
         # print(f"RESULT: {C_total.to(gpu_rank)}", flush=True)
         # print(f"TEST: {(A @ B)}", flush=True)
         return C_total.to(gpu_rank) + bias.to(gpu_rank)
 
 
-    # This function has only a single output, so it gets only one gradient
     @staticmethod
     def backward(ctx, grad_output):
-        # This is a pattern that is very convenient - at the top of backward
-        # unpack saved_tensors and initialize all gradients w.r.t. inputs to
-        # None. Thanks to the fact that additional trailing Nones are
-        # ignored, the return statement is simple even when the function has
-        # optional inputs.
+
         input, weight, bias = ctx.saved_tensors
         grad_input = grad_weight = grad_bias = None
         grad_output = grad_output.contiguous()
-
-        # These needs_input_grad checks are optional and there only to
-        # improve efficiency. If you want to make your code simpler, you can
-        # skip them. Returning gradients for inputs that don't require it is
-        # not an error.
-
-        # print("-----BACK-----", flush=True)
-        # print(grad_output.size(), flush=True)
-        # print(weight.t().size(), flush=True)
-        # print("-----BACK-----", flush=True)
-
 
         if ctx.needs_input_grad[0]:
             grad_input = grad_output.mm(weight)
