@@ -1,0 +1,108 @@
+Sat Jul  5 17:47:14 2025       
++---------------------------------------------------------------------------------------+
+| NVIDIA-SMI 530.30.02              Driver Version: 530.30.02    CUDA Version: 12.1     |
+|-----------------------------------------+----------------------+----------------------+
+| GPU  Name                  Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp  Perf            Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
+|                                         |                      |               MIG M. |
+|=========================================+======================+======================|
+|   0  NVIDIA A100-SXM-64GB            On | 00000000:1D:00.0 Off |                    0 |
+| N/A   42C    P0               62W / 470W|      0MiB / 65536MiB |      0%      Default |
+|                                         |                      |             Disabled |
++-----------------------------------------+----------------------+----------------------+
+|   1  NVIDIA A100-SXM-64GB            On | 00000000:56:00.0 Off |                    0 |
+| N/A   44C    P0               65W / 475W|      0MiB / 65536MiB |      0%      Default |
+|                                         |                      |             Disabled |
++-----------------------------------------+----------------------+----------------------+
+|   2  NVIDIA A100-SXM-64GB            On | 00000000:8F:00.0 Off |                    0 |
+| N/A   43C    P0               63W / 461W|      0MiB / 65536MiB |      0%      Default |
+|                                         |                      |             Disabled |
++-----------------------------------------+----------------------+----------------------+
+|   3  NVIDIA A100-SXM-64GB            On | 00000000:C8:00.0 Off |                    0 |
+| N/A   43C    P0               64W / 469W|      0MiB / 65536MiB |      0%      Default |
+|                                         |                      |             Disabled |
++-----------------------------------------+----------------------+----------------------+
+                                                                                         
++---------------------------------------------------------------------------------------+
+| Processes:                                                                            |
+|  GPU   GI   CI        PID   Type   Process name                            GPU Memory |
+|        ID   ID                                                             Usage      |
+|=======================================================================================|
+|  No running processes found                                                           |
++---------------------------------------------------------------------------------------+
++ -------------- SLURM CHECK -------------- +
+CUDA_VISIBLE_DEVICES=0,1,2,3
+NODES=8
++ ----------------------------------------- +
++ ---------- TORCH LIBRARY CHECK ---------- +
+PyTorch version: 2.7.1+cu126
+PyTorch CUDA version: 12.6
+PyTorch CUDNN version: 90501
+GPUs per node 4
+Training with GPUs :)
++ ----------------------------------------- +
+[Rank 4] GPU_RANK=0 on CUDA device 0 hostname=lrdn2798.leonardo.local
+[Rank 0] GPU_RANK=0 on CUDA device 0 hostname=lrdn2783.leonardo.local
+[Rank 8] GPU_RANK=0 on CUDA device 0 hostname=lrdn2831.leonardo.local
+[Rank 20] GPU_RANK=0 on CUDA device 0 hostname=lrdn2931.leonardo.local
+[Rank 12] GPU_RANK=0 on CUDA device 0 hostname=lrdn2844.leonardo.local
+[Rank 28] GPU_RANK=0 on CUDA device 0 hostname=lrdn2960.leonardo.local
+[Rank 24] GPU_RANK=0 on CUDA device 0 hostname=lrdn2939.leonardo.local
+[Rank 1] GPU_RANK=1 on CUDA device 1 hostname=lrdn2783.leonardo.local
+[Rank 2] GPU_RANK=2 on CUDA device 2 hostname=lrdn2783.leonardo.local
+[Rank 3] GPU_RANK=3 on CUDA device 3 hostname=lrdn2783.leonardo.local
+[Rank 16] GPU_RANK=0 on CUDA device 0 hostname=lrdn2893.leonardo.local
+[Rank 29] GPU_RANK=1 on CUDA device 1 hostname=lrdn2960.leonardo.local
+[Rank 9] GPU_RANK=1 on CUDA device 1 hostname=lrdn2831.leonardo.local
+[Rank 30] GPU_RANK=2 on CUDA device 2 hostname=lrdn2960.leonardo.local
+[Rank 10] GPU_RANK=2 on CUDA device 2 hostname=lrdn2831.leonardo.local
+[Rank 21] GPU_RANK=1 on CUDA device 1 hostname=lrdn2931.leonardo.local
+[Rank 13] GPU_RANK=1 on CUDA device 1 hostname=lrdn2844.leonardo.local
+[Rank 31] GPU_RANK=3 on CUDA device 3 hostname=lrdn2960.leonardo.local
+[Rank 25] GPU_RANK=1 on CUDA device 1 hostname=lrdn2939.leonardo.local
+[Rank 5] GPU_RANK=1 on CUDA device 1 hostname=lrdn2798.leonardo.local
+[Rank 11] GPU_RANK=3 on CUDA device 3 hostname=lrdn2831.leonardo.local
+[Rank 22] GPU_RANK=2 on CUDA device 2 hostname=lrdn2931.leonardo.local
+[Rank 14] GPU_RANK=2 on CUDA device 2 hostname=lrdn2844.leonardo.local
+[Rank 17] GPU_RANK=1 on CUDA device 1 hostname=lrdn2893.leonardo.local
+[Rank 26] GPU_RANK=2 on CUDA device 2 hostname=lrdn2939.leonardo.local
+[Rank 6] GPU_RANK=2 on CUDA device 2 hostname=lrdn2798.leonardo.local
+[Rank 23] GPU_RANK=3 on CUDA device 3 hostname=lrdn2931.leonardo.local
+[Rank 15] GPU_RANK=3 on CUDA device 3 hostname=lrdn2844.leonardo.local
+[Rank 18] GPU_RANK=2 on CUDA device 2 hostname=lrdn2893.leonardo.local
+[Rank 27] GPU_RANK=3 on CUDA device 3 hostname=lrdn2939.leonardo.local
+[Rank 7] GPU_RANK=3 on CUDA device 3 hostname=lrdn2798.leonardo.local
+[Rank 19] GPU_RANK=3 on CUDA device 3 hostname=lrdn2893.leonardo.local
+[RANK 20] I have 7500 samples. From 37500 to 45000
+[RANK 28] I have 7500 samples. From 52500 to 60000
+[RANK 12] I have 7500 samples. From 22500 to 30000
+[RANK 8] I have 7500 samples. From 15000 to 22500
+[RANK 0] This dataset has 60000 samples
+[RANK 24] I have 7500 samples. From 45000 to 52500
+[RANK 0] I have 7500 samples. From 0 to 7500
+[RANK 16] I have 7500 samples. From 30000 to 37500
+[RANK 4] I have 7500 samples. From 7500 to 15000
+[RANK 0] Trainer is running...
+[RANK 0 GPU 0] Epoch 0 | Batches: 157
+-> Epoch 0 | Avg Loss: 0.07358464017762976
+[RANK 0 GPU 0] Epoch 1 | Batches: 157
+-> Epoch 1 | Avg Loss: 0.03880853292737472
+[RANK 0 GPU 0] Epoch 2 | Batches: 157
+-> Epoch 2 | Avg Loss: 0.026251777438289027
+[RANK 0 GPU 0] Epoch 3 | Batches: 157
+-> Epoch 3 | Avg Loss: 0.01892828422014491
+[RANK 0 GPU 0] Epoch 4 | Batches: 157
+-> Epoch 4 | Avg Loss: 0.014277588804962776
+[RANK 0 GPU 0] Epoch 5 | Batches: 157
+-> Epoch 5 | Avg Loss: 0.011169465921692929
+[RANK 0 GPU 0] Epoch 6 | Batches: 157
+-> Epoch 6 | Avg Loss: 0.00902383210200627
+[RANK 0 GPU 0] Epoch 7 | Batches: 157
+-> Epoch 7 | Avg Loss: 0.007496257052141226
+[RANK 0 GPU 0] Epoch 8 | Batches: 157
+-> Epoch 8 | Avg Loss: 0.006427439225648167
+[RANK 0 GPU 0] Epoch 9 | Batches: 157
+-> Epoch 9 | Avg Loss: 0.005617511910544235
+Final execution time: 69.851450953s
+[RANK 0] Training done.
+[RANK: 0] Model saved to autoencoder_mpi.pth

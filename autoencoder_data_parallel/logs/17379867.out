@@ -1,0 +1,92 @@
+Sat Jul  5 18:21:47 2025       
++---------------------------------------------------------------------------------------+
+| NVIDIA-SMI 530.30.02              Driver Version: 530.30.02    CUDA Version: 12.1     |
+|-----------------------------------------+----------------------+----------------------+
+| GPU  Name                  Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp  Perf            Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
+|                                         |                      |               MIG M. |
+|=========================================+======================+======================|
+|   0  NVIDIA A100-SXM-64GB            On | 00000000:1D:00.0 Off |                    0 |
+| N/A   43C    P0               63W / 477W|      0MiB / 65536MiB |      0%      Default |
+|                                         |                      |             Disabled |
++-----------------------------------------+----------------------+----------------------+
+|   1  NVIDIA A100-SXM-64GB            On | 00000000:56:00.0 Off |                    0 |
+| N/A   43C    P0               64W / 474W|      0MiB / 65536MiB |      0%      Default |
+|                                         |                      |             Disabled |
++-----------------------------------------+----------------------+----------------------+
+|   2  NVIDIA A100-SXM-64GB            On | 00000000:8F:00.0 Off |                    0 |
+| N/A   42C    P0               62W / 462W|      0MiB / 65536MiB |      0%      Default |
+|                                         |                      |             Disabled |
++-----------------------------------------+----------------------+----------------------+
+|   3  NVIDIA A100-SXM-64GB            On | 00000000:C8:00.0 Off |                    0 |
+| N/A   42C    P0               60W / 450W|      0MiB / 65536MiB |      0%      Default |
+|                                         |                      |             Disabled |
++-----------------------------------------+----------------------+----------------------+
+                                                                                         
++---------------------------------------------------------------------------------------+
+| Processes:                                                                            |
+|  GPU   GI   CI        PID   Type   Process name                            GPU Memory |
+|        ID   ID                                                             Usage      |
+|=======================================================================================|
+|  No running processes found                                                           |
++---------------------------------------------------------------------------------------+
++ -------------- SLURM CHECK -------------- +
+CUDA_VISIBLE_DEVICES=0,1,2,3
+NODES=3
++ ----------------------------------------- +
++ ---------- TORCH LIBRARY CHECK ---------- +
+PyTorch version: 2.7.1+cu126
+PyTorch CUDA version: 12.6
+PyTorch CUDNN version: 90501
+GPUs per node 4
+Training with GPUs :)
++ ----------------------------------------- +
+[Rank 8] GPU_RANK=0 on CUDA device 0 hostname=lrdn0123.leonardo.local
+[Rank 0] GPU_RANK=0 on CUDA device 0 hostname=lrdn0001.leonardo.local
+[Rank 1] GPU_RANK=1 on CUDA device 1 hostname=lrdn0001.leonardo.local
+[Rank 2] GPU_RANK=2 on CUDA device 2 hostname=lrdn0001.leonardo.local
+[Rank 3] GPU_RANK=3 on CUDA device 3 hostname=lrdn0001.leonardo.local
+[Rank 4] GPU_RANK=0 on CUDA device 0 hostname=lrdn0019.leonardo.local
+[Rank 9] GPU_RANK=1 on CUDA device 1 hostname=lrdn0123.leonardo.local
+[Rank 10] GPU_RANK=2 on CUDA device 2 hostname=lrdn0123.leonardo.local
+[Rank 11] GPU_RANK=3 on CUDA device 3 hostname=lrdn0123.leonardo.local
+[Rank 5] GPU_RANK=1 on CUDA device 1 hostname=lrdn0019.leonardo.local
+[Rank 6] GPU_RANK=2 on CUDA device 2 hostname=lrdn0019.leonardo.local
+[Rank 7] GPU_RANK=3 on CUDA device 3 hostname=lrdn0019.leonardo.local
+[RANK 8] I have 5000 samples. From 40000 to 45000
+[RANK 11] I have 5000 samples. From 55000 to 60000
+[RANK 9] I have 5000 samples. From 45000 to 50000
+[RANK 10] I have 5000 samples. From 50000 to 55000
+[RANK 3] I have 5000 samples. From 15000 to 20000
+[RANK 0] This dataset has 60000 samples
+[RANK 7] I have 5000 samples. From 35000 to 40000
+[RANK 0] I have 5000 samples. From 0 to 5000
+[RANK 1] I have 5000 samples. From 5000 to 10000
+[RANK 2] I have 5000 samples. From 10000 to 15000
+[RANK 5] I have 5000 samples. From 25000 to 30000
+[RANK 6] I have 5000 samples. From 30000 to 35000
+[RANK 4] I have 5000 samples. From 20000 to 25000
+[RANK 0] Trainer is running...
+[RANK 0 GPU 0] Epoch 0 | Batches: 20
+-> Epoch 0 | Avg Loss: 0.22085993513464927
+[RANK 0 GPU 0] Epoch 1 | Batches: 20
+-> Epoch 1 | Avg Loss: 0.1343822998305162
+[RANK 0 GPU 0] Epoch 2 | Batches: 20
+-> Epoch 2 | Avg Loss: 0.08678657536705335
+[RANK 0 GPU 0] Epoch 3 | Batches: 20
+-> Epoch 3 | Avg Loss: 0.0826576432834069
+[RANK 0 GPU 0] Epoch 4 | Batches: 20
+-> Epoch 4 | Avg Loss: 0.07703155999382337
+[RANK 0 GPU 0] Epoch 5 | Batches: 20
+-> Epoch 5 | Avg Loss: 0.07404027388741573
+[RANK 0 GPU 0] Epoch 6 | Batches: 20
+-> Epoch 6 | Avg Loss: 0.07226802414904038
+[RANK 0 GPU 0] Epoch 7 | Batches: 20
+-> Epoch 7 | Avg Loss: 0.07069122542937596
+[RANK 0 GPU 0] Epoch 8 | Batches: 20
+-> Epoch 8 | Avg Loss: 0.06925571666409573
+[RANK 0 GPU 0] Epoch 9 | Batches: 20
+-> Epoch 9 | Avg Loss: 0.06816070110847552
+Final execution time: 0.33829212300000044s
+[RANK 0] Training done.
+[RANK: 0] Model saved to autoencoder_ddp.pth

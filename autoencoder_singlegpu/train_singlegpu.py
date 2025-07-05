@@ -14,8 +14,8 @@ def SaveLatenciesCSV(name, latencies):
         for number in latencies:
             writer.writerow([number])
 
-
-data = MNISTLoader('./data/MNIST')
+batch_size = 128
+data = MNISTLoader('./data/MNIST', batch_size=batch_size)
 
 model = Autoencoder()
 criterion = nn.MSELoss()
@@ -32,9 +32,10 @@ model.to(device)
 epochs = 10
 batch_lat = []
 for epoch in range(epochs):
-    for images, _ in data.trainloader:
 
-        start_time = MPI.Wtime()
+    start_time = MPI.Wtime()
+
+    for images, _ in data.trainloader:
 
         inputs = images.view(-1, data.linear_size).to(device)
         # 1) Encoder forward
@@ -46,12 +47,12 @@ for epoch in range(epochs):
         loss.backward()
         optimizer.step()
 
-        batch_lat.append(MPI.Wtime() - start_time)
+    batch_lat.append(MPI.Wtime() - start_time)
 
     print(f'Epoch [{epoch+1}/{epochs}], Loss: {loss.item():.4f}')
 
 
-SaveLatenciesCSV("Single GPU", batch_lat)
+SaveLatenciesCSV(f"Single_GPU_{batch_size}", batch_lat)
 
 torch.save(model.state_dict(), 'autoencoder.pth')
 print("Model saved to autoencoder.pth")

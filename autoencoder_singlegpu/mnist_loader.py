@@ -4,7 +4,7 @@ import os
 
 
 class MNISTLoader:
-    def __init__(self, data_source, batch_size=64):
+    def __init__(self, data_source, batch_size):
         self.data_source = data_source
         self.linear_size = 28*28 # MNIST image size
         self.batch_size = batch_size

@@ -79,10 +79,9 @@ class Trainer:
             print(f"[RANK {self.rank} GPU {self.gpu_rank}] Epoch {epoch} | Batches: {len(self.test_data)}") if self.rank == 0 else None
             total_loss = 0.0
 
+            start_time = MPI.Wtime()
             #BATCH
             for batch_idx, (batch_data, batch_target) in enumerate(self.train_data):
-                
-                start_time = MPI.Wtime()
 
                 inputs = batch_data.view(-1, 28*28)
                 inputs = inputs.to(self.gpu_rank)
@@ -98,13 +97,12 @@ class Trainer:
 
                 self.optimizer.step()
 
-                local_batch_time.append(MPI.Wtime() - start_time)
+            local_batch_time.append(MPI.Wtime() - start_time)
 
             avg_loss = total_loss / len(self.train_data)
             all_avg_loss = (self.comm.allreduce(avg_loss, op=MPI.SUM) / self.size)
             print(f"-> Epoch {epoch} | Avg Loss: {all_avg_loss}") if self.rank == 0 else None
 
-            #test_accuracy = self._evaluate()
             
         local_training_time = MPI.Wtime() - start_time
         max_training_time = self.comm.allreduce(local_training_time, op=MPI.MAX)
@@ -113,7 +111,7 @@ class Trainer:
         global_batch_time = self.comm.allreduce(local_batch_time, op=MPI.MAX)
 
         if self.rank == 0:
-            SaveLatenciesCSV("Data Parallel", global_batch_time)
+            SaveLatenciesCSV("Data_Parallel_", global_batch_time)
 
 
 
@@ -223,8 +221,6 @@ def main(
     trainer.train(epochs)
     comm.Barrier()
 
-    # # Il training deve gestire l'aggregazione del gradiente con la allreduce, rivederlo
-
     print(f"[RANK {rank}] Training done.", flush=True) if rank == 0 else None
 
     if(rank == 0):
@@ -234,8 +230,8 @@ def main(
 
 if __name__ == "__main__":
 
-    epochs = 32
-    batch_size = 64
+    epochs = 10
+    batch_size = 512
     save_every = 1
     latent_linear_size = 32
     

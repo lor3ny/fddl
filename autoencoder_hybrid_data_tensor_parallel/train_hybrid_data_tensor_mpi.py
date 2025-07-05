@@ -82,10 +82,10 @@ class Trainer:
             print(f"[RANK {self.rank} GPU {self.gpu_rank}] Epoch {epoch} | Batches: {len(self.test_data)}") if self.rank == 0 else None
             total_loss = 0.0
 
+            start_batch = MPI.Wtime()
+
             if self.gpu_rank == 0:
                 for batch_idx, (batch_data, _) in enumerate(self.train_data):
-
-                    start_batch = MPI.Wtime()
 
                     # GPU 0 as coordinator and slave
                     inputs = batch_data.view(-1, 28*28)
@@ -102,8 +102,6 @@ class Trainer:
                     total_loss += loss.item()
 
                     self.optimizer.step()
-
-                    local_batch_lat.append(MPI.Wtime() - start_batch)
 
             else:
                 for batch_idx in range(self.batch_count):
@@ -134,6 +132,9 @@ class Trainer:
                         C_local = A_local @ weights_local
                         C_local_cpu = C_local.cpu()
                         self.comm.Gather([C_local_cpu, MPI.FLOAT], None, root=0)
+
+            if self.gpu_rank == 0:
+                local_batch_lat.append(MPI.Wtime() - start_batch)
 
             if self.rank == 0:
                 avg_loss = total_loss / len(self.train_data)
@@ -284,8 +285,8 @@ def main(
 
 if __name__ == "__main__":
 
-    epochs = 20
-    batch_size = 1024
+    epochs = 10
+    batch_size = 128
     
     parser = argparse.ArgumentParser(description="Example of parsing many CLI arguments.")
     parser.add_argument("--ntasks", type=int, help="Number of tasks", default=1)
