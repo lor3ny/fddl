@@ -8,10 +8,18 @@ import numpy as np
 import os
 import time
 import argparse
+import csv
 
 # My API
 from autoencoder_nccl import Autoencoder
 
+
+def SaveLatenciesCSV(name, latencies):
+    with open(f'{name}.csv', mode='w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow([name])  # Header
+        for number in latencies:
+            writer.writerow([number])
 
 class Trainer:
     def __init__(
@@ -26,7 +34,7 @@ class Trainer:
         gpu_rank: int,
         size: int,
         node_group: dist.ProcessGroup,
-        node_0: dist.ProcessGroup
+        group_0: dist.ProcessGroup
     ) -> None:
         self.train_data = train_data
         self.test_data = test_data
@@ -38,7 +46,7 @@ class Trainer:
         self.rank = rank
         self.size = size
         self.node_group = node_group
-        self.node_0 = node_0
+        self.group_0 = group_0
         self.device="cuda" #  #  Expected one of cpu, cuda, ipu, xpu, mkldnn, opengl, opencl, ideep, hip, ve, fpga, maia, xla, lazy, vulkan, mps, meta, hpu,
 
 
@@ -54,20 +62,19 @@ class Trainer:
         for param in self.model.parameters():
             if param.grad is None:
                 continue
-            # Gather gradients from all ranks
-            grad = param.grad.data.cpu().numpy()
-            avg_grad = np.zeros_like(grad)
+
+            grad = param.grad.data.detach().clone()
             try:
                 dist.all_reduce(grad, op=dist.ReduceOp.SUM, group=self.group_0)
-                avg_grad = grad / self.size  # Average the gradients
-                param.grad.data = torch.tensor(avg_grad, device=self.device)
+                avg_grad = grad / self.size 
+                param.grad.data = avg_grad
 
             except Exception as e:
-                raise RuntimeError(f"Error synchronizing gradients: {e}.", flush=True)
+                raise RuntimeError(f"Error synchronizing gradients: {e}.")
 
     def train(self, max_epochs: int):
 
-        local_allreduce_lat = []
+        local_batch_lat = []
 
         start_time = time.perf_counter()
 
@@ -77,6 +84,8 @@ class Trainer:
 
             if self.gpu_rank == 0:
                 for batch_idx, (batch_data, _) in enumerate(self.train_data):
+
+                    start_batch = time.perf_counter()
 
                     # GPU 0 as coordinator and slave
                     inputs = batch_data.view(-1, 28*28)
@@ -88,31 +97,33 @@ class Trainer:
                     self.optimizer.zero_grad()
                     loss.backward()
 
-                    sync_start_time = time.perf_counter()
                     self._synchronize_gradients() # Is done only on GPU 0s
-                    sync_end_time = time.perf_counter()
-
-                    local_allreduce_lat.append(sync_end_time-sync_start_time)
+    
                     total_loss += loss.item()
 
                     self.optimizer.step()
+
+                    local_batch_lat.append(time.perf_counter()-start_batch)
 
             else:
                 for batch_idx in range(self.batch_count):
                     for layer_idx in range(2):
 
                         # GPUs 1, 2 , 3 are slaves
-                        local_N = None
-                        K = None
-                        M = None
+                        local_N = torch.tensor(0, device=self.gpu_rank)
+                        K = torch.tensor(0, device=self.gpu_rank)
+                        M = torch.tensor(0, device=self.gpu_rank)
 
                         dist.broadcast(local_N, src=0, group=self.node_group)
                         dist.broadcast(K, src=0, group=self.node_group)
                         dist.broadcast(M, src=0, group=self.node_group)
+                        local_N = local_N.item()
+                        K = K.item()
+                        M = M.item()
 
                         # Scatter A over the ranks
-                        A_local = torch.zeros(int(local_N), int(K), dtype=torch.float32)
-                        weights_local = torch.zeros(int(K), int(M), dtype=torch.float32)
+                        A_local = torch.empty(int(local_N), int(K), dtype=torch.float32, device=self.gpu_rank)
+                        weights_local = torch.empty(int(K), int(M), dtype=torch.float32, device=self.gpu_rank)
                         dist.scatter(tensor=A_local, scatter_list=None, src=0, group=self.node_group)
                         dist.broadcast(weights_local, src=0, group=self.node_group)
 
@@ -124,17 +135,24 @@ class Trainer:
 
                         # Actual matmul
                         C_local = A_local @ weights_local
-                        C_local_cpu = C_local.cpu()
                         dist.gather(C_local, gather_list=None, dst=0, group=self.node_group)
 
             if self.rank == 0:
                 avg_loss = total_loss / len(self.train_data)
                 print(f"-> Epoch {epoch} | Avg Loss: {avg_loss}") if self.rank == 0 else None
-            
-        local_training_time = time.perf_counter() - start_time
-        max_training_time = dist.allreduce(local_training_time, op=dist.ReduceOp.SUM, group=self.node_group)
+        
+        local_training_time = torch.tensor((time.perf_counter() - start_time), device=self.gpu_rank)
+        dist.all_reduce(local_training_time, op=dist.ReduceOp.MAX, group=self.node_group)
 
-        print(f"Final execution time: {max_training_time}s") if self.rank == 0 else None
+        print(f"Final execution time: {local_training_time}s") if self.rank == 0 else None
+
+        if self.gpu_rank == 0:
+            local_batch_lat = torch.tensor(local_batch_lat, device=self.gpu_rank)
+            dist.all_reduce(local_batch_lat, op=dist.ReduceOp.MAX, group=self.group_0)
+            local_batch_lat = local_batch_lat.tolist()
+        
+        if self.rank == 0:
+            SaveLatenciesCSV("Batch_Tensor_Parallel_NCCL", local_batch_lat)
         
 def load_distribute_data(
         rank: int, 
@@ -191,12 +209,13 @@ def main(
     batch_size: int
 ):
     # Initialize DIST for NCCL
-    local_rank = int(os.environ["LOCAL_RANK"])
+    rank = int(os.environ["RANK"])
     size = int(os.environ["WORLD_SIZE"])
     backend = 'nccl'
-    torch.cuda.set_device(local_rank)
-    dist.init_process_group(backend=backend, init_method="env://", world_size=size, rank=local_rank)
+    dist.init_process_group(backend=backend, init_method="env://", world_size=size, rank=rank)
     rank = dist.get_rank()
+    gpu_rank = rank % torch.cuda.device_count()
+    torch.cuda.set_device(gpu_rank)
 
     # Group with specific global ranks
     included_ranks = [i for i in range(0, size, 4)]
@@ -208,8 +227,6 @@ def main(
     node_ranks = list(range(start_rank, start_rank + 4))
     node_group = dist.new_group(ranks=node_ranks)
 
-    gpu_rank = rank % torch.cuda.device_count()
-    torch.cuda.set_device(gpu_rank)
 
     if rank == 0:
         print("+ ---------- TORCH LIBRARY CHECK ---------- +")
@@ -220,21 +237,22 @@ def main(
         print(f"Training with GPUs :)") if torch.cuda.is_available() else print("Training with CPUs", flush=True)
         print("+ ----------------------------------------- +")
     
-    dist.barrier()
     print(f"[Rank {rank}] GPU_RANK={gpu_rank} on CUDA device {torch.cuda.current_device()} hostname={os.uname()[1]}", flush=True)
 
     # DATA MUST BE DIVIDED MANUALLY
     dist.barrier()
     if gpu_rank == 0:
         train_loader, test_loader = load_distribute_data(rank=rank, size=size//4, batch_size=batch_size, group=group_0)
-        batch_count = len(train_loader)
+        batch_count = torch.tensor(len(train_loader), dtype=torch.long).to(gpu_rank)
         dist.broadcast(batch_count, src=0, group=node_group)
+        batch_count = batch_count.item()
     else:
         train_loader, test_loader = None, None
         batch_count=None
+        batch_count = torch.tensor(0, dtype=torch.long, device=gpu_rank)
         dist.broadcast(batch_count, src=0, group=node_group)
+        batch_count = batch_count.item()
 
-        
     # MODEL INIT
     model = Autoencoder(rank, gpu_rank, node_group, size//(size/4))
     criterion = nn.MSELoss()
@@ -264,9 +282,10 @@ def main(
     print(f"[RANK {rank}] Training done.", flush=True) if rank == 0 else None
 
     if(rank == 0):
-        torch.save(model.state_dict(), "autoencoder_ddp.pth")
-        print(f"[RANK: {rank}] Model saved to autoencoder_ddp.pth")
+        torch.save(model.state_dict(), "autoencoder_nccl.pth")
+        print(f"[RANK {rank}] Model saved to autoencoder_nccl.pth")
 
+    dist.barrier()
     dist.destroy_process_group()
 
 

@@ -1,0 +1,832 @@
+W0705 13:37:09.252000 3251878 site-packages/torch/distributed/run.py:766] 
+W0705 13:37:09.252000 3251878 site-packages/torch/distributed/run.py:766] *****************************************
+W0705 13:37:09.252000 3251878 site-packages/torch/distributed/run.py:766] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+W0705 13:37:09.252000 3251878 site-packages/torch/distributed/run.py:766] *****************************************
+W0705 13:37:09.252000 3251877 site-packages/torch/distributed/run.py:766] 
+W0705 13:37:09.252000 3251877 site-packages/torch/distributed/run.py:766] *****************************************
+W0705 13:37:09.252000 3251877 site-packages/torch/distributed/run.py:766] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+W0705 13:37:09.252000 3251877 site-packages/torch/distributed/run.py:766] *****************************************
+W0705 13:37:09.253000 3390662 site-packages/torch/distributed/run.py:766] 
+W0705 13:37:09.253000 3390662 site-packages/torch/distributed/run.py:766] *****************************************
+W0705 13:37:09.253000 3390662 site-packages/torch/distributed/run.py:766] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+W0705 13:37:09.253000 3390662 site-packages/torch/distributed/run.py:766] *****************************************
+W0705 13:37:09.252000 3251879 site-packages/torch/distributed/run.py:766] 
+W0705 13:37:09.252000 3251879 site-packages/torch/distributed/run.py:766] *****************************************
+W0705 13:37:09.252000 3251879 site-packages/torch/distributed/run.py:766] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+W0705 13:37:09.252000 3251879 site-packages/torch/distributed/run.py:766] *****************************************
+W0705 13:37:09.253000 3390663 site-packages/torch/distributed/run.py:766] 
+W0705 13:37:09.253000 3390663 site-packages/torch/distributed/run.py:766] *****************************************
+W0705 13:37:09.253000 3390663 site-packages/torch/distributed/run.py:766] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+W0705 13:37:09.253000 3390663 site-packages/torch/distributed/run.py:766] *****************************************
+W0705 13:37:09.253000 3251880 site-packages/torch/distributed/run.py:766] 
+W0705 13:37:09.253000 3251880 site-packages/torch/distributed/run.py:766] *****************************************
+W0705 13:37:09.253000 3251880 site-packages/torch/distributed/run.py:766] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+W0705 13:37:09.253000 3251880 site-packages/torch/distributed/run.py:766] *****************************************
+W0705 13:37:09.253000 3390661 site-packages/torch/distributed/run.py:766] 
+W0705 13:37:09.253000 3390661 site-packages/torch/distributed/run.py:766] *****************************************
+W0705 13:37:09.253000 3390661 site-packages/torch/distributed/run.py:766] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+W0705 13:37:09.253000 3390661 site-packages/torch/distributed/run.py:766] *****************************************
+W0705 13:37:09.253000 3390664 site-packages/torch/distributed/run.py:766] 
+W0705 13:37:09.253000 3390664 site-packages/torch/distributed/run.py:766] *****************************************
+W0705 13:37:09.253000 3390664 site-packages/torch/distributed/run.py:766] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+W0705 13:37:09.253000 3390664 site-packages/torch/distributed/run.py:766] *****************************************
+/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/distributed_c10d.py:4631: UserWarning: No device id is provided via `init_process_group` or `barrier `. Using the current device set by the user. 
+  warnings.warn(  # warn only once
+/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/distributed_c10d.py:4631: UserWarning: No device id is provided via `init_process_group` or `barrier `. Using the current device set by the user. 
+  warnings.warn(  # warn only once
+/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/distributed_c10d.py:4631: UserWarning: No device id is provided via `init_process_group` or `barrier `. Using the current device set by the user. 
+  warnings.warn(  # warn only once
+[rank0]:[W705 13:37:17.220364577 ProcessGroupNCCL.cpp:4718] [PG ID 0 PG GUID 0 Rank 0]  using GPU 0 as device used by this process is currently unknown. This can potentially cause a hang if this rank to GPU mapping is incorrect. You can pecify device_id in init_process_group() to force use of a particular device.
+[rank3]:[W705 13:37:17.220363559 ProcessGroupNCCL.cpp:4718] [PG ID 0 PG GUID 0 Rank 3]  using GPU 3 as device used by this process is currently unknown. This can potentially cause a hang if this rank to GPU mapping is incorrect. You can pecify device_id in init_process_group() to force use of a particular device.
+/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/distributed_c10d.py:4631: UserWarning: No device id is provided via `init_process_group` or `barrier `. Using the current device set by the user. 
+  warnings.warn(  # warn only once
+[rank2]:[W705 13:37:17.222413293 ProcessGroupNCCL.cpp:4718] [PG ID 0 PG GUID 0 Rank 2]  using GPU 2 as device used by this process is currently unknown. This can potentially cause a hang if this rank to GPU mapping is incorrect. You can pecify device_id in init_process_group() to force use of a particular device.
+/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/distributed_c10d.py:4631: UserWarning: No device id is provided via `init_process_group` or `barrier `. Using the current device set by the user. 
+  warnings.warn(  # warn only once
+[rank1]:[W705 13:37:17.256507819 ProcessGroupNCCL.cpp:4718] [PG ID 0 PG GUID 0 Rank 1]  using GPU 1 as device used by this process is currently unknown. This can potentially cause a hang if this rank to GPU mapping is incorrect. You can pecify device_id in init_process_group() to force use of a particular device.
+/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/distributed_c10d.py:4631: UserWarning: No device id is provided via `init_process_group` or `barrier `. Using the current device set by the user. 
+  warnings.warn(  # warn only once
+[rank7]:[W705 13:37:17.252485534 ProcessGroupNCCL.cpp:4718] [PG ID 0 PG GUID 0 Rank 7]  using GPU 3 as device used by this process is currently unknown. This can potentially cause a hang if this rank to GPU mapping is incorrect. You can pecify device_id in init_process_group() to force use of a particular device.
+[rank4]:[W705 13:37:17.252484325 ProcessGroupNCCL.cpp:4718] [PG ID 0 PG GUID 0 Rank 4]  using GPU 0 as device used by this process is currently unknown. This can potentially cause a hang if this rank to GPU mapping is incorrect. You can pecify device_id in init_process_group() to force use of a particular device.
+/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/distributed_c10d.py:4631: UserWarning: No device id is provided via `init_process_group` or `barrier `. Using the current device set by the user. 
+  warnings.warn(  # warn only once
+[rank5]:[W705 13:37:17.260803656 ProcessGroupNCCL.cpp:4718] [PG ID 0 PG GUID 0 Rank 5]  using GPU 1 as device used by this process is currently unknown. This can potentially cause a hang if this rank to GPU mapping is incorrect. You can pecify device_id in init_process_group() to force use of a particular device.
+/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/distributed_c10d.py:4631: UserWarning: No device id is provided via `init_process_group` or `barrier `. Using the current device set by the user. 
+  warnings.warn(  # warn only once
+[rank6]:[W705 13:37:17.323525742 ProcessGroupNCCL.cpp:4718] [PG ID 0 PG GUID 0 Rank 6]  using GPU 2 as device used by this process is currently unknown. This can potentially cause a hang if this rank to GPU mapping is incorrect. You can pecify device_id in init_process_group() to force use of a particular device.
+[rank0]: Traceback (most recent call last):
+[rank0]:   File "/leonardo/home/userexternal/lpiarull/fddl/autoencoder_hybrid_data_tensor_parallel/train_hybrid_data_tensor_nccl.py", line 302, in <module>
+[rank0]:     main(
+[rank0]:     ~~~~^
+[rank0]:         epochs=epochs,
+[rank0]:         ^^^^^^^^^^^^^^
+[rank0]:         batch_size=batch_size,
+[rank0]:         ^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:     )
+[rank0]:     ^
+[rank0]:   File "/leonardo/home/userexternal/lpiarull/fddl/autoencoder_hybrid_data_tensor_parallel/train_hybrid_data_tensor_nccl.py", line 243, in main
+[rank0]:     dist.barrier()
+[rank0]:     ~~~~~~~~~~~~^^
+[rank0]:   File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/c10d_logger.py", line 81, in wrapper
+[rank0]:     return func(*args, **kwargs)
+[rank0]:   File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/distributed_c10d.py", line 4635, in barrier
+[rank0]:     work = group.barrier(opts=opts)
+[rank0]: torch.distributed.DistBackendError: NCCL error in: /pytorch/torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:3356, internal error - please report this issue to the NCCL developers, NCCL version 2.26.2
+[rank0]: ncclInternalError: Internal check failed.
+[rank0]: Last error:
+[rank0]: Could not find NET with id 0
+[rank4]: Traceback (most recent call last):
+[rank4]:   File "/leonardo/home/userexternal/lpiarull/fddl/autoencoder_hybrid_data_tensor_parallel/train_hybrid_data_tensor_nccl.py", line 302, in <module>
+[rank4]:     main(
+[rank4]:     ~~~~^
+[rank4]:         epochs=epochs,
+[rank4]:         ^^^^^^^^^^^^^^
+[rank4]:         batch_size=batch_size,
+[rank4]:         ^^^^^^^^^^^^^^^^^^^^^^
+[rank4]:     )
+[rank4]:     ^
+[rank4]:   File "/leonardo/home/userexternal/lpiarull/fddl/autoencoder_hybrid_data_tensor_parallel/train_hybrid_data_tensor_nccl.py", line 243, in main
+[rank4]:     dist.barrier()
+[rank4]:     ~~~~~~~~~~~~^^
+[rank4]:   File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/c10d_logger.py", line 81, in wrapper
+[rank4]:     return func(*args, **kwargs)
+[rank4]:   File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/distributed_c10d.py", line 4635, in barrier
+[rank4]:     work = group.barrier(opts=opts)
+[rank4]: torch.distributed.DistBackendError: NCCL error in: /pytorch/torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:3356, internal error - please report this issue to the NCCL developers, NCCL version 2.26.2
+[rank4]: ncclInternalError: Internal check failed.
+[rank4]: Last error:
+[rank4]: Could not find NET with id 0
+[rank0]:[W705 13:37:18.899415194 ProcessGroupNCCL.cpp:1479] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
+[rank4]:[W705 13:37:18.890459900 ProcessGroupNCCL.cpp:1479] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
+W0705 13:37:19.622000 3390663 site-packages/torch/distributed/elastic/multiprocessing/api.py:900] Sending process 3390729 closing signal SIGTERM
+W0705 13:37:19.623000 3390663 site-packages/torch/distributed/elastic/multiprocessing/api.py:900] Sending process 3390730 closing signal SIGTERM
+W0705 13:37:19.623000 3390663 site-packages/torch/distributed/elastic/multiprocessing/api.py:900] Sending process 3390731 closing signal SIGTERM
+W0705 13:37:19.625000 3251880 site-packages/torch/distributed/elastic/multiprocessing/api.py:900] Sending process 3251943 closing signal SIGTERM
+W0705 13:37:19.626000 3251880 site-packages/torch/distributed/elastic/multiprocessing/api.py:900] Sending process 3251944 closing signal SIGTERM
+W0705 13:37:19.626000 3251880 site-packages/torch/distributed/elastic/multiprocessing/api.py:900] Sending process 3251945 closing signal SIGTERM
+E0705 13:37:19.964000 3390663 site-packages/torch/distributed/elastic/multiprocessing/api.py:874] failed (exitcode: 1) local_rank: 0 (pid: 3390728) of binary: /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13
+Traceback (most recent call last):
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/torchrun", line 8, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 355, in wrapper
+    return f(*args, **kwargs)
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/run.py", line 892, in main
+    run(args)
+    ~~~^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/run.py", line 883, in run
+    elastic_launch(
+    ~~~~~~~~~~~~~~~
+        config=config,
+        ~~~~~~~~~~~~~~
+        entrypoint=cmd,
+        ~~~~~~~~~~~~~~~
+    )(*cmd_args)
+    ~^^^^^^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/launcher/api.py", line 139, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/launcher/api.py", line 270, in launch_agent
+    raise ChildFailedError(
+    ...<2 lines>...
+    )
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+train_hybrid_data_tensor_nccl.py FAILED
+------------------------------------------------------------
+Failures:
+  <NO_OTHER_FAILURES>
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2025-07-05_13:37:19
+  host      : lrdn0196-net1-3.leonardo.local
+  rank      : 0 (local_rank: 0)
+  exitcode  : 1 (pid: 3390728)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+============================================================
+E0705 13:37:19.991000 3251880 site-packages/torch/distributed/elastic/multiprocessing/api.py:874] failed (exitcode: 1) local_rank: 0 (pid: 3251942) of binary: /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13
+Traceback (most recent call last):
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/torchrun", line 8, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 355, in wrapper
+    return f(*args, **kwargs)
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/run.py", line 892, in main
+    run(args)
+    ~~~^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/run.py", line 883, in run
+    elastic_launch(
+    ~~~~~~~~~~~~~~~
+        config=config,
+        ~~~~~~~~~~~~~~
+        entrypoint=cmd,
+        ~~~~~~~~~~~~~~~
+    )(*cmd_args)
+    ~^^^^^^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/launcher/api.py", line 139, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/launcher/api.py", line 270, in launch_agent
+    raise ChildFailedError(
+    ...<2 lines>...
+    )
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+train_hybrid_data_tensor_nccl.py FAILED
+------------------------------------------------------------
+Failures:
+  <NO_OTHER_FAILURES>
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2025-07-05_13:37:19
+  host      : lrdn0205.leonardo.local
+  rank      : 4 (local_rank: 0)
+  exitcode  : 1 (pid: 3251942)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+============================================================
+srun: error: lrdn0196: task 2: Exited with exit code 1
+srun: error: lrdn0205: task 5: Exited with exit code 1
+Traceback (most recent call last):
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/torchrun", line 8, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 355, in wrapper
+    return f(*args, **kwargs)
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/run.py", line 892, in main
+    run(args)
+    ~~~^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/run.py", line 883, in run
+    elastic_launch(
+    ~~~~~~~~~~~~~~~
+        config=config,
+        ~~~~~~~~~~~~~~
+        entrypoint=cmd,
+        ~~~~~~~~~~~~~~~
+    )(*cmd_args)
+    ~^^^^^^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/launcher/api.py", line 139, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/launcher/api.py", line 265, in launch_agent
+    if result.is_failed():
+       ^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'is_failed'
+[W705 13:37:20.039939705 TCPStore.cpp:106] [c10d] sendBytes failed on SocketImpl(fd=3, addr=[lrdn0205.leonardo.local]:46046, remote=[lrdn0196.leonardo.local]:29600): Broken pipe
+Exception raised from sendBytes at /pytorch/torch/csrc/distributed/c10d/Utils.hpp:653 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x98 (0x14908b6665e8 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libc10.so)
+frame #1: <unknown function> + 0x5ba8bfe (0x1490cb283bfe in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #2: <unknown function> + 0x5baa458 (0x1490cb285458 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #3: <unknown function> + 0x5babc3e (0x1490cb286c3e in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #4: c10d::TCPStore::doWait(c10::ArrayRef<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::chrono::duration<long, std::ratio<1l, 1000l> >) + 0x1a6 (0x1490cb280bc6 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #5: c10d::TCPStore::doGet(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0x33 (0x1490cb280fa3 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #6: c10d::TCPStore::get(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0xab (0x1490cb28208b in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #7: <unknown function> + 0xc12dd6 (0x1490da156dd6 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_python.so)
+frame #8: <unknown function> + 0x38174d (0x1490d98c574d in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_python.so)
+frame #9: <unknown function> + 0x1d3c2c (0x560d731a9c2c in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #10: _PyObject_MakeTpCall + 0x36c (0x560d7318607c in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #11: <unknown function> + 0x206341 (0x560d731dc341 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #12: <unknown function> + 0x9ea1c (0x560d73074a1c in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #13: <unknown function> + 0x273463 (0x560d73249463 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #14: <unknown function> + 0x2c1d4a (0x560d73297d4a in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #15: <unknown function> + 0x2816d5 (0x560d732576d5 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #16: <unknown function> + 0x9ea1c (0x560d73074a1c in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #17: PyEval_EvalCode + 0xa1 (0x560d7324b171 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #18: <unknown function> + 0x2b3010 (0x560d73289010 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #19: <unknown function> + 0x2b09cc (0x560d732869cc in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #20: <unknown function> + 0x2ad876 (0x560d73283876 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #21: <unknown function> + 0x2ad4a8 (0x560d732834a8 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #22: <unknown function> + 0x2ad2bc (0x560d732832bc in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #23: Py_RunMain + 0x32e (0x560d732816ae in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #24: Py_BytesMain + 0x37 (0x560d73236d97 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #25: __libc_start_main + 0xe5 (0x1490e25c4d85 in /lib64/libc.so.6)
+frame #26: <unknown function> + 0x26018e (0x560d7323618e in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+
+W0705 13:37:20.584000 3251878 site-packages/torch/distributed/elastic/rendezvous/dynamic_rendezvous.py:1292] The node 'lrdn0205-net1-3.leonardo.local_3251878_0' has failed to shutdown the rendezvous '17375328' due to an error of type RendezvousConnectionError.
+[W705 13:37:20.044345314 TCPStore.cpp:106] [c10d] sendBytes failed on SocketImpl(fd=3, addr=[lrdn0205.leonardo.local]:46048, remote=[lrdn0196.leonardo.local]:29600): Broken pipe
+Exception raised from sendBytes at /pytorch/torch/csrc/distributed/c10d/Utils.hpp:653 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x98 (0x1496100a95e8 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libc10.so)
+frame #1: <unknown function> + 0x5ba8bfe (0x14964fcc6bfe in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #2: <unknown function> + 0x5baa458 (0x14964fcc8458 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #3: <unknown function> + 0x5babc3e (0x14964fcc9c3e in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #4: c10d::TCPStore::doWait(c10::ArrayRef<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::chrono::duration<long, std::ratio<1l, 1000l> >) + 0x1a6 (0x14964fcc3bc6 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #5: c10d::TCPStore::doGet(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0x33 (0x14964fcc3fa3 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #6: c10d::TCPStore::get(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0xab (0x14964fcc508b in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #7: <unknown function> + 0xc12dd6 (0x14965eb99dd6 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_python.so)
+frame #8: <unknown function> + 0x38174d (0x14965e30874d in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_python.so)
+frame #9: <unknown function> + 0x1d3c2c (0x563b8b6a8c2c in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #10: _PyObject_MakeTpCall + 0x36c (0x563b8b68507c in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #11: <unknown function> + 0x206341 (0x563b8b6db341 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #12: <unknown function> + 0x9ea1c (0x563b8b573a1c in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #13: <unknown function> + 0x273463 (0x563b8b748463 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #14: <unknown function> + 0x2c1d4a (0x563b8b796d4a in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #15: <unknown function> + 0x2816d5 (0x563b8b7566d5 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #16: <unknown function> + 0x9ea1c (0x563b8b573a1c in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #17: PyEval_EvalCode + 0xa1 (0x563b8b74a171 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #18: <unknown function> + 0x2b3010 (0x563b8b788010 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #19: <unknown function> + 0x2b09cc (0x563b8b7859cc in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #20: <unknown function> + 0x2ad876 (0x563b8b782876 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #21: <unknown function> + 0x2ad4a8 (0x563b8b7824a8 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #22: <unknown function> + 0x2ad2bc (0x563b8b7822bc in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #23: Py_RunMain + 0x32e (0x563b8b7806ae in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #24: Py_BytesMain + 0x37 (0x563b8b735d97 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #25: __libc_start_main + 0xe5 (0x149667007d85 in /lib64/libc.so.6)
+frame #26: <unknown function> + 0x26018e (0x563b8b73518e in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+
+W0705 13:37:20.587000 3251877 site-packages/torch/distributed/elastic/rendezvous/dynamic_rendezvous.py:1292] The node 'lrdn0205-net1-3.leonardo.local_3251877_0' has failed to shutdown the rendezvous '17375328' due to an error of type RendezvousConnectionError.
+[W705 13:37:20.051122568 TCPStore.cpp:106] [c10d] sendBytes failed on SocketImpl(fd=3, addr=[lrdn0205-net1-3.leonardo.local]:46046, remote=[lrdn0196.leonardo.local]:29600): Broken pipe
+Exception raised from sendBytes at /pytorch/torch/csrc/distributed/c10d/Utils.hpp:653 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x98 (0x14908b6665e8 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libc10.so)
+frame #1: <unknown function> + 0x5ba8bfe (0x1490cb283bfe in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #2: <unknown function> + 0x5baa458 (0x1490cb285458 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #3: <unknown function> + 0x5babc3e (0x1490cb286c3e in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #4: c10d::TCPStore::doWait(c10::ArrayRef<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::chrono::duration<long, std::ratio<1l, 1000l> >) + 0x1a6 (0x1490cb280bc6 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #5: c10d::TCPStore::doGet(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0x33 (0x1490cb280fa3 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #6: c10d::TCPStore::get(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0xab (0x1490cb28208b in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #7: <unknown function> + 0xc12dd6 (0x1490da156dd6 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_python.so)
+frame #8: <unknown function> + 0x38174d (0x1490d98c574d in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_python.so)
+frame #9: <unknown function> + 0x1d3c2c (0x560d731a9c2c in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #10: _PyObject_MakeTpCall + 0x36c (0x560d7318607c in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #11: <unknown function> + 0x206341 (0x560d731dc341 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #12: <unknown function> + 0x9ea1c (0x560d73074a1c in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #13: <unknown function> + 0x273463 (0x560d73249463 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #14: <unknown function> + 0x2c1d4a (0x560d73297d4a in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #15: <unknown function> + 0x2816d5 (0x560d732576d5 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #16: <unknown function> + 0x9ea1c (0x560d73074a1c in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #17: PyEval_EvalCode + 0xa1 (0x560d7324b171 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #18: <unknown function> + 0x2b3010 (0x560d73289010 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #19: <unknown function> + 0x2b09cc (0x560d732869cc in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #20: <unknown function> + 0x2ad876 (0x560d73283876 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #21: <unknown function> + 0x2ad4a8 (0x560d732834a8 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #22: <unknown function> + 0x2ad2bc (0x560d732832bc in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #23: Py_RunMain + 0x32e (0x560d732816ae in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #24: Py_BytesMain + 0x37 (0x560d73236d97 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #25: __libc_start_main + 0xe5 (0x1490e25c4d85 in /lib64/libc.so.6)
+frame #26: <unknown function> + 0x26018e (0x560d7323618e in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+
+W0705 13:37:20.593000 3251878 site-packages/torch/distributed/elastic/rendezvous/dynamic_rendezvous.py:1292] The node 'lrdn0205-net1-3.leonardo.local_3251878_0' has failed to shutdown the rendezvous '17375328' due to an error of type RendezvousConnectionError.
+Traceback (most recent call last):
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/rendezvous/c10d_rendezvous_backend.py", line 117, in _call_store
+    return getattr(self._store, store_op)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+torch.distributed.DistNetworkError: failed to recv, got 0 bytes
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/torchrun", line 8, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 355, in wrapper
+    return f(*args, **kwargs)
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/run.py", line 892, in main
+    run(args)
+    ~~~^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/run.py", line 883, in run
+    elastic_launch(
+    ~~~~~~~~~~~~~~~
+        config=config,
+        ~~~~~~~~~~~~~~
+        entrypoint=cmd,
+        ~~~~~~~~~~~~~~~
+    )(*cmd_args)
+    ~^^^^^^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/launcher/api.py", line 139, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/launcher/api.py", line 261, in launch_agent
+    result = agent.run()
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/metrics/api.py", line 138, in wrapper
+    result = f(*args, **kwargs)
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/agent/server/api.py", line 711, in run
+    result = self._invoke_run(role)
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/agent/server/api.py", line 864, in _invoke_run
+    self._initialize_workers(self._worker_group)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/metrics/api.py", line 138, in wrapper
+    result = f(*args, **kwargs)
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/agent/server/api.py", line 683, in _initialize_workers
+    self._rendezvous(worker_group)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/metrics/api.py", line 138, in wrapper
+    result = f(*args, **kwargs)
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/agent/server/api.py", line 500, in _rendezvous
+    rdzv_info = spec.rdzv_handler.next_rendezvous()
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/rendezvous/dynamic_rendezvous.py", line 1170, in next_rendezvous
+    self._op_executor.run(join_op, deadline, self._get_deadline)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/rendezvous/dynamic_rendezvous.py", line 648, in run
+    has_set = self._state_holder.sync()
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/rendezvous/dynamic_rendezvous.py", line 437, in sync
+    get_response = self._backend.get_state()
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/rendezvous/c10d_rendezvous_backend.py", line 75, in get_state
+    base64_state: bytes = self._call_store("get", self._key)
+                          ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/rendezvous/c10d_rendezvous_backend.py", line 119, in _call_store
+    raise RendezvousConnectionError(
+        "The connection to the C10d store has failed. See inner exception for details."
+    ) from exc
+torch.distributed.elastic.rendezvous.api.RendezvousConnectionError: The connection to the C10d store has failed. See inner exception for details.
+[W705 13:37:20.054139846 TCPStore.cpp:106] [c10d] sendBytes failed on SocketImpl(fd=3, addr=[lrdn0205.leonardo.local]:46048, remote=[lrdn0196.leonardo.local]:29600): Broken pipe
+Exception raised from sendBytes at /pytorch/torch/csrc/distributed/c10d/Utils.hpp:653 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x98 (0x1496100a95e8 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libc10.so)
+frame #1: <unknown function> + 0x5ba8bfe (0x14964fcc6bfe in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #2: <unknown function> + 0x5baa458 (0x14964fcc8458 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #3: <unknown function> + 0x5babc3e (0x14964fcc9c3e in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #4: c10d::TCPStore::doWait(c10::ArrayRef<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::chrono::duration<long, std::ratio<1l, 1000l> >) + 0x1a6 (0x14964fcc3bc6 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #5: c10d::TCPStore::doGet(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0x33 (0x14964fcc3fa3 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #6: c10d::TCPStore::get(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0xab (0x14964fcc508b in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #7: <unknown function> + 0xc12dd6 (0x14965eb99dd6 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_python.so)
+frame #8: <unknown function> + 0x38174d (0x14965e30874d in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_python.so)
+frame #9: <unknown function> + 0x1d3c2c (0x563b8b6a8c2c in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #10: _PyObject_MakeTpCall + 0x36c (0x563b8b68507c in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #11: <unknown function> + 0x206341 (0x563b8b6db341 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #12: <unknown function> + 0x9ea1c (0x563b8b573a1c in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #13: <unknown function> + 0x273463 (0x563b8b748463 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #14: <unknown function> + 0x2c1d4a (0x563b8b796d4a in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #15: <unknown function> + 0x2816d5 (0x563b8b7566d5 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #16: <unknown function> + 0x9ea1c (0x563b8b573a1c in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #17: PyEval_EvalCode + 0xa1 (0x563b8b74a171 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #18: <unknown function> + 0x2b3010 (0x563b8b788010 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #19: <unknown function> + 0x2b09cc (0x563b8b7859cc in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #20: <unknown function> + 0x2ad876 (0x563b8b782876 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #21: <unknown function> + 0x2ad4a8 (0x563b8b7824a8 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #22: <unknown function> + 0x2ad2bc (0x563b8b7822bc in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #23: Py_RunMain + 0x32e (0x563b8b7806ae in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #24: Py_BytesMain + 0x37 (0x563b8b735d97 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #25: __libc_start_main + 0xe5 (0x149667007d85 in /lib64/libc.so.6)
+frame #26: <unknown function> + 0x26018e (0x563b8b73518e in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+
+W0705 13:37:20.596000 3251877 site-packages/torch/distributed/elastic/rendezvous/dynamic_rendezvous.py:1292] The node 'lrdn0205-net1-3.leonardo.local_3251877_0' has failed to shutdown the rendezvous '17375328' due to an error of type RendezvousConnectionError.
+Traceback (most recent call last):
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/rendezvous/c10d_rendezvous_backend.py", line 117, in _call_store
+    return getattr(self._store, store_op)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+torch.distributed.DistNetworkError: failed to recv, got 0 bytes
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/torchrun", line 8, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 355, in wrapper
+    return f(*args, **kwargs)
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/run.py", line 892, in main
+    run(args)
+    ~~~^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/run.py", line 883, in run
+    elastic_launch(
+    ~~~~~~~~~~~~~~~
+        config=config,
+        ~~~~~~~~~~~~~~
+        entrypoint=cmd,
+        ~~~~~~~~~~~~~~~
+    )(*cmd_args)
+    ~^^^^^^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/launcher/api.py", line 139, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/launcher/api.py", line 261, in launch_agent
+    result = agent.run()
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/metrics/api.py", line 138, in wrapper
+    result = f(*args, **kwargs)
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/agent/server/api.py", line 711, in run
+    result = self._invoke_run(role)
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/agent/server/api.py", line 864, in _invoke_run
+    self._initialize_workers(self._worker_group)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/metrics/api.py", line 138, in wrapper
+    result = f(*args, **kwargs)
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/agent/server/api.py", line 683, in _initialize_workers
+    self._rendezvous(worker_group)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/metrics/api.py", line 138, in wrapper
+    result = f(*args, **kwargs)
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/agent/server/api.py", line 500, in _rendezvous
+    rdzv_info = spec.rdzv_handler.next_rendezvous()
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/rendezvous/dynamic_rendezvous.py", line 1170, in next_rendezvous
+    self._op_executor.run(join_op, deadline, self._get_deadline)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/rendezvous/dynamic_rendezvous.py", line 648, in run
+    has_set = self._state_holder.sync()
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/rendezvous/dynamic_rendezvous.py", line 437, in sync
+    get_response = self._backend.get_state()
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/rendezvous/c10d_rendezvous_backend.py", line 75, in get_state
+    base64_state: bytes = self._call_store("get", self._key)
+                          ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/rendezvous/c10d_rendezvous_backend.py", line 119, in _call_store
+    raise RendezvousConnectionError(
+        "The connection to the C10d store has failed. See inner exception for details."
+    ) from exc
+torch.distributed.elastic.rendezvous.api.RendezvousConnectionError: The connection to the C10d store has failed. See inner exception for details.
+[W705 13:37:20.062404640 TCPStore.cpp:106] [c10d] sendBytes failed on SocketImpl(fd=3, addr=[lrdn0205-net1-3.leonardo.local]:46036, remote=[lrdn0196-net1-3.leonardo.local]:29600): Broken pipe
+Exception raised from sendBytes at /pytorch/torch/csrc/distributed/c10d/Utils.hpp:653 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x98 (0x14b7796735e8 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libc10.so)
+frame #1: <unknown function> + 0x5ba8bfe (0x14b7b9290bfe in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #2: <unknown function> + 0x5baa458 (0x14b7b9292458 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #3: <unknown function> + 0x5babc3e (0x14b7b9293c3e in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #4: c10d::TCPStore::doWait(c10::ArrayRef<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::chrono::duration<long, std::ratio<1l, 1000l> >) + 0x1a6 (0x14b7b928dbc6 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #5: c10d::TCPStore::doGet(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0x33 (0x14b7b928dfa3 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #6: c10d::TCPStore::get(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0xab (0x14b7b928f08b in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #7: <unknown function> + 0xc12dd6 (0x14b7c8163dd6 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_python.so)
+frame #8: <unknown function> + 0x38174d (0x14b7c78d274d in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_python.so)
+frame #9: <unknown function> + 0x1d3c2c (0x56329e6d4c2c in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #10: _PyObject_MakeTpCall + 0x36c (0x56329e6b107c in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #11: <unknown function> + 0x206341 (0x56329e707341 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #12: <unknown function> + 0x9ea1c (0x56329e59fa1c in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #13: <unknown function> + 0x273463 (0x56329e774463 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #14: <unknown function> + 0x2c1d4a (0x56329e7c2d4a in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #15: <unknown function> + 0x2816d5 (0x56329e7826d5 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #16: <unknown function> + 0x9ea1c (0x56329e59fa1c in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #17: PyEval_EvalCode + 0xa1 (0x56329e776171 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #18: <unknown function> + 0x2b3010 (0x56329e7b4010 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #19: <unknown function> + 0x2b09cc (0x56329e7b19cc in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #20: <unknown function> + 0x2ad876 (0x56329e7ae876 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #21: <unknown function> + 0x2ad4a8 (0x56329e7ae4a8 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #22: <unknown function> + 0x2ad2bc (0x56329e7ae2bc in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #23: Py_RunMain + 0x32e (0x56329e7ac6ae in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #24: Py_BytesMain + 0x37 (0x56329e761d97 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #25: __libc_start_main + 0xe5 (0x14b7d05d1d85 in /lib64/libc.so.6)
+frame #26: <unknown function> + 0x26018e (0x56329e76118e in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+
+W0705 13:37:20.605000 3251879 site-packages/torch/distributed/elastic/rendezvous/dynamic_rendezvous.py:1292] The node 'lrdn0205.leonardo.local_3251879_0' has failed to shutdown the rendezvous '17375328' due to an error of type RendezvousConnectionError.
+[W705 13:37:20.079560718 TCPStore.cpp:106] [c10d] sendBytes failed on SocketImpl(fd=3, addr=[lrdn0196.leonardo.local]:32924, remote=[lrdn0196-net1-3.leonardo.local]:29600): Broken pipe
+Exception raised from sendBytes at /pytorch/torch/csrc/distributed/c10d/Utils.hpp:653 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x98 (0x14a6e98145e8 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libc10.so)
+frame #1: <unknown function> + 0x5ba8bfe (0x14a729431bfe in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #2: <unknown function> + 0x5baa458 (0x14a729433458 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #3: <unknown function> + 0x5babc3e (0x14a729434c3e in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #4: c10d::TCPStore::doWait(c10::ArrayRef<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::chrono::duration<long, std::ratio<1l, 1000l> >) + 0x1a6 (0x14a72942ebc6 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #5: c10d::TCPStore::doGet(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0x33 (0x14a72942efa3 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #6: c10d::TCPStore::get(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0xab (0x14a72943008b in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #7: <unknown function> + 0xc12dd6 (0x14a738304dd6 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_python.so)
+frame #8: <unknown function> + 0x38174d (0x14a737a7374d in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_python.so)
+frame #9: <unknown function> + 0x1d3c2c (0x55faf46a0c2c in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #10: _PyObject_MakeTpCall + 0x36c (0x55faf467d07c in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #11: <unknown function> + 0x206341 (0x55faf46d3341 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #12: <unknown function> + 0x9ea1c (0x55faf456ba1c in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #13: <unknown function> + 0x273463 (0x55faf4740463 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #14: <unknown function> + 0x2c1d4a (0x55faf478ed4a in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #15: <unknown function> + 0x2816d5 (0x55faf474e6d5 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #16: <unknown function> + 0x9ea1c (0x55faf456ba1c in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #17: PyEval_EvalCode + 0xa1 (0x55faf4742171 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #18: <unknown function> + 0x2b3010 (0x55faf4780010 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #19: <unknown function> + 0x2b09cc (0x55faf477d9cc in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #20: <unknown function> + 0x2ad876 (0x55faf477a876 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #21: <unknown function> + 0x2ad4a8 (0x55faf477a4a8 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #22: <unknown function> + 0x2ad2bc (0x55faf477a2bc in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #23: Py_RunMain + 0x32e (0x55faf47786ae in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #24: Py_BytesMain + 0x37 (0x55faf472dd97 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #25: __libc_start_main + 0xe5 (0x14a740779d85 in /lib64/libc.so.6)
+frame #26: <unknown function> + 0x26018e (0x55faf472d18e in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+
+W0705 13:37:20.612000 3390662 site-packages/torch/distributed/elastic/rendezvous/dynamic_rendezvous.py:1292] The node 'lrdn0196.leonardo.local_3390662_0' has failed to shutdown the rendezvous '17375328' due to an error of type RendezvousConnectionError.
+[W705 13:37:20.072530643 TCPStore.cpp:106] [c10d] sendBytes failed on SocketImpl(fd=3, addr=[lrdn0205-net1-3.leonardo.local]:46036, remote=[lrdn0196-net1-3.leonardo.local]:29600): Broken pipe
+Exception raised from sendBytes at /pytorch/torch/csrc/distributed/c10d/Utils.hpp:653 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x98 (0x14b7796735e8 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libc10.so)
+frame #1: <unknown function> + 0x5ba8bfe (0x14b7b9290bfe in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #2: <unknown function> + 0x5baa458 (0x14b7b9292458 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #3: <unknown function> + 0x5babc3e (0x14b7b9293c3e in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #4: c10d::TCPStore::doWait(c10::ArrayRef<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::chrono::duration<long, std::ratio<1l, 1000l> >) + 0x1a6 (0x14b7b928dbc6 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #5: c10d::TCPStore::doGet(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0x33 (0x14b7b928dfa3 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #6: c10d::TCPStore::get(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0xab (0x14b7b928f08b in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #7: <unknown function> + 0xc12dd6 (0x14b7c8163dd6 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_python.so)
+frame #8: <unknown function> + 0x38174d (0x14b7c78d274d in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_python.so)
+frame #9: <unknown function> + 0x1d3c2c (0x56329e6d4c2c in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #10: _PyObject_MakeTpCall + 0x36c (0x56329e6b107c in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #11: <unknown function> + 0x206341 (0x56329e707341 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #12: <unknown function> + 0x9ea1c (0x56329e59fa1c in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #13: <unknown function> + 0x273463 (0x56329e774463 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #14: <unknown function> + 0x2c1d4a (0x56329e7c2d4a in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #15: <unknown function> + 0x2816d5 (0x56329e7826d5 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #16: <unknown function> + 0x9ea1c (0x56329e59fa1c in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #17: PyEval_EvalCode + 0xa1 (0x56329e776171 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #18: <unknown function> + 0x2b3010 (0x56329e7b4010 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #19: <unknown function> + 0x2b09cc (0x56329e7b19cc in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #20: <unknown function> + 0x2ad876 (0x56329e7ae876 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #21: <unknown function> + 0x2ad4a8 (0x56329e7ae4a8 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #22: <unknown function> + 0x2ad2bc (0x56329e7ae2bc in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #23: Py_RunMain + 0x32e (0x56329e7ac6ae in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #24: Py_BytesMain + 0x37 (0x56329e761d97 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #25: __libc_start_main + 0xe5 (0x14b7d05d1d85 in /lib64/libc.so.6)
+frame #26: <unknown function> + 0x26018e (0x56329e76118e in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+
+W0705 13:37:20.614000 3251879 site-packages/torch/distributed/elastic/rendezvous/dynamic_rendezvous.py:1292] The node 'lrdn0205.leonardo.local_3251879_0' has failed to shutdown the rendezvous '17375328' due to an error of type RendezvousConnectionError.
+Traceback (most recent call last):
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/rendezvous/c10d_rendezvous_backend.py", line 117, in _call_store
+    return getattr(self._store, store_op)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+torch.distributed.DistNetworkError: failed to recv, got 0 bytes
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/torchrun", line 8, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 355, in wrapper
+    return f(*args, **kwargs)
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/run.py", line 892, in main
+    run(args)
+    ~~~^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/run.py", line 883, in run
+    elastic_launch(
+    ~~~~~~~~~~~~~~~
+        config=config,
+        ~~~~~~~~~~~~~~
+        entrypoint=cmd,
+        ~~~~~~~~~~~~~~~
+    )(*cmd_args)
+    ~^^^^^^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/launcher/api.py", line 139, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/launcher/api.py", line 261, in launch_agent
+    result = agent.run()
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/metrics/api.py", line 138, in wrapper
+    result = f(*args, **kwargs)
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/agent/server/api.py", line 711, in run
+    result = self._invoke_run(role)
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/agent/server/api.py", line 864, in _invoke_run
+    self._initialize_workers(self._worker_group)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/metrics/api.py", line 138, in wrapper
+    result = f(*args, **kwargs)
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/agent/server/api.py", line 683, in _initialize_workers
+    self._rendezvous(worker_group)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/metrics/api.py", line 138, in wrapper
+    result = f(*args, **kwargs)
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/agent/server/api.py", line 500, in _rendezvous
+    rdzv_info = spec.rdzv_handler.next_rendezvous()
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/rendezvous/dynamic_rendezvous.py", line 1170, in next_rendezvous
+    self._op_executor.run(join_op, deadline, self._get_deadline)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/rendezvous/dynamic_rendezvous.py", line 648, in run
+    has_set = self._state_holder.sync()
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/rendezvous/dynamic_rendezvous.py", line 437, in sync
+    get_response = self._backend.get_state()
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/rendezvous/c10d_rendezvous_backend.py", line 75, in get_state
+    base64_state: bytes = self._call_store("get", self._key)
+                          ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/rendezvous/c10d_rendezvous_backend.py", line 119, in _call_store
+    raise RendezvousConnectionError(
+        "The connection to the C10d store has failed. See inner exception for details."
+    ) from exc
+torch.distributed.elastic.rendezvous.api.RendezvousConnectionError: The connection to the C10d store has failed. See inner exception for details.
+[W705 13:37:20.088334770 TCPStore.cpp:106] [c10d] sendBytes failed on SocketImpl(fd=3, addr=[lrdn0196-net1-3.leonardo.local]:32940, remote=[lrdn0196-net1-3.leonardo.local]:29600): Broken pipe
+Exception raised from sendBytes at /pytorch/torch/csrc/distributed/c10d/Utils.hpp:653 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x98 (0x14f5d59585e8 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libc10.so)
+frame #1: <unknown function> + 0x5ba8bfe (0x14f615575bfe in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #2: <unknown function> + 0x5baa458 (0x14f615577458 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #3: <unknown function> + 0x5babc3e (0x14f615578c3e in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #4: c10d::TCPStore::doWait(c10::ArrayRef<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::chrono::duration<long, std::ratio<1l, 1000l> >) + 0x1a6 (0x14f615572bc6 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #5: c10d::TCPStore::doGet(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0x33 (0x14f615572fa3 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #6: c10d::TCPStore::get(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0xab (0x14f61557408b in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #7: <unknown function> + 0xc12dd6 (0x14f624448dd6 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_python.so)
+frame #8: <unknown function> + 0x38174d (0x14f623bb774d in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_python.so)
+frame #9: <unknown function> + 0x1d3c2c (0x5588ed7dec2c in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #10: _PyObject_MakeTpCall + 0x36c (0x5588ed7bb07c in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #11: <unknown function> + 0x206341 (0x5588ed811341 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #12: <unknown function> + 0x9ea1c (0x5588ed6a9a1c in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #13: <unknown function> + 0x273463 (0x5588ed87e463 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #14: <unknown function> + 0x2c1d4a (0x5588ed8ccd4a in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #15: <unknown function> + 0x2816d5 (0x5588ed88c6d5 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #16: <unknown function> + 0x9ea1c (0x5588ed6a9a1c in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #17: PyEval_EvalCode + 0xa1 (0x5588ed880171 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #18: <unknown function> + 0x2b3010 (0x5588ed8be010 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #19: <unknown function> + 0x2b09cc (0x5588ed8bb9cc in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #20: <unknown function> + 0x2ad876 (0x5588ed8b8876 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #21: <unknown function> + 0x2ad4a8 (0x5588ed8b84a8 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #22: <unknown function> + 0x2ad2bc (0x5588ed8b82bc in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #23: Py_RunMain + 0x32e (0x5588ed8b66ae in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #24: Py_BytesMain + 0x37 (0x5588ed86bd97 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #25: __libc_start_main + 0xe5 (0x14f62c8b6d85 in /lib64/libc.so.6)
+frame #26: <unknown function> + 0x26018e (0x5588ed86b18e in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+
+[W705 13:37:20.090664487 TCPStore.cpp:106] [c10d] sendBytes failed on SocketImpl(fd=3, addr=[lrdn0196-net1-3.leonardo.local]:32924, remote=[lrdn0196-net1-3.leonardo.local]:29600): Broken pipe
+Exception raised from sendBytes at /pytorch/torch/csrc/distributed/c10d/Utils.hpp:653 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x98 (0x14a6e98145e8 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libc10.so)
+frame #1: <unknown function> + 0x5ba8bfe (0x14a729431bfe in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #2: <unknown function> + 0x5baa458 (0x14a729433458 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #3: <unknown function> + 0x5babc3e (0x14a729434c3e in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #4: c10d::TCPStore::doWait(c10::ArrayRef<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::chrono::duration<long, std::ratio<1l, 1000l> >) + 0x1a6 (0x14a72942ebc6 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #5: c10d::TCPStore::doGet(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0x33 (0x14a72942efa3 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #6: c10d::TCPStore::get(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0xab (0x14a72943008b in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #7: <unknown function> + 0xc12dd6 (0x14a738304dd6 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_python.so)
+frame #8: <unknown function> + 0x38174d (0x14a737a7374d in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_python.so)
+frame #9: <unknown function> + 0x1d3c2c (0x55faf46a0c2c in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #10: _PyObject_MakeTpCall + 0x36c (0x55faf467d07c in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #11: <unknown function> + 0x206341 (0x55faf46d3341 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #12: <unknown function> + 0x9ea1c (0x55faf456ba1c in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #13: <unknown function> + 0x273463 (0x55faf4740463 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #14: <unknown function> + 0x2c1d4a (0x55faf478ed4a in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #15: <unknown function> + 0x2816d5 (0x55faf474e6d5 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #16: <unknown function> + 0x9ea1c (0x55faf456ba1c in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #17: PyEval_EvalCode + 0xa1 (0x55faf4742171 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #18: <unknown function> + 0x2b3010 (0x55faf4780010 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #19: <unknown function> + 0x2b09cc (0x55faf477d9cc in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #20: <unknown function> + 0x2ad876 (0x55faf477a876 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #21: <unknown function> + 0x2ad4a8 (0x55faf477a4a8 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #22: <unknown function> + 0x2ad2bc (0x55faf477a2bc in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #23: Py_RunMain + 0x32e (0x55faf47786ae in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #24: Py_BytesMain + 0x37 (0x55faf472dd97 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #25: __libc_start_main + 0xe5 (0x14a740779d85 in /lib64/libc.so.6)
+frame #26: <unknown function> + 0x26018e (0x55faf472d18e in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+
+W0705 13:37:20.620000 3390664 site-packages/torch/distributed/elastic/rendezvous/dynamic_rendezvous.py:1292] The node 'lrdn0196.leonardo.local_3390664_0' has failed to shutdown the rendezvous '17375328' due to an error of type RendezvousConnectionError.
+W0705 13:37:20.621000 3390662 site-packages/torch/distributed/elastic/rendezvous/dynamic_rendezvous.py:1292] The node 'lrdn0196.leonardo.local_3390662_0' has failed to shutdown the rendezvous '17375328' due to an error of type RendezvousConnectionError.
+Traceback (most recent call last):
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/rendezvous/c10d_rendezvous_backend.py", line 117, in _call_store
+    return getattr(self._store, store_op)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+torch.distributed.DistNetworkError: failed to recv, got 0 bytes
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/torchrun", line 8, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 355, in wrapper
+    return f(*args, **kwargs)
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/run.py", line 892, in main
+    run(args)
+    ~~~^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/run.py", line 883, in run
+    elastic_launch(
+    ~~~~~~~~~~~~~~~
+        config=config,
+        ~~~~~~~~~~~~~~
+        entrypoint=cmd,
+        ~~~~~~~~~~~~~~~
+    )(*cmd_args)
+    ~^^^^^^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/launcher/api.py", line 139, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/launcher/api.py", line 261, in launch_agent
+    result = agent.run()
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/metrics/api.py", line 138, in wrapper
+    result = f(*args, **kwargs)
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/agent/server/api.py", line 711, in run
+    result = self._invoke_run(role)
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/agent/server/api.py", line 864, in _invoke_run
+    self._initialize_workers(self._worker_group)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/metrics/api.py", line 138, in wrapper
+    result = f(*args, **kwargs)
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/agent/server/api.py", line 683, in _initialize_workers
+    self._rendezvous(worker_group)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/metrics/api.py", line 138, in wrapper
+    result = f(*args, **kwargs)
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/agent/server/api.py", line 500, in _rendezvous
+    rdzv_info = spec.rdzv_handler.next_rendezvous()
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/rendezvous/dynamic_rendezvous.py", line 1170, in next_rendezvous
+    self._op_executor.run(join_op, deadline, self._get_deadline)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/rendezvous/dynamic_rendezvous.py", line 648, in run
+    has_set = self._state_holder.sync()
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/rendezvous/dynamic_rendezvous.py", line 437, in sync
+    get_response = self._backend.get_state()
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/rendezvous/c10d_rendezvous_backend.py", line 75, in get_state
+    base64_state: bytes = self._call_store("get", self._key)
+                          ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/rendezvous/c10d_rendezvous_backend.py", line 119, in _call_store
+    raise RendezvousConnectionError(
+        "The connection to the C10d store has failed. See inner exception for details."
+    ) from exc
+torch.distributed.elastic.rendezvous.api.RendezvousConnectionError: The connection to the C10d store has failed. See inner exception for details.
+[W705 13:37:20.098488953 TCPStore.cpp:106] [c10d] sendBytes failed on SocketImpl(fd=3, addr=[lrdn0196.leonardo.local]:32940, remote=[lrdn0196-net1-3.leonardo.local]:29600): Broken pipe
+Exception raised from sendBytes at /pytorch/torch/csrc/distributed/c10d/Utils.hpp:653 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x98 (0x14f5d59585e8 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libc10.so)
+frame #1: <unknown function> + 0x5ba8bfe (0x14f615575bfe in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #2: <unknown function> + 0x5baa458 (0x14f615577458 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #3: <unknown function> + 0x5babc3e (0x14f615578c3e in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #4: c10d::TCPStore::doWait(c10::ArrayRef<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::chrono::duration<long, std::ratio<1l, 1000l> >) + 0x1a6 (0x14f615572bc6 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #5: c10d::TCPStore::doGet(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0x33 (0x14f615572fa3 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #6: c10d::TCPStore::get(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0xab (0x14f61557408b in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_cpu.so)
+frame #7: <unknown function> + 0xc12dd6 (0x14f624448dd6 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_python.so)
+frame #8: <unknown function> + 0x38174d (0x14f623bb774d in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/lib/libtorch_python.so)
+frame #9: <unknown function> + 0x1d3c2c (0x5588ed7dec2c in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #10: _PyObject_MakeTpCall + 0x36c (0x5588ed7bb07c in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #11: <unknown function> + 0x206341 (0x5588ed811341 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #12: <unknown function> + 0x9ea1c (0x5588ed6a9a1c in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #13: <unknown function> + 0x273463 (0x5588ed87e463 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #14: <unknown function> + 0x2c1d4a (0x5588ed8ccd4a in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #15: <unknown function> + 0x2816d5 (0x5588ed88c6d5 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #16: <unknown function> + 0x9ea1c (0x5588ed6a9a1c in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #17: PyEval_EvalCode + 0xa1 (0x5588ed880171 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #18: <unknown function> + 0x2b3010 (0x5588ed8be010 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #19: <unknown function> + 0x2b09cc (0x5588ed8bb9cc in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #20: <unknown function> + 0x2ad876 (0x5588ed8b8876 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #21: <unknown function> + 0x2ad4a8 (0x5588ed8b84a8 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #22: <unknown function> + 0x2ad2bc (0x5588ed8b82bc in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #23: Py_RunMain + 0x32e (0x5588ed8b66ae in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #24: Py_BytesMain + 0x37 (0x5588ed86bd97 in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+frame #25: __libc_start_main + 0xe5 (0x14f62c8b6d85 in /lib64/libc.so.6)
+frame #26: <unknown function> + 0x26018e (0x5588ed86b18e in /leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/python3.13)
+
+W0705 13:37:20.629000 3390664 site-packages/torch/distributed/elastic/rendezvous/dynamic_rendezvous.py:1292] The node 'lrdn0196.leonardo.local_3390664_0' has failed to shutdown the rendezvous '17375328' due to an error of type RendezvousConnectionError.
+Traceback (most recent call last):
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/rendezvous/c10d_rendezvous_backend.py", line 117, in _call_store
+    return getattr(self._store, store_op)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+torch.distributed.DistNetworkError: failed to recv, got 0 bytes
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/bin/torchrun", line 8, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 355, in wrapper
+    return f(*args, **kwargs)
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/run.py", line 892, in main
+    run(args)
+    ~~~^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/run.py", line 883, in run
+    elastic_launch(
+    ~~~~~~~~~~~~~~~
+        config=config,
+        ~~~~~~~~~~~~~~
+        entrypoint=cmd,
+        ~~~~~~~~~~~~~~~
+    )(*cmd_args)
+    ~^^^^^^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/launcher/api.py", line 139, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/launcher/api.py", line 261, in launch_agent
+    result = agent.run()
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/metrics/api.py", line 138, in wrapper
+    result = f(*args, **kwargs)
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/agent/server/api.py", line 711, in run
+    result = self._invoke_run(role)
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/agent/server/api.py", line 864, in _invoke_run
+    self._initialize_workers(self._worker_group)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/metrics/api.py", line 138, in wrapper
+    result = f(*args, **kwargs)
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/agent/server/api.py", line 683, in _initialize_workers
+    self._rendezvous(worker_group)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/metrics/api.py", line 138, in wrapper
+    result = f(*args, **kwargs)
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/agent/server/api.py", line 500, in _rendezvous
+    rdzv_info = spec.rdzv_handler.next_rendezvous()
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/rendezvous/dynamic_rendezvous.py", line 1170, in next_rendezvous
+    self._op_executor.run(join_op, deadline, self._get_deadline)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/rendezvous/dynamic_rendezvous.py", line 648, in run
+    has_set = self._state_holder.sync()
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/rendezvous/dynamic_rendezvous.py", line 437, in sync
+    get_response = self._backend.get_state()
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/rendezvous/c10d_rendezvous_backend.py", line 75, in get_state
+    base64_state: bytes = self._call_store("get", self._key)
+                          ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/leonardo/home/userexternal/lpiarull/.conda/envs/fddl/lib/python3.13/site-packages/torch/distributed/elastic/rendezvous/c10d_rendezvous_backend.py", line 119, in _call_store
+    raise RendezvousConnectionError(
+        "The connection to the C10d store has failed. See inner exception for details."
+    ) from exc
+torch.distributed.elastic.rendezvous.api.RendezvousConnectionError: The connection to the C10d store has failed. See inner exception for details.
+srun: error: lrdn0196: task 3: Exited with exit code 1
+srun: error: lrdn0205: tasks 4,6-7: Exited with exit code 1
+srun: error: lrdn0196: tasks 0-1: Exited with exit code 1

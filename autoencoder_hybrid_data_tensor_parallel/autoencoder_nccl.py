@@ -35,20 +35,24 @@ class LinearMPI(torch.autograd.Function):
         
         ctx.save_for_backward(A, B, bias)
         B = B.t()
-        N = A.size(dim=0)
-        K = B.size(dim=0)
-        M = B.size(dim=1)
+        N = torch.tensor(A.size(dim=0), device=gpu_rank)
+        K = torch.tensor(B.size(dim=0), device=gpu_rank)
+        M = torch.tensor(B.size(dim=1), device=gpu_rank)
 
-        local_rows = int(N // size)
+        local_rows = torch.tensor(int(N // size), device=gpu_rank)
 
         dist.broadcast(local_rows, src=0, group=group)
         dist.broadcast(K, src=0, group=group)
         dist.broadcast(M, src=0, group=group)
+        local_rows = local_rows.item()
+        K = K.item()
+        M = M.item()
 
-        A_parts = A.chunk(4, dim=0)
+
+        A_parts = list(A.chunk(4, dim=0))
         A_local = torch.empty(int(local_rows), int(K), dtype=torch.float32, device=gpu_rank)
         dist.scatter(tensor=A_local, scatter_list=A_parts, src=0, group=group)
-        dist.broadcast(tensor=B, src=0, group=group)
+        dist.broadcast(tensor=B.contiguous(), src=0, group=group)
 
         dist.barrier()
 
@@ -57,7 +61,7 @@ class LinearMPI(torch.autograd.Function):
 
         C_total = torch.empty(N, M, dtype=torch.float32)
 
-        C_locals = [torch.empty(local_rows, M, dtype=torch.float32, device=gpu_rank) for _ in range(size//4)]
+        C_locals = [torch.empty(local_rows, M, dtype=torch.float32, device=gpu_rank) for _ in range(4)]
         dist.gather(C_local, gather_list=C_locals, dst=0, group=group)
 
         C_total = torch.cat([

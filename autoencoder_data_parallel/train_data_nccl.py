@@ -1,17 +1,17 @@
-from torch.utils.data import DataLoader, Subset
-from torchvision import datasets, transforms
-from mpi4py import MPI
 import torch
 import torch.nn as nn
 import torch.optim as optim
+from torch.utils.data import DataLoader, Subset
+from torchvision import datasets, transforms
+
+from mpi4py import MPI
 import numpy as np
 import os
 import argparse
 import csv
 
-# My API
-from autoencoder import Autoencoder
-
+from autoencoder import Autoencoder, Autoencoder_PIPE
+#from mnist_loader import MNISTLoader
 
 def SaveLatenciesCSV(name, latencies):
     with open(f'{name}.csv', mode='w', newline='') as file:
@@ -28,24 +28,22 @@ class Trainer:
         test_data: DataLoader,
         optimizer: torch.optim.Optimizer,
         criterion: torch.nn.Module,
-        batch_count: int,
+        save_every: int,
         rank: int,
         gpu_rank: int,
         size: int,
-        comm: MPI.Comm,
-        comm_0: MPI.Comm
+        comm: MPI.Comm
     ) -> None:
         self.train_data = train_data
         self.test_data = test_data
         self.optimizer = optimizer
         self.criterion = criterion
-        self.batch_count = batch_count
+        self.save_every = save_every
         self.model = model
         self.gpu_rank = gpu_rank
         self.rank = rank
         self.size = size
         self.comm = comm
-        self.comm_0 = comm_0
         self.device="cuda" #  #  Expected one of cpu, cuda, ipu, xpu, mkldnn, opengl, opencl, ideep, hip, ve, fpga, maia, xla, lazy, vulkan, mps, meta, hpu,
 
 
@@ -65,7 +63,7 @@ class Trainer:
             grad = param.grad.data.cpu().numpy()
             avg_grad = np.zeros_like(grad)
             try:
-                self.comm_0.Allreduce(grad, avg_grad, op=MPI.SUM)
+                self.comm.Allreduce(grad, avg_grad, op=MPI.SUM)
                 avg_grad /= self.size  # Average the gradients
                 param.grad.data = torch.tensor(avg_grad, device=self.device)
 
@@ -74,82 +72,52 @@ class Trainer:
 
     def train(self, max_epochs: int):
 
-        local_batch_lat = []
+        local_batch_time = []
 
         start_time = MPI.Wtime()
-
         for epoch in range(max_epochs):
             print(f"[RANK {self.rank} GPU {self.gpu_rank}] Epoch {epoch} | Batches: {len(self.test_data)}") if self.rank == 0 else None
             total_loss = 0.0
 
-            if self.gpu_rank == 0:
-                for batch_idx, (batch_data, _) in enumerate(self.train_data):
+            #BATCH
+            for batch_idx, (batch_data, batch_target) in enumerate(self.train_data):
+                
+                start_time = MPI.Wtime()
 
-                    start_batch = MPI.Wtime()
+                inputs = batch_data.view(-1, 28*28)
+                inputs = inputs.to(self.gpu_rank)
+                outputs = self.model(inputs)
+                loss = self.criterion(inputs, outputs)
+                
+                self.optimizer.zero_grad()
+                loss.backward()
 
-                    # GPU 0 as coordinator and slave
-                    inputs = batch_data.view(-1, 28*28)
-                    inputs = inputs.to(self.gpu_rank)
+                self._synchronize_gradients() 
 
-                    outputs = self.model(inputs)
-                    loss = self.criterion(inputs, outputs)
-                    
-                    self.optimizer.zero_grad()
-                    loss.backward()
+                total_loss += loss.item()
 
-                    self._synchronize_gradients() # Is done only on GPU 0s
+                self.optimizer.step()
 
-                    total_loss += loss.item()
+                local_batch_time.append(MPI.Wtime() - start_time)
 
-                    self.optimizer.step()
+            avg_loss = total_loss / len(self.train_data)
+            all_avg_loss = (self.comm.allreduce(avg_loss, op=MPI.SUM) / self.size)
+            print(f"-> Epoch {epoch} | Avg Loss: {all_avg_loss}") if self.rank == 0 else None
 
-                    local_batch_lat.append(MPI.Wtime() - start_batch)
-
-            else:
-                for batch_idx in range(self.batch_count):
-                    for layer_idx in range(2):
-
-                        # GPUs 1, 2 , 3 are slaves
-                        local_N = None
-                        K = None
-                        M = None
-
-                        local_N = self.comm.bcast(local_N, root = 0)
-                        K = self.comm.bcast(K, root = 0)
-                        M = self.comm.bcast(M, root = 0)
-
-                        # Scatter A over the ranks
-                        A_local = torch.zeros(int(local_N), int(K), dtype=torch.float32)
-                        weights_local = torch.zeros(int(K), int(M), dtype=torch.float32)
-                        self.comm.Scatter(None, [A_local, MPI.FLOAT], root=0)
-                        self.comm.Bcast(weights_local, root=0)
-
-                        # Bring everything to the GPU
-                        A_local = A_local.to(self.gpu_rank)
-                        weights_local = weights_local.to(self.gpu_rank)
-
-                        self.comm.Barrier()
-
-                        # Actual matmul
-                        C_local = A_local @ weights_local
-                        C_local_cpu = C_local.cpu()
-                        self.comm.Gather([C_local_cpu, MPI.FLOAT], None, root=0)
-
-            if self.rank == 0:
-                avg_loss = total_loss / len(self.train_data)
-                print(f"-> Epoch {epoch} | Avg Loss: {avg_loss}") if self.rank == 0 else None
+            #test_accuracy = self._evaluate()
             
         local_training_time = MPI.Wtime() - start_time
         max_training_time = self.comm.allreduce(local_training_time, op=MPI.MAX)
 
         print(f"Final execution time: {max_training_time}s") if self.rank == 0 else None
-
-        if self.gpu_rank == 0:
-            global_batch_lat = self.comm_0.allreduce(local_batch_lat, op=MPI.MAX)
+        global_batch_time = self.comm.allreduce(local_batch_time, op=MPI.MAX)
 
         if self.rank == 0:
-            SaveLatenciesCSV("Batch_Tensor_Parallel_MPI", global_batch_lat)
-        
+            SaveLatenciesCSV("Data Parallel", global_batch_time)
+
+
+
+
 def load_distribute_data(
         rank: int, 
         size: int, 
@@ -179,18 +147,17 @@ def load_distribute_data(
     remainder = total_samples % size
     indices = list(range(total_samples))
 
-    rank_index = rank//4
     # Distribute samples among ranks
-    start_index = rank_index * sample_per_rank + min(rank_index, remainder)
-    extra = 1 if rank_index < remainder else 0
+    start_index = rank * sample_per_rank + min(rank, remainder)
+    extra = 1 if rank < remainder else 0
     local_samples = sample_per_rank + extra
     end_index = start_index + local_samples
-    local_indices = indices[int(start_index):int(end_index)]
+    local_indices = indices[start_index:end_index]
     print(f"[RANK {rank}] I have {local_samples} samples. From {start_index} to {end_index}", flush=True)
 
     # Create DataLoader for local dataset
+    # Bisogna passare local_indices
     local_dataset = Subset(train_dataset, local_indices)
-
     train_loader = DataLoader(
         local_dataset, batch_size=batch_size, shuffle=True
     )
@@ -202,26 +169,13 @@ def load_distribute_data(
 
 def main(
     epochs: int,
-    batch_size: int
+    batch_size: int,
+    save_every: int,
 ):
     # Initialize MPI
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
     size = comm.Get_size()
-
-    # Os group communicator
-    included_ranks = [i for i in range(0, size, 4)]
-    world_group = comm.Get_group()
-    group_0 = world_group.Incl(included_ranks)
-    comm_0 = comm.Create(group_0)
-
-    # Node group communicator 
-    my_node = rank // 4
-    start_rank = my_node * 4
-    node_ranks = list(range(start_rank, start_rank + 4))
-    world_group = comm.Get_group()
-    node_group = world_group.Incl(node_ranks)
-    node_comm = comm.Create(node_group)
 
     gpu_rank = rank % torch.cuda.device_count()
     torch.cuda.set_device(gpu_rank)
@@ -240,21 +194,16 @@ def main(
 
     # DATA MUST BE DIVIDED MANUALLY
     comm.Barrier()
-    if gpu_rank == 0:
-        train_loader, test_loader = load_distribute_data(rank=rank, size=size//4, batch_size=batch_size, comm=comm_0)
-        batch_count = len(train_loader)
-        node_comm.bcast(batch_count, root=0)
-    else:
-        train_loader, test_loader = None, None
-        batch_count = node_comm.bcast(None, root=0)
+    train_loader, test_loader = load_distribute_data(rank=rank, size=size, batch_size=batch_size, comm=comm)
 
-        
     # MODEL INIT
-    model = Autoencoder(rank, gpu_rank, node_comm, size//(size/4))
+    model = Autoencoder(28*28, 32)
     criterion = nn.MSELoss()
     optimizer = optim.Adam(model.parameters(), lr=1e-3)
 
     model = model.to(gpu_rank)
+    # not needed
+    #model = DDP(model, device_ids=[gpu_rank])
 
     # #MODEL TRAINING
     print(f"[RANK {rank}] Trainer is running...", flush=True) if rank == 0 else None
@@ -265,34 +214,39 @@ def main(
         test_data=test_loader,
         optimizer=optimizer,
         criterion=criterion,
-        batch_count=batch_count,
+        save_every=save_every,
         rank=rank,
         gpu_rank=gpu_rank,
         size=size,
-        comm=node_comm,
-        comm_0=comm_0
+        comm=comm
     )
     trainer.train(epochs)
     comm.Barrier()
 
+    # # Il training deve gestire l'aggregazione del gradiente con la allreduce, rivederlo
+
     print(f"[RANK {rank}] Training done.", flush=True) if rank == 0 else None
 
     if(rank == 0):
-        torch.save(model.state_dict(), "autoencoder_mpi.pth")
-        print(f"[RANK: {rank}] Model saved to autoencoder_mpi.pth")
+        torch.save(model.state_dict(), "autoencoder_ddp.pth")
+        print(f"[RANK: {rank}] Model saved to autoencoder_ddp.pth")
 
 
 if __name__ == "__main__":
 
-    epochs = 20
-    batch_size = 1024
+    epochs = 32
+    batch_size = 64
+    save_every = 1
+    latent_linear_size = 32
     
     parser = argparse.ArgumentParser(description="Example of parsing many CLI arguments.")
     parser.add_argument("--ntasks", type=int, help="Number of tasks", default=1)
     args = parser.parse_args()
     world_size = args.ntasks
 
+
     main(
         epochs=epochs,
         batch_size=batch_size,
+        save_every=save_every
     )
