@@ -286,7 +286,7 @@ def main(
 if __name__ == "__main__":
 
     epochs = 10
-    batch_size = 128
+    batch_size = 256
     
     parser = argparse.ArgumentParser(description="Example of parsing many CLI arguments.")
     parser.add_argument("--ntasks", type=int, help="Number of tasks", default=1)
