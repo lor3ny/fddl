@@ -23,7 +23,7 @@ Before running and testing it is fundamental to upload the necessary modules and
 ```cmd
 module load python
 module load anaconda
-module load openmpi/{version-cudaaware}
+module load openmpi/{version-cudaaware or not}
 module load cuda/{version}
 moudle load nccl/{version} #compatible with cuda/{version}
 ``` 
