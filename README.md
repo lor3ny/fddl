@@ -4,16 +4,16 @@
 Large language models (LLMs)havegrownsignificantly in size and computational demands, making both training and inference increasingly expensive. To meet these requirements, supercomputers have evolved to support distributed deep learning at Exascale. However, distributing deep learning models across multiple nodes re mains a complex challenge but fundamental to reduce latency and energy consumption. While many high-level APIs aim to simplify distributed training, they often lack transparency, preventing fine-grained optimization and making it difficult to support or customize hybrid parallelism strategies. As a result, diagnosing failures or addressing performance bottlenecks becomes significantly more challenging. To address these challenges, this project investigates the use of PyTorch in conjunction with MPIandNCCL.Specifically, this work presents distributed training and inference strategies using a variational autoencoder (VAE) as a baseline model on CINECA’s Leonardo supercomputer. It introduces a fine grained data parallel solution and a hybrid data–tensor parallel approach, both designed for multi-GPU, multi-node systems, highlighting the potential of custom hybrid distribution strategies.
 
 ## How to Use
-DL models are executed over single and multi GPUs systems using CINECA's Leonardo.
+DL models are executed over single and multi-GPUs systems using CINECA's Leonardo.
 This project is designed to work on cluster architectures.
 So the architectures and modules have to be adapted on the chosen cluster.
 
 The project has been testes with the following modules and versions:
 
-- Python 3.
-- Anaconda 3
-- Open MPI
-- CUDA 12.1
+- Python 3.11.6
+- Anaconda 3 2023.09
+- Open MPI 4.1.6 without CUDA-Awareness
+- CUDA 12.1 
 - NCCL 2.19.1 compatible with CUDA 12.1
 
 # Dependencies
